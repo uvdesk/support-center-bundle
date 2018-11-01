@@ -1,0 +1,156 @@
+{% set currentUser = app.user ? user_service.getCustomerPartialDetailById(app.user.id) : null %}
+<!--Header-->
+<style>
+    .uv-dropdown-list  {
+        text-align: left;
+    }
+    .uv-dropdown-list ul li {
+        width: 100%;
+    }
+    .uv-header .uv-header-rt .uv-dropdown-list ul li a {
+        color: #333;
+        font-size: 16px;
+        padding: 0;
+    }
+    .uv-header .uv-header-rt .uv-dropdown-list ul li a:hover {
+        color: #2750C4;
+        text-decoration: none;
+    }
+    .uv-profile-block .uv-dropdown-list {
+        top: 0;
+    }
+    .uv-rtl header .uv-header-rt > span {
+        display: block;
+    }
+    .uv-rtl header .uv-header-rt > span > .uv-dropdown-list {
+        right: unset;
+        left: 0px;
+        top: 70px;
+        text-align: right;
+    }
+    {% if websiteConfiguration is defined and websiteConfiguration.bannerBackgroundColor %}
+		.uv-hero {
+			background-color: {{websiteConfiguration.bannerBackgroundColor}};
+		}
+        .uv-header .uv-header-rt .uv-hamburger svg path {
+            fill: {{ websiteConfiguration.bannerBackgroundColor }};
+        }
+        .uv-skin-dark .uv-hero {
+			background-color: {{websiteConfiguration.bannerBackgroundColor}};
+		}
+	{% endif %}
+    {% if websiteConfiguration is defined and websiteConfiguration.linkColor is defined %}
+        a:not(.uv-btn):not(.uv-btn-small):not(.uv-btn-social):not(.uv-table):not(.not-shiny) {
+            color: {{ websiteConfiguration.linkColor }} !important;
+        }
+    {% endif %}
+    {% if websiteConfiguration is defined and websiteConfiguration.linkHoverColor is defined %}
+        a:not(.uv-btn):not(.uv-btn-small):not(.uv-btn-social):not(.uv-table):not(.not-shiny):hover {
+            color: {{ websiteConfiguration.linkHoverColor }} !important;
+        }
+    {% endif %}
+    .goog-te-gadget-simple .goog-te-menu-value, .goog-te-gadget-simple .goog-te-menu-value:hover {
+        color: #333!important;
+    }
+</style>
+<div class="uv-header">
+    <div class="uv-container">
+        <header>
+            <div class="uv-header-lt">
+                <a class="uv-logo" href="{{path('helpdesk_knowledgebase_folder')}}">
+                    {% if websiteConfiguration is defined and websiteConfiguration.website.logo is defined %}
+                        <img src="{{ websiteConfiguration.website.logo }}" alt="{{ websiteConfiguration.website.name}}" />
+                    {% else %}
+                        <img src="{{ asset('bundles/uvdeskcore/images/uvdesk-gray-logo.svg') }}" alt="UVdesk" />
+                    {% endif %}
+                </a>
+            </div>
+            <div class="uv-header-rt">
+                {% if currentUser %}
+                    <span style="position: relative" class="uv-profile-block">
+                        <div class="uv-profile-wrapper uv-dropdown-other">
+                            <div class="uv-profile-avatar">
+                                <img src="{{ currentUser.smallThumbnail ?: asset(default_customer_image_path) }}">
+                            </div>
+                            <div class="uv-profile-howdy">
+                                <span>{{ 'Howdy!'|trans }}</span>
+                                <span class="uv-username">{{ currentUser.firstName }}</span>
+                            </div>
+                            <div class="uv-drop-icon"></div>
+                        </div>
+                        <div class="uv-dropdown-list uv-bottom-right uv-text-left">
+                            <div class="uv-dropdown-container">
+                                <label>{{ 'Account'|trans }}</label>
+                                <ul>
+                                    <li>
+                                        <a href="{{ path('helpdesk_customer_ticket_collection') }}">{{ 'Tickets'|trans }}</a>
+                                    </li>
+                                    {% if websiteConfiguration.ticketCreateOption == 1 %}
+                                        <li>
+                                            <a href="{{ path('helpdesk_customer_create_ticket') }}">{{ 'New Ticket Request'|trans }}</a>
+                                        </li>
+                                    {% endif %}
+                                    <li>
+                                        <a href="{{ path('helpdesk_customer_account') }}">{{ 'Profile'|trans }}</a>
+                                    </li>
+                                    <li>
+                                        <a class="uv-text-danger" href="{{ path('helpdesk_customer_logout') }}">{{ 'Sign Out'|trans }}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </span>
+                {% else %}
+                    <nav id="front_nav">
+                        <ul>
+                            <li><a href="{{path('helpdesk_knowledgebase_folder')}}">{{"Home"|trans}}</a></li>
+                            {% for headerLink in websiteConfiguration.headerLinks %}
+                                <li><a href="{{headerLink.url}}" target="_blank">{{headerLink.label}}</a></li>
+                            {% endfor %}
+
+                            {% if websiteConfiguration is defined and websiteConfiguration.ticketCreateOption is defined %}
+                                {% if not websiteConfiguration.loginRequiredToCreate or app.user %}
+                                    <li><a href="{{path('helpdesk_customer_create_ticket')}}" class="uv-btn-small">{% trans %}Contact Us{% endtrans %}</a></li>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if websiteConfiguration is defined and websiteConfiguration.disableCustomerLogin is defined and not websiteConfiguration.disableCustomerLogin %}
+                                <li><a href="{{path('helpdesk_customer_login')}}" class="uv-btn-small">{% trans %}Sign In{% endtrans %}</a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    <div class="uv-hamburger">
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        width="20px" height="15px">
+                        <path fill-rule="evenodd"
+                        d="M18.500,9.000 L1.500,9.000 C0.672,9.000 0.000,8.328 0.000,7.500 C0.000,6.672 0.672,6.000 1.500,6.000 L18.500,6.000 C19.328,6.000 20.000,6.672 20.000,7.500 C20.000,8.328 19.328,9.000 18.500,9.000 ZM18.500,3.000 L1.500,3.000 C0.672,3.000 0.000,2.328 0.000,1.500 C0.000,0.672 0.672,-0.000 1.500,-0.000 L18.500,-0.000 C19.328,-0.000 20.000,0.672 20.000,1.500 C20.000,2.328 19.328,3.000 18.500,3.000 ZM1.500,12.000 L18.500,12.000 C19.328,12.000 20.000,12.672 20.000,13.500 C20.000,14.328 19.328,15.000 18.500,15.000 L1.500,15.000 C0.672,15.000 0.000,14.328 0.000,13.500 C0.000,12.672 0.672,12.000 1.500,12.000 Z"/>
+                        </svg>
+                    </div>
+                {% endif %}
+            </div>
+        </header>
+    </div>
+</div>
+<!--//Header-->
+{% if searchDisable is defined and searchDisable == false %}
+    <form method="get" action="{{path('helpdesk_knowledgebase_search')}}">
+        <!--Hero-->
+        <div class="uv-hero">
+            <div class="uv-container">
+                <article>
+                    <h1>
+                        {% if websiteConfiguration is defined and websiteConfiguration.siteDescription is defined %}
+                            {{ websiteConfiguration.siteDescription }}
+                        {% else %}
+                            {% trans %}Hi! how can we help?{% endtrans %}
+                        {% endif %}
+                    </h1>
+                    <input type="text" name="s" class="uv-kb-search-lg" placeholder="{{"Enter search keyword"|trans}}">
+                </article>
+            </div>
+        </div>
+        <!--Hero-->
+    </form>
+{% endif %}

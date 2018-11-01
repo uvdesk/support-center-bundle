@@ -1,0 +1,11 @@
+uvdesk_support_center_member_knowledgebase_folder_routing_resources:
+    resource: "@UVDeskSupportCenterBundle/Resources/config/routes/knowledgebase-folders.yaml"
+
+uvdesk_support_center_member_knowledgebase_category_routing_resources:
+    resource: "@UVDeskSupportCenterBundle/Resources/config/routes/knowledgebase-categories.yaml"
+
+uvdesk_support_center_member_knowledgebase_article_routing_resources:
+    resource: "@UVDeskSupportCenterBundle/Resources/config/routes/knowledgebase-articles.yaml"
+
+uvdesk_support_center_member_knowledgebase_configuration_routing_resources:
+    resource: "@UVDeskSupportCenterBundle/Resources/config/routes/knowledgebase-settings.yaml"
