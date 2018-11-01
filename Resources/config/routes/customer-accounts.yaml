@@ -1,0 +1,21 @@
+helpdesk_customer_login:
+    path:     /login
+    controller: Webkul\UVDesk\SupportCenterBundle\Knowledgebase\Customer::login
+
+helpdesk_customer_logout:
+    path:     /logout
+    controller: Webkul\UVDesk\SupportCenterBundle\Knowledgebase\Customer::logout
+
+helpdesk_customer_account:
+    path:     /account
+    controller: Webkul\UVDesk\SupportCenterBundle\Knowledgebase\Customer::Account
+
+helpdesk_customer_forgot_password:
+    path:     /forgot-password
+    controller: Webkul\UVDesk\SupportCenterBundle\Knowledgebase\Customer::forgotPassword
+
+helpdesk_customer_update_account_credentials:
+    path:     /update-credentials/{email}/{verificationCode}
+    controller: Webkul\UVDesk\SupportCenterBundle\Knowledgebase\Customer::updateCredentials
+    defaults: { email: 0, verificationCode: 0 }
+

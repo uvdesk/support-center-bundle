@@ -1,0 +1,5 @@
+uvdesk_support_center_customer_account_routing_resources:
+    resource: "@UVDeskSupportCenterBundle/Resources/config/routes/customer-accounts.yaml"
+
+uvdesk_support_center_customer_ticket_routing_resources:
+    resource: "@UVDeskSupportCenterBundle/Resources/config/routes/customer-tickets.yaml"

@@ -1,0 +1,47 @@
+helpdesk_member_knowledgebase_article_collection:
+    path:     /articles
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\Article::ArticleList
+
+helpdesk_member_knowledgebase_category_articles_collection:
+    path:     /{category}/articles
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\Article::ArticleListByCategory
+    defaults: { category: 0 }
+
+helpdesk_member_knowledgebase_folder_articles_collection:
+    path:     /solution/{solution}/articles
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\Article::ArticleListBySolution
+    defaults: { solution: 0 }
+
+helpdesk_member_knowledgebase_article_collection_xhr:
+    path:     /articles/ajax
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\Article::ArticleListXhr
+
+helpdesk_member_knowledgebase_folder_articles_collection_xhr:
+    path:     /solution/{solution}/articles/ajax
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\Article::ArticleListXhr
+    defaults: { solution: 0 }
+
+helpdesk_member_knowledgebase_create_article:
+    path:     /article/add
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\Article::Article
+    defaults: { panelId: 'knowledgebase' }
+
+helpdesk_member_knowledgebase_update_article:
+    path:     /article/edit/{id}
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\Article::Article
+    defaults: { panelId: 'knowledgebase', id: 0 }
+
+helpdesk_member_knowledgebase_update_article_xhr:
+    path:     /article/ajax/{id}
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\Article::ArticleXhr
+    defaults: { id: 0 }
+
+helpdesk_member_knowledgebase_revision_article:
+    path:     /articleHistory/{id}
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\Article::articleHistoryXhr
+    defaults: { id: 0 }
+
+helpdesk_member_knowledgebase_related_article_xhr:
+    path:     /articleRelated/{id}
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\Article::articleRelatedXhr
+    defaults: { id: 0 }

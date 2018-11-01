@@ -1,0 +1,39 @@
+ajax_file_upload:
+    path:     /file-upload
+    controller: Webkul\UVDesk\DefaultBundle\Controller\Default::ajaxFileUpload
+
+ajax_url_file:
+    path:     /url-upload
+    controller: Webkul\UVDesk\DefaultBundle\Controller\Default::ajaxUrlFileUpload
+
+ajax_file_remove:
+    path:     /file-remove
+    controller: Webkul\UVDesk\DefaultBundle\Controller\Default::ajaxFileRemove
+
+ajax_service_call:
+    path:     /service-call
+    controller: Webkul\UVDesk\DefaultBundle\Controller\Default::ajaxServiceCall
+
+helpdesk_member_knowledgebase_folders_collection:
+    path:     /knowledgebase/folders
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\Folder::listFolders
+    defaults: { panelId: 'knowledgebase' }
+
+helpdesk_member_knowledgebase_folders_collection_xhr:
+    path:     /knowledgebase/folders/xhr
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\KnowledgebaseXHR::listFoldersXHR
+
+helpdesk_member_knowledgebase_create_folder:
+    path:     /knowledgebase/folders/new
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\Folder::createFolder
+    defaults: { panelId: 'knowledgebase' }
+
+helpdesk_member_knowledgebase_update_folder:
+    path:     /knowledgebase/folders/update/{folderId}
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\Folder::updateFolder
+    defaults: { panelId: 'knowledgebase', folderId: 0 }
+
+helpdesk_member_knowledgebase_update_folder_xhr:
+    path:     /knowledgebase/folders/update/xhr/{folderId}
+    controller: Webkul\UVDesk\SupportCenterBundle\Workstation\KnowledgebaseXHR::updateFolderXHR
+    defaults: { folderId: 0 }
