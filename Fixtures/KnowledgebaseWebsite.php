@@ -25,6 +25,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
         'ticket_create_option' => true,
         'disable_customer_login' => false,
         'login_required_to_create' => true,
+        'home_page_content' => 'masonry',
     ];
 
     public function load(ObjectManager $entityManager)
@@ -59,6 +60,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
                 ->setSiteDescription(self::$websiteConfigurationSeed['site_description'])
                 ->setBroadcastMessage(self::$websiteConfigurationSeed['broadcast_message'])
                 ->setTicketCreateOption(self::$websiteConfigurationSeed['ticket_create_option'])
+                ->setHomepageContent(self::$websiteConfigurationSeed['home_page_content'])
                 ->setDisableCustomerLogin(self::$websiteConfigurationSeed['disable_customer_login'])
                 ->setIsActive(true)
                 ->setCreatedAt(new \DateTime())
