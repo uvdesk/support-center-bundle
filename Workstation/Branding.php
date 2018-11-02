@@ -65,8 +65,8 @@ class Branding extends Controller
                     $configuration->setRemoveBrandingContent($removeBrandingContent);
                     $configuration->setDisableCustomerLogin($disableCustomerLogin);
 
-                    $ticketCreateOption = array_key_exists('ticketCreateOption',$params['website']) ? $params['website']['ticketCreateOption'] : 0;
-                    $loginRequiredToCreate = array_key_exists('loginRequiredToCreate',$params['website']) ? $params['website']['loginRequiredToCreate'] : 0;
+                    $ticketCreateOption = array_key_exists('ticketCreateOption', $params['website']) ? 1 : 0;
+                    $loginRequiredToCreate = array_key_exists('loginRequiredToCreate', $params['website']) ? 1 : 0;
                     $configuration->setTicketCreateOption($ticketCreateOption);                
                     $configuration->setLoginRequiredToCreate($loginRequiredToCreate);
                     $configuration->setUpdatedAt(new \DateTime());
@@ -164,5 +164,4 @@ class Branding extends Controller
             'blacklist'=>$configuration->getBlackList(),
         ]);
     }
-
 }
