@@ -87,8 +87,10 @@ class Category extends Controller
         if (!$this->get('user.service')->checkPermission('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
-        if ($request->attributes->get('id')){ 
-            $category = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:SolutionCategory')->findOneById(['id' => $request->attributes->get('id')]);
+
+        if ($request->attributes->get('id')) { 
+            $category = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:SolutionCategory')->findOneById($request->attributes->get('id'));
+            
             if (!$category) {
                 $this->noResultFound();
             }
