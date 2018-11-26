@@ -43,6 +43,9 @@ class Branding extends Controller
                     $entityManager->persist($website);
                     $entityManager->persist($configuration);
                     $entityManager->flush();
+
+                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
+
                     break;
                 case "knowledgebase":
                     $configuration->setPageBackgroundColor($params['website']['pageBackgroundColor']);
@@ -72,6 +75,8 @@ class Branding extends Controller
                     $configuration->setUpdatedAt(new \DateTime());
                     $entityManager->persist($configuration);
                     $entityManager->flush();
+
+                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
                     break;
                 case "seo":
                     $configuration->setMetaDescription($params['metaDescription']);  
@@ -79,6 +84,8 @@ class Branding extends Controller
                     $configuration->setUpdatedAt(new \DateTime());
                     $entityManager->persist($configuration);
                     $entityManager->flush();
+
+                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
                     break;
                 case "links":
                     $footerLinks=[];
@@ -105,6 +112,8 @@ class Branding extends Controller
                     $configuration->setFooterLinks($footerLinks);
                     $entityManager->persist($configuration);
                     $entityManager->flush();
+
+                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
                     break;
                 case "broadcasting":
                     $params['broadcasting']['isActive'] = array_key_exists('isActive', $params['broadcasting']) ? true  : false;
@@ -113,12 +122,16 @@ class Branding extends Controller
                     
                     $entityManager->persist($configuration);
                     $entityManager->flush();
+
+                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
                     break;
                 case 'advanced':
                     $configuration->setCustomCSS($request->request->get('customCSS'));
                     $configuration->setScript($request->request->get('script'));
                     $entityManager->persist($configuration);
                     $entityManager->flush();
+
+                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
                     break;
                 default:
                     break;
