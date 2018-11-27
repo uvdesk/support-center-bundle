@@ -22,7 +22,6 @@
 		</div>
 	</div>
 {% endblock %}
-
 {% block body %}
     <style>
         .uv-btn-tag {
@@ -558,15 +557,7 @@
 
         var ticketApp = {};
         $(function () {
-            var viewerImages = function() {
-                {# $('.uv-viewer-images').viewer({
-                    'url': 'data-url',
-                    'downloadBase': "{{ path('helpdesk_customer_download_ticket_attachment') }}",
-                    'download': 'data-download',
-                }); #}
-            };
-            viewerImages();
-
+            
             var TicketModel = Backbone.Model.extend({
                 idAttribute : "id",
                 validation: {
@@ -795,7 +786,6 @@
                     //convertForImages(this.$el);
                     this.$el.find('div.message a').attr('target', '_blank');
                     app.appView.relativeTime()
-                    viewerImages();
                 }
             });
 
@@ -979,9 +969,9 @@
             threadCollection.syncData();
 
             {% if ticket.customer == app.user %}
-                {# var collaboratorCollection = new CollaboratorCollection($.parseJSON('{{ ticket_service.getTicketCollaborators(ticket.id)|json_encode|raw }}'));
+                var collaboratorCollection = new CollaboratorCollection($.parseJSON('{{ ticket_service.getTicketCollaborators(ticket.id)|json_encode|raw }}'));
                 var collaboratorListView = new CollaboratorList();
-                collaboratorListView.render(); #}
+                collaboratorListView.render();
             {% endif %}
         });
     </script>
@@ -995,7 +985,7 @@
 			images_upload_url: "{{ path('helpdesk_customer_upload_thread_encoded_image', {ticketId: app.request.get('id')}) }}",
             setup: function(editor) {
                 editor.on('KeyUp', function(e) {
-                    {# ticketApp.ticketView.saveDraft(editor.getContent()); #}
+                    ticketApp.ticketView.saveDraft(editor.getContent());
                 });
             }
 		});

@@ -90,24 +90,23 @@ class Branding extends Controller
                 case "links":
                     $footerLinks=[];
                     $headerLinks=[];
-                    $headerLinks = $params['headerLinks'];                    
-                    if(count($headerLinks)>0){
+                    $headerLinks = isset($params['headerLinks'])? $params['headerLinks']: '';
+                    if(!empty($headerLinks)){
                         foreach ($headerLinks as $key => $link) {
                             if($link['label'] == '' || $link['url'] == '' || !filter_var($link['url'], FILTER_VALIDATE_URL)) {
                                 
                                 unset($headerLinks[$key]);
                             }
                         }
-                    } 
-                    $footerLinks = $params['footerLinks'];
-                    if(count($footerLinks)>0){
+                    }
+                    $footerLinks = isset($params['footerLinks']) ? $params['footerLinks']: 0;
+                    if(!empty($footerLinks)){
                         foreach ($footerLinks as $key => $link) {
                             if($link['label'] == '' || $link['url'] == '' || !filter_var($link['url'], FILTER_VALIDATE_URL)) {
                                 unset($footerLinks[$key]);
                             }
                         }
                     }
-
                     $configuration->setHeaderLinks($headerLinks);
                     $configuration->setFooterLinks($footerLinks);
                     $entityManager->persist($configuration);

@@ -86,7 +86,7 @@ class KnowledgebaseXHR extends Controller
                     $entityManager->flush();
 
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = 'solution.deleteFolder.success';
+                    $json['alertMessage'] = 'Success ! Folder deleted successfully.';
                 }else{
 
                     $json['alertClass'] = 'error';
