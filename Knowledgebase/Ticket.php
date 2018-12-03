@@ -6,11 +6,13 @@ use Webkul\UVDesk\CoreBundle\Entity\Thread;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Webkul\UVDesk\CoreBundle\Entity\TicketRating;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Webkul\UVDesk\CoreBundle\Entity\Ticket as TicketEntity;
 use Webkul\UVDesk\SupportCenterBundle\Form\Ticket as TicketForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Webkul\UVDesk\CoreBundle\Workflow\Events as CoreWorkflowEvents;
 
 class Ticket extends Controller
 {
@@ -250,6 +252,11 @@ class Ticket extends Controller
                     $em->persist($ticket);
                     $em->flush();
                 }
+                // Trigger customer reply event
+                $event = new GenericEvent(CoreWorkflowEvents\Ticket\CustomerReply::getId(), [
+                    'entity' =>  $ticket,
+                ]);
+                $this->get('event_dispatcher')->dispatch('uvdesk.automation.workflow.execute', $event);
 
                 $this->addFlash('success', "Success ! Reply added successfully.");
             } else {

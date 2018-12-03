@@ -700,7 +700,7 @@
                         form.find('.uv-element-block-textarea').append("<span class='uv-field-message'>{{ 'This field is mandatory'|trans }}</span>");
                     }
                 },
-                saveDraft :  _.debounce(function(content) {
+                {# saveDraft :  _.debounce(function(content) {
                     if(!this.stopDraftSaveFlag) {
                         $('.mce-toolbar-grp').append(this.loaderTemplate())
                         this.model.save({data : {
@@ -718,7 +718,7 @@
                             }
                         });
                     }
-                }, 3000),
+                }, 3000), #}
             });
 
             var ThreadModel = Backbone.Model.extend({
