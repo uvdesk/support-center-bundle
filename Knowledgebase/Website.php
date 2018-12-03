@@ -246,8 +246,9 @@ class Website extends Controller
    
     public function viewArticle(Request $request)
     {
-        $this->isWebsiteActive();
 
+        $this->isWebsiteActive();
+       
         if (!$request->attributes->get('article') && !$request->attributes->get('slug')) {
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
         }
@@ -255,20 +256,18 @@ class Website extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         $user = $this->get('user.service')->getCurrentUser();
         $articleRepository = $entityManager->getRepository('UVDeskSupportCenterBundle:Article');
-     
 
         if ($request->attributes->get('article')) {
             $article = $articleRepository->findOneBy(['status' => 1, 'companyId' => $company->getId(), 'id' => $request->attributes->get('article')]);
         } else {
             $article = $articleRepository->findOneBy(['status' => 1,'slug' => $request->attributes->get('slug')]);
         }
-
        
         if (empty($article)) {
             $this->noResultFound();
         }
         $article->setViewed((int) $article->getViewed() + 1);
-
+        
         // Log article view
         $articleViewLog = new ArticleViewLog();
         $articleViewLog->setUser(($user != null && $user != 'anon.') ? $user : null);
@@ -279,6 +278,8 @@ class Website extends Controller
         $entityManager->persist($article);
         $entityManager->persist($articleViewLog);
         $entityManager->flush();
+        
+      
 
         // Get article feedbacks
         $feedbacks = ['enabled' => false, 'submitted' => false, 'article' => $articleRepository->getArticleFeedbacks($article)];

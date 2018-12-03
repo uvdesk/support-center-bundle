@@ -94,6 +94,12 @@ Class Customer extends Controller
             
             if ($user) { 
                 $key = time();
+                 // Trigger agent delete event
+                 $event = new GenericEvent(CoreWorkflowEvents\Customer\ForgotPassword::getId(), [
+                    'entity' => $user,
+                ]);
+                $this->get('event_dispatcher')->dispatch('uvdesk.automation.workflow.execute', $event);
+
                 $request->getSession()->getFlashBag()->set('success', 'Please check your mail for password update.');
                 
                 return $this->redirect($this->generateUrl('helpdesk_customer_login'));
