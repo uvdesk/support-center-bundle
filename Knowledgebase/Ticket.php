@@ -6,11 +6,13 @@ use Webkul\UVDesk\CoreBundle\Entity\Thread;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Webkul\UVDesk\CoreBundle\Entity\TicketRating;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Webkul\UVDesk\CoreBundle\Entity\Ticket as TicketEntity;
 use Webkul\UVDesk\SupportCenterBundle\Form\Ticket as TicketForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Webkul\UVDesk\CoreBundle\Workflow\Events as CoreWorkflowEvents;
 
 class Ticket extends Controller
 {
@@ -251,6 +253,13 @@ class Ticket extends Controller
                     $em->flush();
                 }
 
+                // Trigger customer reply event
+                $event = new GenericEvent(CoreWorkflowEvents\Ticket\CustomerReply::getId(), [
+                    'entity' =>  $ticket,
+                ]);
+
+                $this->get('event_dispatcher')->dispatch('uvdesk.automation.workflow.execute', $event);
+
                 $this->addFlash('success', "Success ! Reply added successfully.");
             } else {
                 $this->addFlash(
@@ -416,6 +425,65 @@ class Ticket extends Controller
         $response->sendHeaders();
         $response->setContent(readfile($zipname));
 
+        return $response;
+    }
+
+    public function ticketCollaboratorXhr(Request $request)
+    {
+        $json = array();
+        $content = json_decode($request->getContent(), true);
+        $em = $this->getDoctrine()->getManager();
+        $ticket = $em->getRepository('UVDeskCoreBundle:Ticket')->find($content['ticketId']);
+        
+        if ($request->getMethod() == "POST") {
+            if ($content['email'] == $ticket->getCustomer()->getEmail()) {
+                $json['alertClass'] = 'danger';
+                $json['alertMessage'] = $this->get('translator')->trans('Error ! Can not add customer as a collaborator.');
+            } else {
+                $data = array(
+                    'from' => $content['email'],
+                    'firstName' => ($firstName = ucfirst(current(explode('@', $content['email'])))),
+                    'lastName' => ' ',
+                    'role' => 4,
+                );
+                
+                $collaborator = $this->get('user.service')->getUserDetails($data);
+                $checkTicket = $em->getRepository('UVDeskCoreBundle:Ticket')->isTicketCollaborator($ticket,$content['email']);
+                
+                if (!$checkTicket) {
+                    $ticket->addCollaborator($collaborator);
+                    $em->persist($ticket);
+                    $em->flush();
+                    $ticket->lastCollaborator = $collaborator;
+                    $collaborator = $em->getRepository('UVDeskCoreBundle:User')->find($collaborator->getId());
+                   
+
+                    $json['collaborator'] =  $this->get('user.service')->getCustomerPartialDetailById($collaborator->getId());
+                    $json['alertClass'] = 'success';
+                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Collaborator added successfully.');
+                } else {
+                    $json['alertClass'] = 'danger';
+                    $json['alertMessage'] = $this->get('translator')->trans('Error ! Collaborator is already added.');
+                }
+            }
+        } elseif ($request->getMethod() == "DELETE") {
+            $collaborator = $em->getRepository('UVDeskCoreBundle:User')->findOneBy(array('id' => $request->attributes->get('id')));
+            
+            if ($collaborator) {
+                $ticket->removeCollaborator($collaborator);
+                $em->persist($ticket);
+                $em->flush();
+
+                $json['alertClass'] = 'success';
+                $json['alertMessage'] = $this->get('translator')->trans('Success ! Collaborator removed successfully.');
+            } else {
+                $json['alertClass'] = 'danger';
+                $json['alertMessage'] = $this->get('translator')->trans('Error ! Invalid Collaborator.');
+            }
+        }
+
+        $response = new Response(json_encode($json));
+        $response->headers->set('Content-Type', 'application/json');
         return $response;
     }
 }
