@@ -7,7 +7,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Webkul\UVDesk\CoreBundle\Form\UserProfile;
 use Webkul\UVDesk\CoreBundle\Utils\TokenGenerator;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Webkul\UVDesk\CoreBundle\Workflow\Events as CoreWorkflowEvents;
 
 Class Customer extends Controller
 {
@@ -94,6 +96,14 @@ Class Customer extends Controller
             
             if ($user) { 
                 $key = time();
+                
+                // Trigger agent delete event
+                $event = new GenericEvent(CoreWorkflowEvents\Customer\ForgotPassword::getId(), [
+                    'entity' => $user,
+                ]);
+
+                $this->get('event_dispatcher')->dispatch('uvdesk.automation.workflow.execute', $event);
+
                 $request->getSession()->getFlashBag()->set('success', 'Please check your mail for password update.');
                 
                 return $this->redirect($this->generateUrl('helpdesk_customer_login'));

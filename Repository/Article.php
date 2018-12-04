@@ -570,7 +570,7 @@ class Article extends EntityRepository
     public function getArticleFeedbacks($article)
     {
         $response = ['positiveFeedbacks' => 0, 'negativeFeedbacks' => 0, 'collection' => []];
-        $nativeQuery = strtr('SELECT user_id, is_helpful, description FROM article_feedback WHERE article_id = {ARTICLE_ID}', [
+        $nativeQuery = strtr('SELECT user_id, is_helpful, description FROM uv_article_feedback WHERE article_id = {ARTICLE_ID}', [
             '{ARTICLE_ID}' => $article->getId(),
         ]);
 

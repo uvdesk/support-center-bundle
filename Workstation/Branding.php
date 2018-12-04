@@ -43,6 +43,9 @@ class Branding extends Controller
                     $entityManager->persist($website);
                     $entityManager->persist($configuration);
                     $entityManager->flush();
+
+                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
+
                     break;
                 case "knowledgebase":
                     $configuration->setPageBackgroundColor($params['website']['pageBackgroundColor']);
@@ -72,6 +75,8 @@ class Branding extends Controller
                     $configuration->setUpdatedAt(new \DateTime());
                     $entityManager->persist($configuration);
                     $entityManager->flush();
+
+                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
                     break;
                 case "seo":
                     $configuration->setMetaDescription($params['metaDescription']);  
@@ -79,21 +84,25 @@ class Branding extends Controller
                     $configuration->setUpdatedAt(new \DateTime());
                     $entityManager->persist($configuration);
                     $entityManager->flush();
+
+                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
                     break;
                 case "links":
                     $footerLinks=[];
                     $headerLinks=[];
-                    $headerLinks = $params['headerLinks'];                    
-                    if(count($headerLinks)>0){
+                    $headerLinks = isset($params['headerLinks'])? $params['headerLinks']: '';
+                    $footerLinks = isset($params['footerLinks']) ? $params['footerLinks']: 0;
+
+                    if (!empty($headerLinks)) {
                         foreach ($headerLinks as $key => $link) {
                             if($link['label'] == '' || $link['url'] == '' || !filter_var($link['url'], FILTER_VALIDATE_URL)) {
                                 
                                 unset($headerLinks[$key]);
                             }
                         }
-                    } 
-                    $footerLinks = $params['footerLinks'];
-                    if(count($footerLinks)>0){
+                    }
+                    
+                    if (!empty($footerLinks)) {
                         foreach ($footerLinks as $key => $link) {
                             if($link['label'] == '' || $link['url'] == '' || !filter_var($link['url'], FILTER_VALIDATE_URL)) {
                                 unset($footerLinks[$key]);
@@ -105,6 +114,8 @@ class Branding extends Controller
                     $configuration->setFooterLinks($footerLinks);
                     $entityManager->persist($configuration);
                     $entityManager->flush();
+
+                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
                     break;
                 case "broadcasting":
                     $params['broadcasting']['isActive'] = array_key_exists('isActive', $params['broadcasting']) ? true  : false;
@@ -113,12 +124,16 @@ class Branding extends Controller
                     
                     $entityManager->persist($configuration);
                     $entityManager->flush();
+
+                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
                     break;
                 case 'advanced':
                     $configuration->setCustomCSS($request->request->get('customCSS'));
                     $configuration->setScript($request->request->get('script'));
                     $entityManager->persist($configuration);
                     $entityManager->flush();
+
+                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
                     break;
                 default:
                     break;
