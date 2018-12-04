@@ -14,7 +14,7 @@ use Webkul\UVDesk\SupportCenterBundle\Form\Category as CategoryForm;
 class Category extends Controller
 {
     const LIMIT = 10;
-  
+
     public function categoryList(Request $request)    
     {
         if (!$this->get('user.service')->checkPermission('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
@@ -155,7 +155,6 @@ class Category extends Controller
                 $this->addFlash('success', $message);
 
                 return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_category_collection'));
-          
         }
 
         $solutions = $this->getDoctrine()
