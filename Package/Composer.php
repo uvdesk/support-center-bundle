@@ -12,7 +12,7 @@ class Composer extends ComposerPackageExtension
         $composerPackage = new ComposerPackage(new UVDeskSupportCenterConfiguration());
         $composerPackage
             ->movePackageConfig('config/routes/uvdesk_support_center.yaml', 'Templates/routes.yaml')
-            ->combineProjectConfig('config/packages/security.yaml', 'Templates/security-configs.yaml');
+            ->combineProjectConfig('config/packages/security.yaml', 'Templates/security.yaml');
         
         return $composerPackage;
     }
