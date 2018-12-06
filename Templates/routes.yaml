@@ -1,7 +1,7 @@
 # This file is the entry point to configure the routes for your dependencies.
 uvdesk_support_center_bundle_member_routing_resources:
     resource: "@UVDeskSupportCenterBundle/Resources/config/members.yaml"
-    prefix:   /{_locale}/%uvdesk_member_routing_prefix%/
+    prefix:   /{_locale}/%uvdesk.site_path.member_prefix%/
     requirements:
         _locale: %app_locales%
     defaults:
@@ -9,7 +9,7 @@ uvdesk_support_center_bundle_member_routing_resources:
 
 uvdesk_support_center_bundle_customer_routing_resources:
     resource: "@UVDeskSupportCenterBundle/Resources/config/customers.yaml"
-    prefix:   /{_locale}/%uvdesk_support_center_routing_prefix%
+    prefix:   /{_locale}/%uvdesk.site_path.knowledgebase_customer_prefix%/
     requirements:
         _locale: %app_locales%
     defaults:
