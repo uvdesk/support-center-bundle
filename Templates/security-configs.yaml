@@ -1,7 +1,7 @@
 security:
     firewalls:
         customer:
-            pattern: /customer
+            pattern: /%uvdesk_support_center_routing_prefix%
             provider: user_provider
             anonymous: ~
             form_login:
@@ -15,8 +15,8 @@ security:
                 target: helpdesk_customer_login
 
     access_control:
-        - { path: /customer/login, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
-        - { path: /customer/create-ticket, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
-        - { path: /customer/forgot-password, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
-        - { path: /customer/update-credentials, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
-        - { path: /customer/, roles: ROLE_CUSTOMER }
+        - { path: /%uvdesk_support_center_routing_prefix%/login, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
+        - { path: /%uvdesk_support_center_routing_prefix%/create-ticket, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
+        - { path: /%uvdesk_support_center_routing_prefix%/forgot-password, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
+        - { path: /%uvdesk_support_center_routing_prefix%/update-credentials, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
+        - { path: /%uvdesk_support_center_routing_prefix%/, roles: ROLE_CUSTOMER }
