@@ -1,7 +1,7 @@
 security:
     firewalls:
         customer:
-            pattern: /%uvdesk.site_path.knowledgebase_customer_prefix%
+            pattern: /%uvdesk_site_path.knowledgebase_customer_prefix%
             provider: user_provider
             anonymous: ~
             form_login:
@@ -15,8 +15,8 @@ security:
                 target: helpdesk_customer_login
 
     access_control:
-        - { path: /%uvdesk.site_path.knowledgebase_customer_prefix%/login, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
-        - { path: /%uvdesk.site_path.knowledgebase_customer_prefix%/create-ticket, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
-        - { path: /%uvdesk.site_path.knowledgebase_customer_prefix%/forgot-password, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
-        - { path: /%uvdesk.site_path.knowledgebase_customer_prefix%/update-credentials, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
-        - { path: /%uvdesk.site_path.knowledgebase_customer_prefix%/, roles: ROLE_CUSTOMER }
+        - { path: /%uvdesk_site_path.knowledgebase_customer_prefix%/login, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
+        - { path: /%uvdesk_site_path.knowledgebase_customer_prefix%/create-ticket, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
+        - { path: /%uvdesk_site_path.knowledgebase_customer_prefix%/forgot-password, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
+        - { path: /%uvdesk_site_path.knowledgebase_customer_prefix%/update-credentials, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
+        - { path: /%uvdesk_site_path.knowledgebase_customer_prefix%/, roles: ROLE_CUSTOMER }
