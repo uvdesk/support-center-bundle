@@ -218,9 +218,7 @@ class Ticket extends Controller
     public function saveReply(int $id, Request $request)
     {
         $this->isWebsiteActive();
-        
         $data = $request->request->all();
-
         $ticket = $this->getDoctrine()->getRepository('UVDeskCoreBundle:Ticket')->find($id);
 
         if($_POST) {
@@ -233,11 +231,9 @@ class Ticket extends Controller
                 $userDetail = $this->get('user.service')->getCustomerPartialDetailById($data['user']->getId());
                 $data['fullname'] = $userDetail['name'];
 
-                $data['userType'] = 'customer';
                 $data['source']   = 'website';
-                $data['createdBy']   = $userDetail['email'];
+                $data['createdBy']   = 'customer';
                 $data['attachments'] = $request->files->get('attachments');
-
                 $thread = $this->get('ticket.service')->createThread($ticket, $data);
 
                 $em = $this->getDoctrine()->getManager();
