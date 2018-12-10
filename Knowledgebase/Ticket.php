@@ -136,9 +136,8 @@ class Ticket extends Controller
                     $data['subject'] = $request->request->get('subject');
                     $data['source'] = 'website';
                     $data['threadType'] = 'create';
-                    $data['userType'] = 'customer';
                     $data['message'] = htmlentities($data['reply']);
-                    $data['createdBy'] = $customerEmail;
+                    $data['createdBy'] = 'customer';
                     $data['attachments'] = $request->files->get('attachments');
 
                     if(!empty($request->server->get("HTTP_CF_CONNECTING_IP") )) {
@@ -243,7 +242,6 @@ class Ticket extends Controller
                     if($ticket->getStatus() != $status) {
                         $flag = 1;
                     }
-
                     $ticket->setStatus($status);
                     $em->persist($ticket);
                     $em->flush();
@@ -423,7 +421,7 @@ class Ticket extends Controller
     }
 
     public function ticketCollaboratorXhr(Request $request){
-
+        
         $json = array();
         $content = json_decode($request->getContent(), true);
         $em = $this->getDoctrine()->getManager();
