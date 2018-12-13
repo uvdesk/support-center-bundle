@@ -584,5 +584,4 @@ class Article extends EntityRepository
 
         return $response;
     }
-
 }

@@ -245,8 +245,8 @@ Class Customer extends Controller
         ]);
     }
 
-    public function searchArticle(Request $request){
-
+    public function searchArticle(Request $request)
+    {
         $this->isWebsiteActive();
         $searchQuery = $request->query->get('s');
         if (empty($searchQuery)) {
@@ -254,8 +254,6 @@ Class Customer extends Controller
         }
   
         $articleCollection = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Article')->getArticleBySearch($request);
-        // Index search query in background for analytics
-        //$this->get('report.service')->indexSearchQuery($request->get('_locale'));
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/search.html.twig', [
             'search' => $searchQuery,
