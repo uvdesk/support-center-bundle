@@ -244,4 +244,28 @@ Class Customer extends Controller
             'user' => $user,
         ]);
     }
+
+    public function searchArticle(Request $request){
+
+        $this->isWebsiteActive();
+        $searchQuery = $request->query->get('s');
+        if (empty($searchQuery)) {
+            return $this->redirect($this->generateUrl('helpdesk_customer_ticket_collection'));
+        }
+  
+        $articleCollection = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Article')->getArticleBySearch($request);
+        // Index search query in background for analytics
+        //$this->get('report.service')->indexSearchQuery($request->get('_locale'));
+
+        return $this->render('@UVDeskSupportCenter/Knowledgebase/search.html.twig', [
+            'search' => $searchQuery,
+            'articles' => $articleCollection,
+            'breadcrumbs' => [
+                ['label' => $this->get('translator')->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
+                ['label' => $searchQuery, 'url' => '#'],
+            ],
+        ]);
+
+    }
+    
 }

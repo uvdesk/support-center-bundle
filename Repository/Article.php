@@ -357,14 +357,12 @@ class Article extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('a');
 
         $prams = array(
-                        'companyId' => (int)$companyId,
                         'solutionId' => (int)$request->attributes->get('solution'),
                         'categoryId' => (int)$request->attributes->get('category'),
                     );
 
         $results = $queryBuilder->select('a')
                  ->leftJoin('Webkul\SupportCenterBundle\Entity\ArticleCategory','ac','WITH', 'ac.articleId = a.id')
-                 ->where('a.companyId = :companyId')
                  ->andwhere('a.solutionId = :solutionId')
                  ->andwhere('ac.categoryId = :categoryId')
                  ->orderBy(
@@ -384,12 +382,10 @@ class Article extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('a');
 
         $prams = array(
-                        'companyId' => (int)$companyId,
                         'solutionId' => (int)$request->attributes->get('solution'),
                     );
 
         $results = $queryBuilder->select('a')
-                 ->where('a.companyId = :companyId')
                  ->andwhere('a.solutionId = :solutionId')
                  ->orderBy(
                         $request->query->get('sort') ? 'a.'.$request->query->get('sort') : 'a.id',
@@ -408,14 +404,12 @@ class Article extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('a');
 
         $prams = array(
-                        'companyId' => $category->getCompanyId(),
                         'solutionId' => $category->getSolution(),
                         'categoryId' => $category->getId(),
                     );
 
         $results = $queryBuilder->select('a')
                  ->leftJoin('Webkul\SupportCenterBundle\Entity\ArticleCategory','ac','WITH', 'ac.articleId = a.id')
-                 ->where('a.companyId = :companyId')
                  ->andwhere('a.solutionId = :solutionId')
                  ->andwhere('ac.categoryId = :categoryId')
                  ->andwhere('a.status = 1')
@@ -464,10 +458,10 @@ class Article extends EntityRepository
         $params = [
             'name' => '%' . $searchQuery . '%',
             'status' => 1,
-            'locale' => $request->getLocale(),
         ];
 
-        $results = $this->createQueryBuilder('a')->select('a.id, a.name, a.slug, a.content, a.metaDescription, a.keywords, a.metaTitle, a.status, a.viewed, a.stared, a.dateAdded, a.dateUpdated')
+        $results = $this->createQueryBuilder('a')
+                 ->select('a.id, a.name, a.slug, a.content, a.metaDescription, a.keywords, a.metaTitle, a.status, a.viewed, a.stared, a.dateAdded, a.dateUpdated')
                  ->andwhere('a.name LIKE :name OR a.content LIKE :name')
                  ->andwhere('a.status = :status')
                  ->orderBy((!empty($sort)) ? 'a.' . $sort : 'a.id', (!empty($direction)) ? $direction : Criteria::DESC)
@@ -590,4 +584,5 @@ class Article extends EntityRepository
 
         return $response;
     }
+
 }
