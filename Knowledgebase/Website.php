@@ -246,7 +246,6 @@ class Website extends Controller
    
     public function viewArticle(Request $request)
     {
-
         $this->isWebsiteActive();
        
         if (!$request->attributes->get('article') && !$request->attributes->get('slug')) {
@@ -279,8 +278,6 @@ class Website extends Controller
         $entityManager->persist($articleViewLog);
         $entityManager->flush();
         
-      
-
         // Get article feedbacks
         $feedbacks = ['enabled' => false, 'submitted' => false, 'article' => $articleRepository->getArticleFeedbacks($article)];
 
@@ -310,10 +307,6 @@ class Website extends Controller
 
     public function searchKnowledgebase(Request $request)
     {
-        if (!$this->get('user.service')->checkPermission('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
-            return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
-        }
-
         $this->isWebsiteActive();
 
         $searchQuery = $request->query->get('s');
