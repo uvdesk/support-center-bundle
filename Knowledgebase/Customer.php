@@ -7,7 +7,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Webkul\UVDesk\CoreBundle\Form\UserProfile;
 use Webkul\UVDesk\CoreBundle\Utils\TokenGenerator;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Webkul\UVDesk\CoreBundle\Workflow\Events as CoreWorkflowEvents;
 
 Class Customer extends Controller
 {
@@ -94,10 +96,12 @@ Class Customer extends Controller
             
             if ($user) { 
                 $key = time();
-                 // Trigger agent delete event
-                 $event = new GenericEvent(CoreWorkflowEvents\Customer\ForgotPassword::getId(), [
+                
+                // Trigger agent delete event
+                $event = new GenericEvent(CoreWorkflowEvents\Customer\ForgotPassword::getId(), [
                     'entity' => $user,
                 ]);
+
                 $this->get('event_dispatcher')->dispatch('uvdesk.automation.workflow.execute', $event);
 
                 $request->getSession()->getFlashBag()->set('success', 'Please check your mail for password update.');
@@ -179,6 +183,16 @@ Class Customer extends Controller
             $dataFiles = $request->files->get('user_form');
             $data = $data['user_form'];
 
+             // Profile upload validation
+             $validMimeType = ['image/jpeg', 'image/png', 'image/jpg'];
+             if(isset($dataFiles['profileImage'])){
+                 if(!in_array($dataFiles['profileImage']->getMimeType(), $validMimeType)){
+                     $this->addFlash('warning', 'Error ! Profile image is not valid, please upload a valid format');
+                     return $this->redirect($this->generateUrl('helpdesk_customer_account'));
+                 }
+             }
+ 
+
             $checkUser = $em->getRepository('UVDeskCoreBundle:User')->findOneBy(array('email'=>$data['email']));
             $errorFlag = 0;
             
@@ -241,8 +255,8 @@ Class Customer extends Controller
         ]);
     }
 
-    public function searchArticle(Request $request){
-
+    public function searchArticle(Request $request)
+    {
         $this->isWebsiteActive();
         $searchQuery = $request->query->get('s');
         if (empty($searchQuery)) {
@@ -250,8 +264,6 @@ Class Customer extends Controller
         }
   
         $articleCollection = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Article')->getArticleBySearch($request);
-        // Index search query in background for analytics
-        //$this->get('report.service')->indexSearchQuery($request->get('_locale'));
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/search.html.twig', [
             'search' => $searchQuery,
