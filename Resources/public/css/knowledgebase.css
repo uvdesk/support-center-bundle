@@ -2528,22 +2528,24 @@ p {
 .uv-icon-replies {
   width: 18px;
   height: 18px;
-  background-image: url('../uvdeskcore/images/uvdesk-kb-sprite.svg');
-  background-position: -138px -91px;
+  background-image: url('/../bundles/uvdeskcore/images/uvdesk-sprite.svg');
+  background-position: 0px -117px;
   content: ' ';
   display: inline-block;
   vertical-align: middle;
-  margin-right: 5px;
+  margin-right: 3px;
+  margin-top: -3px;
 }
 .uv-icon-timestamp {
   width: 18px;
   height: 18px;
-  background-image: url('../uvdeskcore/images/uvdesk-kb-sprite.svg');
-  background-position: -157px -91px;
+  background-image: url(/../bundles/uvdeskcore/images/uvdesk-sprite.svg);
+  background-position: -19px -117px;
   content: ' ';
   display: inline-block;
   vertical-align: middle;
-  margin-right: 5px;
+  margin-right: 3px;
+  margin-top: -3px;
 }
 .uv-icon-remove-dark-before {
   background-image: url("../../uvdeskcore/images/uvdesk-kb-sprite.svg");
