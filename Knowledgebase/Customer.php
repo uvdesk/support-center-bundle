@@ -183,6 +183,15 @@ Class Customer extends Controller
             $dataFiles = $request->files->get('user_form');
             $data = $data['user_form'];
 
+            // Profile upload validation
+            $validMimeType = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (isset($dataFiles['profileImage'])) {
+                if (!in_array($dataFiles['profileImage']->getMimeType(), $validMimeType)) {
+                    $this->addFlash('warning', 'Error ! Profile image is not valid, please upload a valid format');
+                    return $this->redirect($this->generateUrl('helpdesk_customer_account'));
+                }
+            }
+
             $checkUser = $em->getRepository('UVDeskCoreBundle:User')->findOneBy(array('email'=>$data['email']));
             $errorFlag = 0;
             

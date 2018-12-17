@@ -307,10 +307,6 @@ class Website extends Controller
 
     public function searchKnowledgebase(Request $request)
     {
-        if (!$this->get('user.service')->checkPermission('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
-            return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
-        }
-
         $this->isWebsiteActive();
 
         $searchQuery = $request->query->get('s');
