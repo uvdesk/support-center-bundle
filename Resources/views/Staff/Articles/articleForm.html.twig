@@ -925,59 +925,62 @@
 					var text = inputElement.val().trim();
 
 					if (e.which === 13 && text) {
-						if(text.length <= 35) {
-							let existed = false;
-							$('.uv-filtered-tags .uv-tag').each(function(key, el){
-								if($(el).text().toLowerCase() == text.toLowerCase())
-									existed = true;
-							})
-							if(!existed) {
-								app.appView.showLoader();
+						if((text.match(/^((?![!@#$%^&*()<_+]).)*$/))){
+								if(text.length <= 35) {
+								let existed = false;
+								$('.uv-filtered-tags .uv-tag').each(function(key, el){
+									if($(el).text().toLowerCase() == text.toLowerCase())
+										existed = true;
+								})
+								if(!existed) {
+									app.appView.showLoader();
+									let data = {};
+									data['ids'] = ["{{article.id}}"];
+									data['actionType'] = 'tagUpdate';
+									data['entityId'] = $(e.currentTarget).attr("data-id");
+									data['action'] = 'create';
+									data['name'] = text;
 
-								let data = {};
+									$.ajax({
+										url : "{{ path('helpdesk_member_knowledgebase_update_article_xhr') }}",
+										type : 'POST',
+										data : {data : data},
+										dataType : 'json',
+										success: function (response) {
+											if(response.alertClass == "success") {
+												let html = `
+													<a class="uv-btn-tag" href="#" data-id="${response.tagId}">
+														<span class="uv-tag"><span class="uv-icon-remove-dark-before"></span>${response.tagName}</span>
+													</a>
+												`;
+												$('.uv-filtered-tags.tag').append(html);
+											}
+											inputElement.val('');
+											app.appView.hideLoader();
+											app.appView.renderResponseAlert(response);
+										},
+										error: function (model, xhr, options) {
+											if(url = xhr.getResponseHeader('Location'))
+												window.location = url;
+											var response = warningResponse;
+											if(xhr.responseJSON)
+												response = xhr.responseJSON;
 
-								data['ids'] = ["{{article.id}}"];
-								data['actionType'] = 'tagUpdate';
-								data['entityId'] = $(e.currentTarget).attr("data-id");
-								data['action'] = 'create';
-								data['name'] = text;
-
-								$.ajax({
-									url : "{{ path('helpdesk_member_knowledgebase_update_article_xhr') }}",
-									type : 'POST',
-									data : {data : data},
-									dataType : 'json',
-									success: function (response) {
-										if(response.alertClass == "success") {
-											let html = `
-												<a class="uv-btn-tag" href="#" data-id="${response.tagId}">
-													<span class="uv-tag"><span class="uv-icon-remove-dark-before"></span>${response.tagName}</span>
-												</a>
-											`;
-											$('.uv-filtered-tags.tag').append(html);
+											app.appView.hideLoader();
+											app.appView.renderResponseAlert(response);
 										}
-										inputElement.val('');
-										app.appView.hideLoader();
-										app.appView.renderResponseAlert(response);
-									},
-									error: function (model, xhr, options) {
-										if(url = xhr.getResponseHeader('Location'))
-											window.location = url;
-										var response = warningResponse;
-										if(xhr.responseJSON)
-											response = xhr.responseJSON;
-
-										app.appView.hideLoader();
-										app.appView.renderResponseAlert(response);
-									}
-								});
+									});
+								} else {
+									inputElement.addClass('uv-field-error');
+									inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Tag with same name already exist'|trans }}</span>");
+								}
 							} else {
 								inputElement.addClass('uv-field-error');
-								inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Tag with same name already exist'|trans }}</span>");
+								inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Text length should be less than 35 charactors'|trans }}</span>");
 							}
-						} else {
+						}else{
 							inputElement.addClass('uv-field-error');
-							inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Text length should be less than 35 charactors'|trans }}</span>");
+							inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Only character are allowed' }}</span>");
 						}
 					}
                 },
