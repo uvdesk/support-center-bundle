@@ -11,7 +11,7 @@
         <div class="uv-paper-section">
             <form action="{{ path('helpdesk_customer_login') }}" method="post" id="loginForm">
                 <section>
-                    <h1>{{ 'Sign In to %company%'|trans({ '%company%': '<span class="uv-brand">' ~ websiteDetails.name|e ~ '</span>' })|raw }}</h1>
+                    <h1>{{ 'Sign In to %websitename%'|trans({ '%websitename%': '<span class="uv-brand">' ~ websiteDetails.name|e ~ '</span>' })|raw }}</h1>
                     <div class="uv-element-block">
                         <p>If you've ever contacted our support previously, your account would have already been created.</p>
                     </div>
@@ -32,6 +32,11 @@
                             </div>
                         </div>
                         <button class="uv-btn">Sign In</button>
+                    </div>
+                    <div class="uv-element-block uv-no-margin-bottom">
+                        <div class="uv-agent-wrapper">
+                            <a href="{{ path('helpdesk_member_handle_login')}}">{{ 'I am %websitename%'|trans({ '%websitename%': '<span class="uv-brand">' ~ websiteDetails.name|e ~ '</span>' })|raw }} Agent</a>
+                        </div>
                     </div>
                 </section>
             </form>
