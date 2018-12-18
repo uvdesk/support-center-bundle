@@ -925,16 +925,18 @@
 					var text = inputElement.val().trim();
 
 					if (e.which === 13 && text) {
-						if((text.match(/^((?![!@#$%^&*()<_+]).)*$/))){
+						if ((text.match(/^((?![!@#$%^&*()<_+]).)*$/))) {
 								if(text.length <= 35) {
 								let existed = false;
 								$('.uv-filtered-tags .uv-tag').each(function(key, el){
 									if($(el).text().toLowerCase() == text.toLowerCase())
 										existed = true;
 								})
+								
 								if(!existed) {
-									app.appView.showLoader();
 									let data = {};
+									app.appView.showLoader();
+
 									data['ids'] = ["{{article.id}}"];
 									data['actionType'] = 'tagUpdate';
 									data['entityId'] = $(e.currentTarget).attr("data-id");
@@ -978,7 +980,7 @@
 								inputElement.addClass('uv-field-error');
 								inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Text length should be less than 35 charactors'|trans }}</span>");
 							}
-						}else{
+						} else {
 							inputElement.addClass('uv-field-error');
 							inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Only character are allowed' }}</span>");
 						}
