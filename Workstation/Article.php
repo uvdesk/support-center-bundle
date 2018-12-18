@@ -241,7 +241,7 @@ class Article extends Controller
                                 $entityManager->flush();
 
                                 $json['alertClass'] = 'success';
-                                $json['alertMessage'] = 'article.update.success';
+                                $json['alertMessage'] = 'Success! Article updated successfully';
 
                                 if (!$data['ids'][0]) {
                                     $json['redirect'] = $this->generateUrl('helpdesk_member_knowledgebase_update_article', array('id' => $article->getId()));
@@ -422,7 +422,7 @@ class Article extends Controller
                                     $this->updateContent($request, $articleBase, $data['content']);
 
                                 $json['alertClass'] = 'success';
-                                $json['alertMessage'] = 'article.update.success';
+                                $json['alertMessage'] = 'Success! Article updated successfully';
                             }
                         }
                     
