@@ -229,9 +229,8 @@ class Ticket extends Controller
 
                 $userDetail = $this->get('user.service')->getCustomerPartialDetailById($data['user']->getId());
                 $data['fullname'] = $userDetail['name'];
-
-                $data['source']   = 'website';
-                $data['createdBy']   = 'customer';
+                $data['source'] = 'website';
+                $data['createdBy'] = 'customer';
                 $data['attachments'] = $request->files->get('attachments');
                 $thread = $this->get('ticket.service')->createThread($ticket, $data);
 
@@ -242,14 +241,17 @@ class Ticket extends Controller
                     if($ticket->getStatus() != $status) {
                         $flag = 1;
                     }
+
                     $ticket->setStatus($status);
                     $em->persist($ticket);
                     $em->flush();
                 }
+
                 // Trigger customer reply event
                 $event = new GenericEvent(CoreWorkflowEvents\Ticket\CustomerReply::getId(), [
                     'entity' =>  $ticket,
                 ]);
+
                 $this->get('event_dispatcher')->dispatch('uvdesk.automation.workflow.execute', $event);
 
                 $this->addFlash('success', "Success ! Reply added successfully.");
@@ -419,27 +421,53 @@ class Ticket extends Controller
 
         return $response;
     }
+    public function downloadAttachment(Request $request)
+    {
+        $attachmendId = $request->attributes->get('attachmendId');
+        $attachmentRepository = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreBundle:Attachment');
+        $attachment = $attachmentRepository->findOneById($attachmendId);
+        $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
 
-    public function ticketCollaboratorXhr(Request $request){
+        if (!$attachment) {
+            $this->noResultFound();
+        }
+
+        $path = $this->get('kernel')->getProjectDir() . "/public". $attachment->getPath();
+
+        $response = new Response();
+        $response->setStatusCode(200);
         
+        $response->headers->set('Content-type', $attachment->getContentType());
+        $response->headers->set('Content-Disposition', 'attachment');
+        $response->sendHeaders();
+        $response->setContent(readfile($path));
+        
+        return $response;
+    }
+    
+    public function ticketCollaboratorXhr(Request $request)
+    {
         $json = array();
         $content = json_decode($request->getContent(), true);
         $em = $this->getDoctrine()->getManager();
         $ticket = $em->getRepository('UVDeskCoreBundle:Ticket')->find($content['ticketId']);
-        if($request->getMethod() == "POST") {
-            if($content['email'] == $ticket->getCustomer()->getEmail()) {
+        
+        if ($request->getMethod() == "POST") {
+            if ($content['email'] == $ticket->getCustomer()->getEmail()) {
                 $json['alertClass'] = 'danger';
                 $json['alertMessage'] = $this->get('translator')->trans('Error ! Can not add customer as a collaborator.');
             } else {
                 $data = array(
-                        'from' => $content['email'],
-                        'firstName' => ($firstName = ucfirst(current(explode('@', $content['email'])))),
-                        'lastName' => ' ',
-                        'role' => 4,
-                    );
+                    'from' => $content['email'],
+                    'firstName' => ($firstName = ucfirst(current(explode('@', $content['email'])))),
+                    'lastName' => ' ',
+                    'role' => 4,
+                );
+                
                 $collaborator = $this->get('user.service')->getUserDetails($data);
                 $checkTicket = $em->getRepository('UVDeskCoreBundle:Ticket')->isTicketCollaborator($ticket,$content['email']);
-                if(!$checkTicket) {
+                
+                if (!$checkTicket) {
                     $ticket->addCollaborator($collaborator);
                     $em->persist($ticket);
                     $em->flush();
@@ -455,13 +483,13 @@ class Ticket extends Controller
                     $json['alertMessage'] = $this->get('translator')->trans('Error ! Collaborator is already added.');
                 }
             }
-        } elseif($request->getMethod() == "DELETE") {
+        } elseif ($request->getMethod() == "DELETE") {
             $collaborator = $em->getRepository('UVDeskCoreBundle:User')->findOneBy(array('id' => $request->attributes->get('id')));
-            if($collaborator) {
+            
+            if ($collaborator) {
                 $ticket->removeCollaborator($collaborator);
                 $em->persist($ticket);
                 $em->flush();
-                
 
                 $json['alertClass'] = 'success';
                 $json['alertMessage'] = $this->get('translator')->trans('Success ! Collaborator removed successfully.');
@@ -474,6 +502,5 @@ class Ticket extends Controller
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
-
     }
 }

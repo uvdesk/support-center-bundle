@@ -299,19 +299,19 @@
                                                 {% for file in createThread.attachments %}
                                                     {% if file.path is defined and file.path %}
                                                         {% if (file.path|split('.')|last == 'jpg' or file.path|split('.')|last == 'png' or file.path|split('.')|last == 'jpeg') %}
-                                                        <a href="{{ path('helpdesk_member_ticket_download_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
-                                                            <img src="{{ file.path }}"  data-url="{{ file.path }}"  data-download="{{ file.path }}"  class="uv-auto-pointer-events"/>
-                                                        </a>
+                                                            <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
+                                                                <img src="{{ file.path }}"  data-url="{{ file.path }}"  data-download="{{ file.path }}"  class="uv-auto-pointer-events"/>
+                                                            </a>
                                                         {% elseif (file.path|split('.')|last == 'zip') %}
-                                                            <a href="{{ path('helpdesk_member_ticket_download_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
+                                                            <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
                                                                 <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-zip.png'))}}"  data-url=""  data-download=""  class="uv-auto-pointer-events"/>
                                                             </a>
                                                         {% elseif (file.path|split('.')|last == 'doc') %}
-                                                            <a href="{{ path('helpdesk_member_ticket_download_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
+                                                            <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
                                                                 <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-doc.png'))}}"  data-url=""  data-download=""  class="uv-auto-pointer-events"/>
                                                             </a>
                                                         {% else  %}
-                                                            <a href="{{ path('helpdesk_member_ticket_download_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
+                                                            <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
                                                                 <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-unknown.png'))}}"  data-url=""  data-download=""  class="uv-auto-pointer-events"/>
                                                             </a>
                                                         {% endif %}
@@ -544,19 +544,19 @@
                                 <% collection = file.path.split('.') %>
                                 <% fileFormat = collection[collection.length - 1] %>
                                 <% if (allowedFormats.includes(fileFormat)) { %> 
-                                    <a href="{{ path('helpdesk_member_ticket_download_attachment') }}/<%-file.id %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
+                                    <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/<%-file.id %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
                                         <img src="<%- file.path %>" data-url="<%- file.attachmentOrginal %>" data-download="<%- file.id %>" class="uv-auto-pointer-events">
                                     </a>
                                 <% } else if (fileFormat == 'zip') { %>
-                                    <a href="{{ path('helpdesk_member_ticket_download_attachment') }}/<%-file.id %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
+                                    <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/<%-file.id %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
                                         <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-zip.png'))}}" data-url="<%- file.attachmentOrginal %>" data-download="<%- file.id %>" class="uv-auto-pointer-events">
                                     </a>
                                 <% } else if(fileFormat == 'doc') { %>
-                                    <a href="{{ path('helpdesk_member_ticket_download_attachment') }}/<%-file.id %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
+                                    <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/<%-file.id %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
                                         <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-doc.png'))}}" data-url="<%- file.attachmentOrginal %>" data-download="<%- file.id %>" class="uv-auto-pointer-events">
                                     </a>
                                 <% } else { %>
-                                    <a href="{{ path('helpdesk_member_ticket_download_attachment') }}/<%-file.id %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
+                                    <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/<%-file.id %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
                                         <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-unknown.png'))}}" data-url="<%- file.attachmentOrginal %>" data-download="<%- file.id %>" class="uv-auto-pointer-events">
                                     </a>
                                 <% } %>

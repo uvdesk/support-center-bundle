@@ -50,9 +50,9 @@ helpdesk_customer_create_ticket_success:
     defaults: { email: '', flag: 0 }
 
 helpdesk_customer_download_ticket_attachment:
-    path:     /ticket/download/{id}
+    path:     /ticket/download/{attachmendId}
     controller: Webkul\UVDesk\SupportCenterBundle\Knowledgebase\Ticket::downloadAttachment
-    defaults: { id: 0 }
+    defaults: { attachmendId: 0 }
 
 helpdesk_customer_download_ticket_attachment_zip:
     path:     /ticket/download-ticket-zip/{threadId}
@@ -63,7 +63,7 @@ helpdesk_customer_view_ticket_attachment:
     path: /attachment/{id}/view
     controller: Webkul\UVDesk\CoreBundle\Knowledgebase\AttachmentViewer::attachmentView
 
-helpdesk_front_article_search:
+helpdesk_customer_front_article_search:
     path: /search/article/{s}
     controller: Webkul\UVDesk\SupportCenterBundle\Knowledgebase\Customer::searchArticle
     defaults: { s: 0 }
