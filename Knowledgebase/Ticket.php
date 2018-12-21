@@ -136,9 +136,8 @@ class Ticket extends Controller
                     $data['subject'] = $request->request->get('subject');
                     $data['source'] = 'website';
                     $data['threadType'] = 'create';
-                    $data['userType'] = 'customer';
                     $data['message'] = htmlentities($data['reply']);
-                    $data['createdBy'] = $customerEmail;
+                    $data['createdBy'] = 'customer';
                     $data['attachments'] = $request->files->get('attachments');
 
                     if(!empty($request->server->get("HTTP_CF_CONNECTING_IP") )) {
@@ -218,9 +217,7 @@ class Ticket extends Controller
     public function saveReply(int $id, Request $request)
     {
         $this->isWebsiteActive();
-        
         $data = $request->request->all();
-
         $ticket = $this->getDoctrine()->getRepository('UVDeskCoreBundle:Ticket')->find($id);
 
         if($_POST) {
@@ -232,12 +229,9 @@ class Ticket extends Controller
 
                 $userDetail = $this->get('user.service')->getCustomerPartialDetailById($data['user']->getId());
                 $data['fullname'] = $userDetail['name'];
-
-                $data['userType'] = 'customer';
-                $data['source']   = 'website';
-                $data['createdBy']   = $userDetail['email'];
+                $data['source'] = 'website';
+                $data['createdBy'] = 'customer';
                 $data['attachments'] = $request->files->get('attachments');
-
                 $thread = $this->get('ticket.service')->createThread($ticket, $data);
 
                 $em = $this->getDoctrine()->getManager();
@@ -427,7 +421,30 @@ class Ticket extends Controller
 
         return $response;
     }
+    public function downloadAttachment(Request $request)
+    {
+        $attachmendId = $request->attributes->get('attachmendId');
+        $attachmentRepository = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreBundle:Attachment');
+        $attachment = $attachmentRepository->findOneById($attachmendId);
+        $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
 
+        if (!$attachment) {
+            $this->noResultFound();
+        }
+
+        $path = $this->get('kernel')->getProjectDir() . "/public". $attachment->getPath();
+
+        $response = new Response();
+        $response->setStatusCode(200);
+        
+        $response->headers->set('Content-type', $attachment->getContentType());
+        $response->headers->set('Content-Disposition', 'attachment');
+        $response->sendHeaders();
+        $response->setContent(readfile($path));
+        
+        return $response;
+    }
+    
     public function ticketCollaboratorXhr(Request $request)
     {
         $json = array();

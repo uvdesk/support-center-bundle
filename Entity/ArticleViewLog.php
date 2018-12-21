@@ -25,11 +25,6 @@ class ArticleViewLog
     private $user;
 
     /**
-     * @var \Webkul\UserBundle\Entity\Company
-     */
-    private $company;
-
-    /**
      * @var \Webkul\SupportCenterBundle\Entity\Article
      */
     private $article;
