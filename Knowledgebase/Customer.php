@@ -87,17 +87,17 @@ Class Customer extends Controller
             return $this->redirect($this->generateUrl('webkul_support_center_front_solutions'));
         }
 
-        if($request->getMethod() == 'POST') {
+        if ($request->getMethod() == 'POST') {
             $entityManager = $this->getDoctrine()->getManager();
             $user = new User();
             $data = $request->request->all();
             $repository = $this->getDoctrine()->getRepository('UVDeskCoreBundle:User');
             $user = $entityManager->getRepository('UVDeskCoreBundle:User')->findOneBy(array('email' => $data['email']));
             
-            if ($user) { 
+            if ($user) {
                 $key = time();
                 
-                // Trigger agent delete event
+                // Trigger agent forgot event
                 $event = new GenericEvent(CoreWorkflowEvents\Customer\ForgotPassword::getId(), [
                     'entity' => $user,
                 ]);
