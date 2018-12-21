@@ -148,16 +148,20 @@ class Ticket extends Controller
                     }
 
                     $thread = $this->get('ticket.service')->createTicketBase($data);
-                    if($thread) {
-                        $ticket = $thread->getTicket();
-                        if($request->request->get('customFields') || $request->files->get('customFields'))
-                            $this->get('ticket.service')->addTicketCustomFields($ticket, $request->request->get('customFields'), $request->files->get('customFields'));
-
-                    $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('Success ! Ticket has been created successfully.'));
+                    
+                    if ($thread) {
+                        $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('Success ! Ticket has been created successfully.'));
                     } else {
                         $request->getSession()->getFlashBag()->set('warning', $this->get('translator')->trans('Warning ! Can not create ticket, invalid details.'));
                     }
-                    $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('Success ! Ticket has been created successfully.'));
+
+                    // Trigger ticket created event
+                    $event = new GenericEvent(CoreWorkflowEvents\Ticket\Create::getId(), [
+                        'entity' => $thread->getTicket(),
+                    ]);
+
+                    $this->get('event_dispatcher')->dispatch('uvdesk.automation.workflow.execute', $event);
+
                     return $this->redirect($this->generateUrl('helpdesk_customer_create_ticket'));
                 } else {
                     $errors = $this->getFormErrors($form);
