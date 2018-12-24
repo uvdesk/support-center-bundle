@@ -1,7 +1,7 @@
 security:
     firewalls:
         customer:
-            pattern: /%uvdesk_site_path.knowledgebase_customer_prefix%
+            pattern: /
             provider: user_provider
             anonymous: ~
             form_login:
