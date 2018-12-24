@@ -1044,6 +1044,7 @@ span.uv-sorting:hover.ascend {
   top: 10px;
   right: 10px;
   position: fixed;
+  z-index: 1;
 }
 .uv-notification {
   width: 300px;
