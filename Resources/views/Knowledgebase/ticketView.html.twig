@@ -448,43 +448,6 @@
         </div>
         </div>
     </div>
-    {# <div class="uv-kudo">
-        <div class="uv-kudo-button">
-            <!--uv-kudo-button-active-->
-            <div class="uv-kudo-icon"></div>
-            <span>{{ 'Rate Support'|trans }}</span>
-        </div>
-
-        <div class="uv-kudo-plank">
-            {% set count = 0 %}
-            {% for rating in ticket.ratings %}
-                {% if rating.customer.id == app.user.id %}
-                    {% set count = rating.stars %}
-                {% endif %}
-            {% endfor %}
-            <div class="uv-kudo-response-wrapper">
-                <span class="uv-kudo-response uv-kudo-very-sad {% if count == 1 %}uv-kudo-done{% endif %}" data-id="1"></span>
-                <span class="uv-kudo-response uv-kudo-sad {% if count == 2 %}uv-kudo-done{% endif %}" data-id="2"></span>
-                <span class="uv-kudo-response uv-kudo-neutral {% if count == 3 %}uv-kudo-done{% endif %}" data-id="3"></span>
-                <span class="uv-kudo-response uv-kudo-happy {% if count == 4 %}uv-kudo-done{% endif %}" data-id="4"></span>
-                <span class="uv-kudo-response uv-kudo-very-happy  {% if count == 5 %}uv-kudo-done{% endif %}" data-id="5"></span>
-            </div>
-
-            <span class="uv-kudo-message">
-                {% if count == 1 %}
-                    {{ 'I am very Sad'|trans }}
-                {% elseif count == 2 %}
-                    {{ 'I am Sad'|trans }}
-                {% elseif count == 3 %}
-                    {{ 'I am Neutral'|trans }}
-                {% elseif count == 4 %}
-                    {{ 'I am Happy'|trans }}
-                {% elseif count == 2 %}
-                    {{ 'I am Very Happy'|trans }}
-                {% endif %}
-            </span>
-        </div>
-    </div> #}
 
     <div class="uv-pop-up-overlay" id="confirm-ticket-close-modal" style="display: none;">
         <div class="uv-pop-up-box uv-pop-up-slim">
@@ -988,13 +951,4 @@
             }
 		});
 	</script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function(){
-            var uvKudoIcon = document.querySelector(".uv-kudo-icon");
-            var uvKudoPlank = document.querySelector(".uv-kudo-plank");
-            var uvKudoMessage = document.querySelector(".uv-kudo-message");
-            var uvKudoResponse = document.querySelector(".uv-kudo-response");
-        });
-    </script>
 {% endblock %}
