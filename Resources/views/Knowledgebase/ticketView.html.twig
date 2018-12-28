@@ -194,7 +194,6 @@
                 {% if ticket.customer == app.user %}
                     <div class="uv-hr"></div>
                     <div class="uv-aside-brick collaborator-list-block">
-
                         <div class="uv-element-block">
                             <label class="uv-field-label">{{ 'Collaborators'|trans }}</label>
                             <div class="uv-field-block">
@@ -306,7 +305,7 @@
                                                             <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
                                                                 <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-zip.png'))}}"  data-url=""  data-download=""  class="uv-auto-pointer-events"/>
                                                             </a>
-                                                        {% elseif (file.path|split('.')|last == 'doc') %}
+                                                        {% elseif ((file.path|split('.')|last == 'doc') or (file.path|split('.')|last == 'docx')) %}
                                                             <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
                                                                 <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-doc.png'))}}"  data-url=""  data-download=""  class="uv-auto-pointer-events"/>
                                                             </a>
@@ -315,13 +314,17 @@
                                                                 <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-pdf.png'))}}"  data-url=""  data-download=""  class="uv-auto-pointer-events"/>
                                                             </a>
                                                         {% elseif (file.path|split('.')|last == 'xls') %}
-                                                        <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
-                                                            <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-xls.png'))}}"  data-url=""  data-download=""  class="uv-auto-pointer-events"/>
-                                                        </a>
+                                                            <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
+                                                                <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-xls.png'))}}"  data-url=""  data-download=""  class="uv-auto-pointer-events"/>
+                                                            </a>
                                                         {% elseif (file.path|split('.')|last == 'csv') %}
-                                                        <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
-                                                            <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/csv.png'))}}"  data-url=""  data-download=""  class="uv-auto-pointer-events"/>
-                                                        </a>
+                                                            <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
+                                                                <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/csv.png'))}}"  data-url=""  data-download=""  class="uv-auto-pointer-events"/>
+                                                            </a>
+                                                        {% elseif ((file.path|split('.')|last == 'ppt') or (file.path|split('.')|last == 'pptx')) %}
+                                                            <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
+                                                                <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-ppt.png'))}}"  data-url=""  data-download=""  class="uv-auto-pointer-events"/>
+                                                            </a>
                                                         {% else  %}
                                                             <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/{{ file.id }}" target = "_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="{{ file.name }}" data-placement="top">
                                                                 <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-unknown.png'))}}"  data-url=""  data-download=""  class="uv-auto-pointer-events"/>
@@ -449,43 +452,6 @@
         </div>
         </div>
     </div>
-    {# <div class="uv-kudo">
-        <div class="uv-kudo-button">
-            <!--uv-kudo-button-active-->
-            <div class="uv-kudo-icon"></div>
-            <span>{{ 'Rate Support'|trans }}</span>
-        </div>
-
-        <div class="uv-kudo-plank">
-            {% set count = 0 %}
-            {% for rating in ticket.ratings %}
-                {% if rating.customer.id == app.user.id %}
-                    {% set count = rating.stars %}
-                {% endif %}
-            {% endfor %}
-            <div class="uv-kudo-response-wrapper">
-                <span class="uv-kudo-response uv-kudo-very-sad {% if count == 1 %}uv-kudo-done{% endif %}" data-id="1"></span>
-                <span class="uv-kudo-response uv-kudo-sad {% if count == 2 %}uv-kudo-done{% endif %}" data-id="2"></span>
-                <span class="uv-kudo-response uv-kudo-neutral {% if count == 3 %}uv-kudo-done{% endif %}" data-id="3"></span>
-                <span class="uv-kudo-response uv-kudo-happy {% if count == 4 %}uv-kudo-done{% endif %}" data-id="4"></span>
-                <span class="uv-kudo-response uv-kudo-very-happy  {% if count == 5 %}uv-kudo-done{% endif %}" data-id="5"></span>
-            </div>
-
-            <span class="uv-kudo-message">
-                {% if count == 1 %}
-                    {{ 'I am very Sad'|trans }}
-                {% elseif count == 2 %}
-                    {{ 'I am Sad'|trans }}
-                {% elseif count == 3 %}
-                    {{ 'I am Neutral'|trans }}
-                {% elseif count == 4 %}
-                    {{ 'I am Happy'|trans }}
-                {% elseif count == 2 %}
-                    {{ 'I am Very Happy'|trans }}
-                {% endif %}
-            </span>
-        </div>
-    </div> #}
 
     <div class="uv-pop-up-overlay" id="confirm-ticket-close-modal" style="display: none;">
         <div class="uv-pop-up-box uv-pop-up-slim">
@@ -563,7 +529,7 @@
                                     <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/<%-file.id %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
                                         <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-zip.png'))}}" data-url="<%- file.attachmentOrginal %>" data-download="<%- file.id %>" class="uv-auto-pointer-events">
                                     </a>
-                                <% } else if(fileFormat == 'doc') { %>
+                                <% } else if((fileFormat == 'doc') || (fileFormat == 'docx')) { %>
                                     <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/<%-file.id %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
                                         <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-doc.png'))}}" data-url="<%- file.attachmentOrginal %>" data-download="<%- file.id %>" class="uv-auto-pointer-events">
                                     </a>
@@ -578,6 +544,10 @@
                                 <% } else if(fileFormat == 'csv') { %>
                                     <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/<%-file.id %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
                                         <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/csv.png'))}}" data-url="<%- file.attachmentOrginal %>" data-download="<%- file.id %>" class="uv-auto-pointer-events">
+                                    </a>
+                                <% } else if((fileFormat == 'ppt') || (fileFormat == 'pptx')) { %>
+                                    <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/<%-file.id %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
+                                        <img src="{{absolute_url(asset('bundles/uvdeskcore/images/icons/file-system/icon-file-ppt.png'))}}" data-url="<%- file.attachmentOrginal %>" data-download="<%- file.id %>" class="uv-auto-pointer-events">
                                     </a>
                                 <% } else { %>
                                     <a href="{{ path('helpdesk_customer_download_ticket_attachment') }}/<%-file.id %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
@@ -632,8 +602,7 @@
                 el: $('.uv-body'),
                 stopDraftSaveFlag: 0,
                 events: {
-                    'click .uv-kudo-response-wrapper .uv-kudo-response': 'rateTicket',
-                    'click .uv-element-block.collaborators .uv-btn-tag': 'removeCcCollaborator',
+                    'click .collaborator-list .uv-btn-tag': 'removeCcCollaborator',
                     'change .uv-element-block.cc-bcc .cc-bcc-toggle': 'showCcBccBlock',
                     'keypress .uv-element-block.cc-bcc .uv-group-field': 'addCcBccInput',
                     'click .cc-bcc-list .uv-btn-tag, .to-list .uv-btn-tag': 'removeEmail',
@@ -649,41 +618,7 @@
                     $('#confirm-ticket-close-modal').hide();
                     this.validateForm(e);
                 },
-                ratingText: {
-                    '1' : "{{ 'I am very Sad'|trans }}",
-                    '2' : "{{ 'I am Sad'|trans }}",
-                    '3' : "{{ 'I am Neutral'|trans }}",
-                    '4' : "{{ 'I am Happy'|trans }}",
-                    '5' : "{{ 'I am Very Happy'|trans }}",
-                },
                 loaderTemplate : _.template($("#loader-tmp").html()),
-                rateTicket : function(e) {
-                    var element = Backbone.$(e.currentTarget);
-                    var count = element.attr('data-id');
-                    this.model.set('rating', count);
-
-                    var self = this;
-                    app.appView.showLoader()
-                    this.model.save({}, {
-                        url : "{{ path('helpdesk_customer_rate_ticket') }}",
-                        success: function (model, response, options) {
-                            app.appView.hideLoader()
-                            if(response.alertClass == 'success') {
-                                //app.appView.renderResponseAlert(response);
-                                $('.uv-kudo-response').removeClass('uv-kudo-done');
-                                element.addClass('uv-kudo-done');
-                                $('.uv-kudo-message').text(self.ratingText[count])
-                                $('.uv-kudo-button').trigger('click')
-                            } else {
-                                app.appView.renderResponseAlert(response);
-                            }
-                        },
-                        error: function (model, xhr, options) {
-                            if(url = xhr.getResponseHeader('Location'))
-                                window.location = url;
-                        }
-                    });
-                },
                 addCCCollaborators: function() {
                     if(collaboratorCollection.length) {
                         var collaboratorContainer = $('.uv-element-block.collaborators');
@@ -697,8 +632,11 @@
                 },
                 removeCcCollaborator: function(e) {
                     e.preventDefault()
-                    Backbone.$(e.currentTarget).parent().remove();
-                    var collaboratorContainer = $('.uv-element-block.collaborators');
+                    if (Backbone.$(e.currentTarget).parent()[0]) {
+                        Backbone.$(e.currentTarget).parent()[0].removeChild(e.currentTarget);
+                        var collaboratorContainer = $('.uv-element-block.collaborators');
+                    }
+
                     if(!collaboratorContainer.find('.uv-btn-tag').length)
                         collaboratorContainer.hide()
                 },
@@ -878,7 +816,7 @@
                 className: 'uv-btn-tag',
                 template : _.template("<span class='uv-tag'><span class='uv-icon-remove-dark-before'></span><%- name %></span>"),
                 events : {
-                    'click .uv-tag' : 'confirmRemove'
+                    'click .uv-tag' : 'removeItem'
                 },
                 render : function () {
                     this.$el.html(this.template(this.model.toJSON()));
@@ -911,10 +849,6 @@
                             app.appView.renderResponseAlert(response);
                         }
                     });
-                },
-                confirmRemove: function(e) {
-                    e.preventDefault();
-                    app.appView.openConfirmModal(this)
                 }
             });
 
@@ -922,7 +856,7 @@
                 el : $(".collaborator-list-block"),
                 events : {
                     'keypress .uv-field' : 'addCollaborator',
-                    'focusout .uv-field' : 'removeErrorClass'
+                    'focusout .uv-field' : 'removeErrorClass',
                 },
                 initialize : function() {
                     //Backbone.Validation.bind(this);
@@ -1025,19 +959,4 @@
             }
 		});
 	</script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function(){
-            var uvKudoButton = document.querySelector(".uv-kudo-button");
-            var uvKudoIcon = document.querySelector(".uv-kudo-icon");
-            var uvKudoPlank = document.querySelector(".uv-kudo-plank");
-            var uvKudoMessage = document.querySelector(".uv-kudo-message");
-            var uvKudoResponse = document.querySelector(".uv-kudo-response");
-
-            uvKudoButton.addEventListener("click", function(){
-                uvKudoButton.classList.toggle("uv-kudo-button-active");
-                uvKudoPlank.classList.toggle("uv-kudo-plank-active");
-            });
-        });
-    </script>
 {% endblock %}
