@@ -241,7 +241,7 @@ class Article extends Controller
                                 $entityManager->flush();
 
                                 $json['alertClass'] = 'success';
-                                $json['alertMessage'] = 'article.update.success';
+                                $json['alertMessage'] = 'Success! Article updated successfully';
 
                                 if (!$data['ids'][0]) {
                                     $json['redirect'] = $this->generateUrl('helpdesk_member_knowledgebase_update_article', array('id' => $article->getId()));
@@ -264,7 +264,10 @@ class Article extends Controller
                     case 'tagUpdate':
                         if ($data['action'] == 'remove') {                            
                             $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->removeTagByArticle($data['ids'][0], [$data['entityId']]);
-
+                            
+                            $json['alertClass'] = 'success';
+                            $json['alertMessage'] = 'Success ! Tag removed successfully.';
+                            break;
                         } elseif ($data['action'] == 'add') {
                             $articleTagMapping = new ArticleTags();
                             $articleTagMapping->setArticleId($data['ids'][0]);
@@ -294,7 +297,7 @@ class Article extends Controller
                         }
 
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] = 'Success ! Tags updated successfully.';
+                        $json['alertMessage'] = 'Success ! Tags Saved successfully.';
                         break;
                     case 'contentUpdate':
                         $article = $this->getArticle(['id' => $data['ids'][0]]);
@@ -422,7 +425,7 @@ class Article extends Controller
                                     $this->updateContent($request, $articleBase, $data['content']);
 
                                 $json['alertClass'] = 'success';
-                                $json['alertMessage'] = 'article.update.success';
+                                $json['alertMessage'] = 'Success! Article updated successfully';
                             }
                         }
                     

@@ -87,17 +87,17 @@ Class Customer extends Controller
             return $this->redirect($this->generateUrl('webkul_support_center_front_solutions'));
         }
 
-        if($request->getMethod() == 'POST') {
+        if ($request->getMethod() == 'POST') {
             $entityManager = $this->getDoctrine()->getManager();
             $user = new User();
             $data = $request->request->all();
             $repository = $this->getDoctrine()->getRepository('UVDeskCoreBundle:User');
             $user = $entityManager->getRepository('UVDeskCoreBundle:User')->findOneBy(array('email' => $data['email']));
             
-            if ($user) { 
+            if ($user) {
                 $key = time();
                 
-                // Trigger agent delete event
+                // Trigger agent forgot event
                 $event = new GenericEvent(CoreWorkflowEvents\Customer\ForgotPassword::getId(), [
                     'entity' => $user,
                 ]);
@@ -183,6 +183,15 @@ Class Customer extends Controller
             $dataFiles = $request->files->get('user_form');
             $data = $data['user_form'];
 
+            // Profile upload validation
+            $validMimeType = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (isset($dataFiles['profileImage'])) {
+                if (!in_array($dataFiles['profileImage']->getMimeType(), $validMimeType)) {
+                    $this->addFlash('warning', 'Error ! Profile image is not valid, please upload a valid format');
+                    return $this->redirect($this->generateUrl('helpdesk_customer_account'));
+                }
+            }
+
             $checkUser = $em->getRepository('UVDeskCoreBundle:User')->findOneBy(array('email'=>$data['email']));
             $errorFlag = 0;
             
@@ -244,4 +253,26 @@ Class Customer extends Controller
             'user' => $user,
         ]);
     }
+
+    public function searchArticle(Request $request)
+    {
+        $this->isWebsiteActive();
+        $searchQuery = $request->query->get('s');
+        if (empty($searchQuery)) {
+            return $this->redirect($this->generateUrl('helpdesk_customer_ticket_collection'));
+        }
+  
+        $articleCollection = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Article')->getArticleBySearch($request);
+
+        return $this->render('@UVDeskSupportCenter/Knowledgebase/search.html.twig', [
+            'search' => $searchQuery,
+            'articles' => $articleCollection,
+            'breadcrumbs' => [
+                ['label' => $this->get('translator')->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
+                ['label' => $searchQuery, 'url' => '#'],
+            ],
+        ]);
+
+    }
+    
 }
