@@ -11,9 +11,9 @@
     ],
     "require": {
         "php": "^7.0",
-        "uvdesk/composer-package-manager": "^0.1",
+        "uvdesk/composer-package-manager": "~0.1",
         "symfony/flex": "^1.0",
-        "uvdesk/core-framework": "^0.1"
+        "uvdesk/core-framework": "~0.1"
     },
     "autoload": {
         "psr-4": { "Webkul\\UVDesk\\SupportCenterBundle\\": "" }
