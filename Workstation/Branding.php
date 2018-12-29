@@ -11,7 +11,7 @@ class Branding extends Controller
 {  
     public function theme(Request $request)
     {
-        if (!$this->get('user.service')->checkPermission('ROLE_ADMIN')) {
+        if (!$this->get('user.service')->isAccessAuthorized('ROLE_ADMIN')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -150,7 +150,7 @@ class Branding extends Controller
 
     public function spam(Request $request)
     {
-        if (!$this->get('user.service')->checkPermission('ROLE_ADMIN')) {
+        if (!$this->get('user.service')->isAccessAuthorized('ROLE_ADMIN')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
