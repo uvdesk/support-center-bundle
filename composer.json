@@ -1,5 +1,5 @@
 {
-    "name": "uvdesk/support-center-bundle",
+    "name": "uv/support-center-bundle",
     "description": "UVDesk Community Helpdesk Customer Support Center Bundle",
     "type": "symfony-bundle",
     "license": "MIT",
@@ -11,9 +11,9 @@
     ],
     "require": {
         "php": "^7.0",
-        "uvdesk/composer-package-manager": "^0.1",
+        "uv/composer-package-manager": "^0.1",
         "symfony/flex": "^1.0",
-        "uvdesk/core-framework": "^0.1"
+        "uv/core-framework": "^0.1"
     },
     "autoload": {
         "psr-4": { "Webkul\\UVDesk\\SupportCenterBundle\\": "" }
