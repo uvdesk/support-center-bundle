@@ -115,6 +115,8 @@ class Ticket extends Controller
                     $data['type'] = $em->getRepository('UVDeskCoreBundle:TicketType')->find($request->request->get('type'));
 
                     if(!is_object($data['customer'] = $this->container->get('security.token_storage')->getToken()->getUser()) == "anon.") {
+                        $supportRole = $em->getRepository('UVDeskCoreBundle:SupportRole')->findOneByCode("ROLE_CUSTOMER");
+
                         $customerEmail = $params['email'] = $request->request->get('from');
                         $customer = $em->getRepository('UVDeskCoreBundle:User')->findOneBy(array('email' => $customerEmail));
                         $params['flag'] = (!$customer) ? 1 : 0;$request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('Success ! Ticket has been created successfully.'));
@@ -124,7 +126,7 @@ class Ticket extends Controller
                         $data['lastName'] = ($data['firstName'] != end($nameDetails)) ? end($nameDetails) : " ";
                         $data['from'] = $customerEmail;
                         $data['role'] = 4;
-                        $data['customer'] = $this->get('user.service')->createUserInstance($data);
+                        $data['customer'] = $this->get('user.service')->createUserInstance($customerEmail, $data['fullname'], $supportRole);
                     } else {
                         $userDetail = $em->getRepository('UVDeskCoreBundle:User')->find($data['customer']->getId());
                         $data['email'] = $customerEmail = $data['customer']->getEmail();
@@ -467,8 +469,10 @@ class Ticket extends Controller
                     'lastName' => ' ',
                     'role' => 4,
                 );
+
+                $supportRole = $em->getRepository('UVDeskCoreBundle:SupportRole')->findOneByCode('ROLE_CUSTOMER');
+                $collaborator = $this->get('user.service')->createUserInstance($data['from'], $data['firstName'], $supportRole);
                 
-                $collaborator = $this->get('user.service')->createUserInstance($data);
                 $checkTicket = $em->getRepository('UVDeskCoreBundle:Ticket')->isTicketCollaborator($ticket,$content['email']);
                 
                 if (!$checkTicket) {
