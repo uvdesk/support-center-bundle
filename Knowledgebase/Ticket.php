@@ -241,7 +241,7 @@ class Ticket extends Controller
                 $thread = $this->get('ticket.service')->createThread($ticket, $data);
 
                 $em = $this->getDoctrine()->getManager();
-                $status = $em->getRepository('UVDeskCoreBundle:TicketStatus')->find($data['status']);
+                $status = $em->getRepository('UVDeskCoreBundle:TicketStatus')->findOneByCode($data['status']);
                 if($status) {
                     $flag = 0;
                     if($ticket->getStatus() != $status) {
