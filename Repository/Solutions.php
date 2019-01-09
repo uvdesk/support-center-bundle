@@ -137,7 +137,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         return($result);
     }
 
-    public function getCategoriesWithCountBySolution($id, $status = [0, 1])
+    public function getCategoriesWithCountBySolution($id, $status = [1])
     {
         $queryBuilder = $this->createQueryBuilder('a');
 
@@ -163,7 +163,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         return $categories;
     }
 
-    public function getCategoriesCountBySolution($id, $status = [0, 1])
+    public function getCategoriesCountBySolution($id, $status = [1])
     {
         $queryBuilder = $this->createQueryBuilder('a');
 
