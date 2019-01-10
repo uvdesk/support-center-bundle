@@ -453,10 +453,10 @@ class Article extends EntityRepository
         $sort = $request->query->get('sort');
         $direction = $request->query->get('direction');
         $searchQuery = $request->query->get('s');
-        $searchTagList = explode(' ', $searchQuery);
+        $searchTagList = explode(' ', trim($searchQuery));
 
         $params = [
-            'name' => '%' . $searchQuery . '%',
+            'name' => '%' . trim($searchQuery) . '%',
             'status' => 1,
         ];
 
