@@ -33,7 +33,7 @@ class Branding extends Controller
                     $status = array_key_exists("status",$params['website']) ? 1 : 0;
                     
                     if (isset($parmsFile['logo'])) {
-                        $fileName  = $this->container->get('uvdesk.service')->getFileUploadManager()->upload($parmsFile['logo']);
+                        $fileName = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($parmsFile['logo']);
                         $website->setLogo($fileName);
                     }
 
