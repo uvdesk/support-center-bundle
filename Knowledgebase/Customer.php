@@ -226,7 +226,7 @@ Class Customer extends Controller
 
                     $userInstance = $em->getRepository('UVDeskCoreBundle:UserInstance')->findOneBy(array('user' => $user->getId()));
                     if(isset($dataFiles['profileImage'])){
-                        $fileName  = $this->container->get('uvdesk.service')->getFileUploadManager()->upload($dataFiles['profileImage']);
+                        $fileName = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($dataFiles['profileImage']);
                         $userInstance->setProfileImagePath($fileName);
                     }
 
