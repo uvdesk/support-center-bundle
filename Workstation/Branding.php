@@ -33,8 +33,8 @@ class Branding extends Controller
                     $status = array_key_exists("status",$params['website']) ? 1 : 0;
                     
                     if (isset($parmsFile['logo'])) {
-                        $fileName = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($parmsFile['logo']);
-                        $website->setLogo($fileName);
+                        $assetDetails = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($parmsFile['logo'], 'website');
+                        $website->setLogo($assetDetails['path']);
                     }
 
                     $configuration->setStatus($status);
@@ -141,7 +141,7 @@ class Branding extends Controller
         }
     
         return $this->render('@UVDeskSupportCenter/Staff/branding.html.twig', [
-            'websitedata' => $website,
+            'websiteData' => $website,
             'type' => $settingType,
             'configuration' => $configuration,
             'broadcast' => json_decode($configuration->getBroadcastMessage()),
