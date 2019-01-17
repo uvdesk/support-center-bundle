@@ -119,14 +119,16 @@
                                 <li><a href="{{headerLink.url}}" target="_blank">{{headerLink.label}}</a></li>
                             {% endfor %}
 
-                            {% if websiteConfiguration is defined and websiteConfiguration.ticketCreateOption is defined %}
+                            {% if websiteConfiguration is defined and websiteConfiguration.ticketCreateOption %}
                                 {% if not websiteConfiguration.loginRequiredToCreate or app.user %}
                                     <li><a href="{{path('helpdesk_customer_create_ticket')}}" class="uv-btn-small">{% trans %}Contact Us{% endtrans %}</a></li>
                                 {% endif %}
                             {% endif %}
 
-                            {% if websiteConfiguration is defined and websiteConfiguration.disableCustomerLogin is defined and not websiteConfiguration.disableCustomerLogin %}
-                                <li><a href="{{path('helpdesk_customer_login')}}" class="uv-btn-small">{% trans %}Sign In{% endtrans %}</a></li>
+                            {% if websiteConfiguration is defined and websiteConfiguration.removeCustomerLoginButton is defined %}
+                                {% if not websiteConfiguration.removeCustomerLoginButton %}
+                                    <li><a href="{{path('helpdesk_customer_login')}}" class="uv-btn-small">{% trans %}Sign In{% endtrans %}</a></li>
+                                {% endif %}  
                             {% endif %}
                         </ul>
                     </nav>
