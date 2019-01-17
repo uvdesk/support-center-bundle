@@ -126,7 +126,7 @@
                             {% endif %}
 
                             {% if websiteConfiguration is defined and websiteConfiguration.removeCustomerLoginButton is defined %}
-                                {% if  not websiteConfiguration.removeCustomerLoginButton %}
+                                {% if not websiteConfiguration.removeCustomerLoginButton %}
                                     <li><a href="{{path('helpdesk_customer_login')}}" class="uv-btn-small">{% trans %}Sign In{% endtrans %}</a></li>
                                 {% endif %}  
                             {% endif %}

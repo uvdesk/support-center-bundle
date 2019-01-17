@@ -41,15 +41,17 @@ Class Customer extends Controller
     protected function isLoginDisabled()
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $websiteRepo = $entityManager->getRepository('UVDeskCoreBundle:Website');
-        $configurationRepo = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite');
-        $website = $websiteRepo->findOneByCode('knowledgebase');
-
-        if ($website)
-            $configuration = $configurationRepo->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
-
-        if (method_exists($configuration, 'getDisableCustomerLogin') && $configuration->getDisableCustomerLogin()) {
-            return true;
+        $website = $entityManager->getRepository('UVDeskCoreBundle:Website')->findOneByCode('knowledgebase');
+        
+        if (!empty($website)) {
+            $configuration = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite')->findOneBy([
+                'website' => $website->getId(),
+                'isActive' => 1,
+            ]);
+            
+            if (!empty($configuration) && $configuration->getDisableCustomerLogin()) {
+                return true;
+            }
         }
 
         return false;
