@@ -82,7 +82,7 @@
                                             <path fill="#7c74f1" fill-rule="evenodd" d="M26.516,22.252H21.477V17.226h-3.75L24,11.031l6.269,6.195h-3.75v5.026ZM29.973,8.138A9.1,9.1,0,0,0,24,6.005a8.947,8.947,0,0,0-4.863,1.4,9.78,9.78,0,0,0-3.457,3.682A7.494,7.494,0,0,0,9,18.512a7.2,7.2,0,0,0,2.2,5.289,7.234,7.234,0,0,0,5.3,2.192H32.727A6.294,6.294,0,0,0,39,19.739,5.933,5.933,0,0,0,37.3,15.5a6.113,6.113,0,0,0-4.1-1.958A9.112,9.112,0,0,0,29.973,8.138Z"/>
                                         </svg>
                                     </div>
-                                    <img id="dynamic-image-upload" {% if isLogo %} src="{{ websiteData.logo }}" {% endif %}>
+                                    <img id="dynamic-image-upload" {% if isLogo %} src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}{{ websiteData.logo }}" {% endif %}>
 
                                 </div>
                                 <div class="uv-image-info-brick">
