@@ -59,7 +59,7 @@
             <div class="uv-header-lt">
                 <a class="uv-logo" href="{{path('helpdesk_knowledgebase_folder')}}">
                     {% if websiteConfiguration is defined and websiteConfiguration.website.logo is not empty %}
-                        <img src="{{ websiteConfiguration.website.logo }}" alt="{{ websiteConfiguration.website.name}}" />
+                        <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}{{ websiteConfiguration.website.logo }}" alt="{{ websiteConfiguration.website.name}}" />
                     {% else %}
                         <svg xmlns="http://www.w3.org/2000/svg" width="122" height="48" viewBox="0 0 122 48">
                             <defs>
@@ -81,7 +81,7 @@
                     <span style="position: relative" class="uv-profile-block">
                         <div class="uv-profile-wrapper uv-dropdown-other">
                             <div class="uv-profile-avatar">
-                                <img src="{{ currentUser.smallThumbnail ?: asset(default_customer_image_path) }}">
+                                <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}{{ currentUser.smallThumbnail ?: asset(default_customer_image_path) }}">
                             </div>
                             <div class="uv-profile-howdy">
                                 <span>{{ 'Howdy!'|trans }}</span>
