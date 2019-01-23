@@ -92,13 +92,15 @@ class Ticket extends Controller
                     $email = $request->request->get('from');
                     $name = explode(' ', $request->request->get('name'));
                 }
+
+                $website = $em->getRepository('UVDeskCoreBundle:Website')->findOneByCode('knowledgebase');
+                if(!empty($email) && $this->container->get('ticket.service')->isEmailBlocked($email, $website)) {
+                    $request->getSession()->getFlashBag()->set('warning', $this->get('translator')->trans('Warning ! Cannot create ticket, given email is blocked by admin.'));
+                    return $this->redirect($this->generateUrl('helpdesk_customer_create_ticket'));
+                }
+
                 if($request->request->all())
                     $form->submit($request->request->all());
-                
-                // extract($this->get('customfield.service')->customFieldsValidation($request, 'customer'));
-                // if(!empty($errorFlashMessage)) {
-                //     $this->addFlash('warning', $errorFlashMessage);
-                // }
 
                 if ($form->isValid() && !count($formErrors) && !$error) {
                     $data = array(
