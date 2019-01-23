@@ -140,7 +140,7 @@
 		<a href="<%- path.replace('replaceId', id) %>">
 			<% if(solutionImage) { %>
 				<div class="uv-app-list-brick-lt">
-					<img src="<%= solutionImage %>"/>					
+					<img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}<%= solutionImage %>"/>					
 				</div>
 			<% }else{ %>
 				<div class="uv-app-list-brick-lt uv-without-img"><div></div></div>
