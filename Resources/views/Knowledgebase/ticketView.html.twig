@@ -149,7 +149,7 @@
     {% set ticketAgent = ticket.agent ? user_service.getAgentDetailById(ticket.agent.id) : null %}
     {% set totalThreads = ticket_service.getTicketTotalThreads(ticket.id) %}
     {% set customer = user_service.getCustomerPartialDetailById(ticket.customer.id)  %}
-    {% set createThread = ticket_service.getCreateReply(ticket.id) %}
+    {% set createThread = ticket_service.getCreateReply(ticket.id, 'customer') %}
     {% set currentUser = user_service.getCustomerPartialDetailById(app.user.id)  %}
 
     <div class="uv-thread">
@@ -268,7 +268,7 @@
                                 </div>
                                 <div class="uv-ticket-main-lt">
                                     {% if customer.smallThumbnail %}
-                                        <img src="{{ customer.smallThumbnail }}">
+                                        <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}{{ customer.smallThumbnail }}">
                                     {% else %}
                                         <img src="{{ asset(default_customer_image_path) }}">
                                     {% endif %}
@@ -329,7 +329,7 @@
                         <div class="uv-ticket-main-lt">
                             <span class="uv-icon-ellipsis"></span>
                             {% if currentUser.smallThumbnail %}
-                                <img src="{{ currentUser.smallThumbnail }}" />
+                                <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}{{ currentUser.smallThumbnail }}" />
                             {% else %}
                                 <img src="{{ asset(default_customer_image_path) }}" />
                             {% endif %}

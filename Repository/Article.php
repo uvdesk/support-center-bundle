@@ -170,9 +170,9 @@ class Article extends EntityRepository
                 } else {
                     if($key == 'search' || $key == 'query') {
                         $qb->orwhere('a.name'.' LIKE :name');
-                        $qb->setParameter('name', '%'.urldecode($value).'%');
+                        $qb->setParameter('name', '%'.urldecode(trim($value)).'%');
                         $qb->orwhere('a.content'.' LIKE :content'); //can use regexBundle for it so that it can\'t match html
-                        $qb->setParameter('content', '%'.urldecode($value).'%');
+                        $qb->setParameter('content', '%'.urldecode(trim($value)).'%');
                     }
                 }
             }
