@@ -41,15 +41,17 @@ Class Customer extends Controller
     protected function isLoginDisabled()
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $websiteRepo = $entityManager->getRepository('UVDeskCoreBundle:Website');
-        $configurationRepo = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite');
-        $website = $websiteRepo->findOneByCode('knowledgebase');
-
-        if ($website)
-            $configuration = $configurationRepo->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
-
-        if (method_exists($configuration, 'getDisableCustomerLogin') && $configuration->getDisableCustomerLogin()) {
-            return true;
+        $website = $entityManager->getRepository('UVDeskCoreBundle:Website')->findOneByCode('knowledgebase');
+        
+        if (!empty($website)) {
+            $configuration = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite')->findOneBy([
+                'website' => $website->getId(),
+                'isActive' => 1,
+            ]);
+            
+            if (!empty($configuration) && $configuration->getDisableCustomerLogin()) {
+                return true;
+            }
         }
 
         return false;
@@ -197,7 +199,7 @@ Class Customer extends Controller
                     $this->addFlash('warning', 'Error ! Profile image is not valid, please upload a valid format');
                     return $this->redirect($this->generateUrl('helpdesk_customer_account'));
                 }
-            }
+            } 
 
             $checkUser = $em->getRepository('UVDeskCoreBundle:User')->findOneBy(array('email'=>$data['email']));
             $errorFlag = 0;
@@ -232,9 +234,9 @@ Class Customer extends Controller
                     $em->flush();
 
                     $userInstance = $em->getRepository('UVDeskCoreBundle:UserInstance')->findOneBy(array('user' => $user->getId()));
-                    if(isset($dataFiles['profileImage'])){
-                        $fileName  = $this->container->get('uvdesk.service')->getFileUploadManager()->upload($dataFiles['profileImage']);
-                        $userInstance->setProfileImagePath($fileName);
+                    if (isset($dataFiles['profileImage'])) {
+                        $assetDetails = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($dataFiles['profileImage'], 'profile');
+                        $userInstance->setProfileImagePath($assetDetails['path']);
                     }
 
                     $userInstance  = $userInstance->setContactNumber($data['contactNumber']);
