@@ -149,7 +149,7 @@
     {% set ticketAgent = ticket.agent ? user_service.getAgentDetailById(ticket.agent.id) : null %}
     {% set totalThreads = ticket_service.getTicketTotalThreads(ticket.id) %}
     {% set customer = user_service.getCustomerPartialDetailById(ticket.customer.id)  %}
-    {% set createThread = ticket_service.getCreateReply(ticket.id) %}
+    {% set createThread = ticket_service.getCreateReply(ticket.id, 'customer') %}
     {% set currentUser = user_service.getCustomerPartialDetailById(app.user.id)  %}
 
     <div class="uv-thread">
