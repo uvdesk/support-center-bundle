@@ -268,7 +268,7 @@
                                 </div>
                                 <div class="uv-ticket-main-lt">
                                     {% if customer.smallThumbnail %}
-                                        <img src="{{ customer.smallThumbnail }}">
+                                        <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}{{ customer.smallThumbnail }}">
                                     {% else %}
                                         <img src="{{ asset(default_customer_image_path) }}">
                                     {% endif %}
@@ -329,7 +329,7 @@
                         <div class="uv-ticket-main-lt">
                             <span class="uv-icon-ellipsis"></span>
                             {% if currentUser.smallThumbnail %}
-                                <img src="{{ currentUser.smallThumbnail }}" />
+                                <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}{{ currentUser.smallThumbnail }}" />
                             {% else %}
                                 <img src="{{ asset(default_customer_image_path) }}" />
                             {% endif %}
