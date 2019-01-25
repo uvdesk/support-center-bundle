@@ -453,8 +453,8 @@
             <% } %>
         </div>
         <div class="uv-ticket-main-lt">
-            <% if(user && user.smallThumbnail != null) { %>
-                <img src="<%= user.smallThumbnail %>" />
+            <% if(user && smallThumbnail != null) { %>
+                <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}<%= smallThumbnail %>" />
             <% } else { %>
                 <img src="<% if(userType == 'agent') { %> {{ asset(default_agent_image_path) }} <% } else { %> {{ asset(default_customer_image_path) }} <% } %>" />
             <% } %>
