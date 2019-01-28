@@ -9,7 +9,7 @@
 			<div class="uv-kb-folder">
 				<div class="uv-kb-folder-lt">
 					{% if folder.solutionImage %}
-						<img src="{{ folder.solutionImage }}">
+						<img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}{{ folder.solutionImage }}">
 					{% endif %}
 				</div>
 				<div class="uv-kb-folder-rt">
