@@ -81,7 +81,7 @@
                     <span style="position: relative" class="uv-profile-block">
                         <div class="uv-profile-wrapper uv-dropdown-other">
                             <div class="uv-profile-avatar">
-                                <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}{{ currentUser.smallThumbnail ?: asset(default_customer_image_path) }}">
+                                <img src="{{ currentUser.smallThumbnail ?  app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') ~ currentUser.smallThumbnail : asset(default_customer_image_path) }}">                       
                             </div>
                             <div class="uv-profile-howdy">
                                 <span>{{ 'Howdy!'|trans }}</span>
