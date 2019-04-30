@@ -595,13 +595,6 @@ class Article extends EntityRepository
                 ->addOrderBy('a.viewed', Criteria::DESC)
                 ->setMaxResults(10);
        
-	 // if($locale) {
-        //     $qb->leftJoin('Webkul\SupportCenterBundle\Entity\TranslatedArticle','ta','WITH', 'ta.article = a.id')
-        //         ->addSelect('ta.locale, ta.name as translatedName, ta.content as translatedContent')
-        //         ->andWhere('ta.locale = :locale OR ta.locale IS NULL')
-        //         ->setParameter('locale', $locale);
-        // }
-
         $results = $qb->getQuery()->getArrayResult();
         return $results;
     }
