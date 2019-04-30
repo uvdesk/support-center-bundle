@@ -584,4 +584,25 @@ class Article extends EntityRepository
 
         return $response;
     }
+	
+    public function getPopularTranslatedArticles($locale)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder()
+                ->select('a.id', 'a.name', 'a.slug', 'a.content')
+                ->from($this->getEntityName(), 'a')
+                ->andwhere('a.status = :status')
+                ->setParameter('status', 1)
+                ->addOrderBy('a.viewed', Criteria::DESC)
+                ->setMaxResults(10);
+       
+	 // if($locale) {
+        //     $qb->leftJoin('Webkul\SupportCenterBundle\Entity\TranslatedArticle','ta','WITH', 'ta.article = a.id')
+        //         ->addSelect('ta.locale, ta.name as translatedName, ta.content as translatedContent')
+        //         ->andWhere('ta.locale = :locale OR ta.locale IS NULL')
+        //         ->setParameter('locale', $locale);
+        // }
+
+        $results = $qb->getQuery()->getArrayResult();
+        return $results;
+    }
 }
