@@ -49,7 +49,7 @@ class Website extends Controller
 
         $twigResponse = [
             'searchDisable' => false,
-            'popArticles' => [],
+            'popArticles' => $this->container->get('user.service')->getPopularArticles(),
             'solutions' => $solutionRepository->getAllSolutions(new ParameterBag($parameterBag), $this->container, 'a', [1]),
         ];
 
@@ -257,7 +257,7 @@ class Website extends Controller
         $articleRepository = $entityManager->getRepository('UVDeskSupportCenterBundle:Article');
 
         if ($request->attributes->get('article')) {
-            $article = $articleRepository->findOneBy(['status' => 1, 'companyId' => $company->getId(), 'id' => $request->attributes->get('article')]);
+            $article = $articleRepository->findOneBy(['status' => 1, 'id' => $request->attributes->get('article')]);
         } else {
             $article = $articleRepository->findOneBy(['status' => 1,'slug' => $request->attributes->get('slug')]);
         }
