@@ -125,7 +125,7 @@ Class Customer extends Controller
         return $this->render('@UVDeskSupportCenter/Knowledgebase/forgotPassword.html.twig', [
             'searchDisable' => true,
             'breadcrumbs' => [
-                ['label' => 'Support Center', 'url' => 'webkul_support_center_front_solutions'],
+                ['label' => 'Support Center', 'url' => $this->generateUrl('helpdesk_knowledgebase')],
                 ['label' => 'Forgot Password','url' => '#']
             ]
         ]);
