@@ -496,7 +496,7 @@
 						<div class="uv-field-block">
 						    <select name="form[timezone]" class="uv-select">
 						        {% for timezone in uvdesk_service.getTimezones() %}
-						        	<option value="{{ timezone }}" {% if company.timezone == timezone %}selected{% endif %}>{{ timezone }}</option>
+						        	<option value="{{ timezone }}" {% if websiteData.timezone == timezone %}selected{% endif %}>{{ timezone }}</option>
 						    	{% endfor %}
 						    </select>
 						</div>
@@ -510,7 +510,7 @@
 						<div class="uv-field-block">
 						    <select name="form[timeFormat]" class="uv-select">
 						        {% for key, timeFormat in uvdesk_service.getTimeFormats() %}
-						        	<option value="{{ key }}" {% if company.timeFormat == key %}selected{% endif %}>{{ timeFormat }}</option>
+						        	<option value="{{ key }}" {% if websiteData.timeFormat == key %}selected{% endif %}>{{ timeFormat }}</option>
 						    	{% endfor %}
 						    </select>
 						</div>
