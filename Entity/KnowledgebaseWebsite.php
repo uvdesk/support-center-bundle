@@ -819,11 +819,5 @@ class KnowledgebaseWebsite
     public function getRemoveBrandingContent()
     {
         return $this->removeBrandingContent;
-    }
-
-       
-        
-    
-
-    
+    } 
 }
