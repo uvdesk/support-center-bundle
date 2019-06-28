@@ -815,14 +815,13 @@
 			    	'click .timezone-btn': 'timezoneFormSubmit',
                     
 			    },
-			   
                 timezoneFormSubmit: function(e) {
 					var form = Backbone.$(e.currentTarget).closest('form')
-                    if(form.attr('id') == 'timeSettingForm') {
+                    if (form.attr('id') == 'timeSettingForm') {
                         data = form.serializeObject();
                         form.submit()
-                        }
                     }
+                }
 		    });
 
             var time = new TimezoneForm();
