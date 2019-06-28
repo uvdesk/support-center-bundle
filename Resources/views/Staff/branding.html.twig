@@ -57,10 +57,11 @@
 				<ul>
 					<li for="general" {% if type == 'general' or type == '' %}class="uv-tab-active"{% endif %}>{{ 'General'|trans }}</li>
 					<li for="knowledgebase" {% if type == 'knowledgebase' %} class="uv-tab-active"{% endif %}>{{ 'Knowledgebase'|trans }}</li>
+                    <li for="time" {% if type == 'time' %}class="uv-tab-active"{% endif %}>{{ 'Time'|trans }}</li>
 					<li for="seo" {% if type == 'seo' %}class="uv-tab-active"{% endif %}>{{ 'SEO'|trans }}</li>
 					<li for="links" {% if type == 'links' %}class="uv-tab-active"{% endif %}>{{ 'Links'|trans }}</li>
                     <li for="advanced" {% if type == 'advanced' %}class="uv-tab-active"{% endif %}>{{ 'Advanced'|trans }}</li>
-					<li for="broadcasting" {% if type == 'broadcasting' %}class="uv-tab-active"{% endif %}>{{ 'Broadcast Message'|trans }}</li>
+					<li for="broadcasting" {% if type == 'broadcasting' %}class="uv-tab-active"{% endif %}>{{ 'Broadcast Message'|trans }}</li>                  
 				</ul>
 			</div>
 			<!--Tabs-->
@@ -483,6 +484,48 @@
                 </form>
             </div>
             <!--//Tab View-->
+
+            <!--Tab View-->
+			<div class="uv-tab-view {% if type == 'time' %}uv-tab-view-active{% endif %}" id="time">
+				<!--Form-->
+                
+				<form method="post" action="{{ path('helpdesk_member_knowledgebase_theme', {'type': 'time'}) }}" id="timeSettingForm">
+					<!-- Field -->
+					<div class="uv-element-block">
+						<label class="uv-field-label">{{ 'Timezone'|trans }}</label>
+						<div class="uv-field-block">
+						    <select name="form[timezone]" class="uv-select">
+						        {% for timezone in uvdesk_service.getTimezones() %}
+						        	<option value="{{ timezone }}" {% if websiteData.timezone == timezone %}selected{% endif %}>{{ timezone }}</option>
+						    	{% endfor %}
+						    </select>
+						</div>
+						<span class="uv-field-info">{{ "Choose a default company's timezone"|trans }}</span>
+					</div>
+					<!-- //Field -->
+
+					<!-- Field -->
+					<div class="uv-element-block">
+						<label class="uv-field-label">{{ 'Date Time Format'|trans }}</label>
+						<div class="uv-field-block">
+						    <select name="form[timeFormat]" class="uv-select">
+						        {% for key, timeFormat in uvdesk_service.getTimeFormats() %}
+						        	<option value="{{ key }}" {% if websiteData.timeFormat == key %}selected{% endif %}>{{ timeFormat }}</option>
+						    	{% endfor %}
+						    </select>
+						</div>
+						<span class="uv-field-info">{{ 'Choose a format to convert date to specified date time format'|trans }}</span>
+					</div>
+					<!-- //Field -->
+
+					<!--CTA-->
+					<input class="uv-btn timezone-btn" href="#" value="{{ 'Save Changes'|trans }}" type="button">
+					<!--//CTA-->
+				</form>
+				<!--//Form-->
+			</div>
+			<!--//Tab View-->
+
 		</div>
 	</div>
 {% endblock %}
@@ -765,6 +808,23 @@
 			        }
                 },                      
             });
+
+            var TimezoneForm = Backbone.View.extend({
+                el: '#timeSettingForm',
+			    events: {
+			    	'click .timezone-btn': 'timezoneFormSubmit',
+                    
+			    },
+                timezoneFormSubmit: function(e) {
+					var form = Backbone.$(e.currentTarget).closest('form')
+                    if (form.attr('id') == 'timeSettingForm') {
+                        data = form.serializeObject();
+                        form.submit()
+                    }
+                }
+		    });
+
+            var time = new TimezoneForm();
 
             var broadcastForm = new BroadcastForm({
                 model: new BroadcastModel()

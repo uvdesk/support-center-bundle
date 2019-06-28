@@ -135,6 +135,15 @@ class Branding extends Controller
 
                     $this->addFlash('success', 'Success ! Branding details saved successfully.');
                     break;
+                case 'time':
+                    $configuration->getWebsite()->setTimezone($params['form']['timezone']);
+                    $configuration->getWebsite()->setTimeformat($params['form']['timeFormat']);
+                    
+                    $entityManager->persist($configuration);
+                    $entityManager->flush();
+
+                    $this->addFlash('success', 'Success ! Time details saved successfully.');
+                    break;
                 default:
                     break;
             }
