@@ -6,26 +6,35 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ArticleRelatedArticle
+ * @ORM\Entity(repositoryClass=null)
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(name="uv_related_articles")
  */
 class ArticleRelatedArticle
 {
     /**
      * @var integer
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
      * @var integer
+     * 
      */
     private $companyId;
 
     /**
      * @var integer
+     * @ORM\Column(type="integer")
      */
     private $articleId;
 
     /**
      * @var integer
+     * @ORM\Column(type="integer")
      */
     private $relatedArticleId;
 

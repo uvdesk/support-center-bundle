@@ -4,29 +4,40 @@ namespace Webkul\UVDesk\SupportCenterBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Article
+ * @ORM\Entity(repositoryClass="Webkul\UVDesk\SupportCenterBundle\Repository\Article")
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(name="uv_article", indexes={@ORM\Index(name="search_idx", columns={"slug"})})
  */
 class Article
 {
     /**
      * @var integer
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=255)
      */
     private $name;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Slug(fields={"slug"}, style="camel", separator="-")
      */
     private $slug;
 
     /**
      * @var string
+     * @ORM\Column(type="text")
      */
     private $content;
 
@@ -37,31 +48,37 @@ class Article
     
     /**
      * @var string
+     * @ORM\Column(type="string", length=255, nullable=true, name="meta_description")
      */
     private $metaDescription;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $keywords;
 
     /**
      * @var integer
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $viewed;
 
     /**
      * @var integer
+     * @ORM\Column(type="integer", nullable=true, options={"default": 0})
      */
     private $status;
 
     /**
      * @var \DateTime
+     * @ORM\Column(type="datetime", name="date_added")
      */
     private $dateAdded;
 
     /**
      * @var \DateTime
+     * @ORM\Column(type="datetime", name="date_updated")
      */
     private $dateUpdated;
 
@@ -270,6 +287,7 @@ class Article
      *
      * @param \DateTime $dateUpdated
      * @return Article
+     * 
      */
     public function setDateUpdated($dateUpdated)
     {
@@ -316,6 +334,7 @@ class Article
 
     /**
      * @var integer
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $stared;
 
@@ -345,6 +364,8 @@ class Article
     
     /**
      * @var string
+     * 
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $metaTitle;
 
