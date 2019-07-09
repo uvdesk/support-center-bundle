@@ -6,26 +6,37 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ArticleViewLog
+ * @ORM\Entity(repositoryClass=null)
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(name="uv_article_view_log")
  */
 class ArticleViewLog
 {
     /**
      * @var integer
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
      * @var \DateTime
+     * @ORM\Column(type="datetime")
      */
     private $viewedAt;
 
     /**
      * @var \Webkul\UserBundle\Entity\User
+     * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\CoreBundle\Entity\User")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
      */
     private $user;
 
     /**
      * @var \Webkul\SupportCenterBundle\Entity\Article
+     * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\SupportCenterBundle\Entity\Article")
+     * @ORM\JoinColumn(name="article_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $article;
 

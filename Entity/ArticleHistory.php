@@ -6,32 +6,42 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ArticleHistory
+ * @ORM\Entity(repositoryClass=null)
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(name="uv_article_history")
  */
 class ArticleHistory
 {
     /**
      * @var integer
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
    
     /**
      * @var integer
+     * @ORM\Column(type="integer")
      */
     private $articleId;
 
     /**
      * @var integer
+     * @ORM\Column(type="integer")
      */
     private $userId;
 
     /**
      * @var string
+     * @ORM\Column(type="text")
      */
     private $content;
 
     /**
      * @var \DateTime
+     * @ORM\Column(type="datetime")
      */
     private $dateAdded;
 
