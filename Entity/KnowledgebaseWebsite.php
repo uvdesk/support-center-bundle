@@ -2,118 +2,148 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * KnowledgebaseWebsite
+ * @ORM\Entity(repositoryClass=null)
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(name="uv_website_knowledgebase")
  */
 class KnowledgebaseWebsite
 {
     /**
      * @var int
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=255)
      */
     private $status;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=255)
      */
     private $brandColor;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=255)
      */
     private $pageBackgroundColor;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $headerBackgroundColor;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $linkColor;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $articleTextColor;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=255, name="ticket_create_option")
      */
     private $ticketCreateOption;
      /**
      * @var string
+     * @ORM\Column(type="string", length=1000, name="site_description", nullable=true)
      */
     private $siteDescription;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=255, name="meta_description", nullable=true)
      */
     private $metaDescription;
     /**
      * @var string
+     * @ORM\Column(type="string", length=255, name="meta_keywords", nullable=true)
      */
     private $metaKeywords;
     /**
      * @var string
+     * @ORM\Column(type="string", length=255, name="homepage_content", nullable=true)
      */
     private $homepageContent;
     /**
      * @var string
+     * @ORM\Column(type="text", nullable=true)
      */
     private $whiteList;
 
     /**
      * @var string
+     * @ORM\Column(type="text", nullable=true)
      */
     private $blackList;
     /**
      * @var \DateTime
+     * @ORM\Column(type="datetime")
      */
     private $createdAt;
 
     /**
      * @var \DateTime
+     * @ORM\Column(type="datetime")
      */
     private $updatedAt;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $broadcastMessage;
 
     /**
      * @var bool
+     * @ORM\Column(type="boolean")
      */
     private $disableCustomerLogin;
 
     /**
      * @var string
+     * @ORM\Column(type="text", nullable=true)
      */
     private $script;
 
     /**
      * @var string
+     * @ORM\Column(type="text", nullable=true)
      */
     private $customCSS;
 
     /**
      * @var bool
+     * @ORM\Column(type="boolean")
      */
     private $isActive;
 
     /**
      * @var array
+     * @ORM\Column(type="array", nullable=true)
      */
     private $headerLinks;
 
     /**
      * @var array
+     * @ORM\Column(type="array", nullable=true)
      */
     private $footerLinks;
 
@@ -372,6 +402,8 @@ class KnowledgebaseWebsite
     }
     /**
      * @var \Webkul\UVDesk\SupportCenterBundle\Entity\website
+     * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\CoreBundle\Entity\Website", inversedBy="website")
+     * @ORM\JoinColumn(name="website", referencedColumnName="id")
      */
     private $website;
     /**
@@ -490,6 +522,7 @@ class KnowledgebaseWebsite
 
 /**
      * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $bannerBackgroundColor;
 
@@ -519,6 +552,7 @@ class KnowledgebaseWebsite
 
 /**
      * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $linkHoverColor;
 
@@ -637,6 +671,9 @@ class KnowledgebaseWebsite
         return $this->metaKeywords;
     }
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
     private $loginRequiredToCreate;
 
 
@@ -760,6 +797,7 @@ class KnowledgebaseWebsite
 
     /**
      * @var integer
+     * @ORM\Column(type="integer", nullable=true, options={"default": 0})
      */
     private $removeCustomerLoginButton;
 
@@ -794,6 +832,7 @@ class KnowledgebaseWebsite
 
     /**
      * @var integer
+     * @ORM\Column(type="integer", nullable=true, options={"default": 0})
      */
     private $removeBrandingContent;
 

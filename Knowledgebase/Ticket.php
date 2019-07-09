@@ -128,7 +128,7 @@ class Ticket extends Controller
                         $data['lastName'] = ($data['firstName'] != end($nameDetails)) ? end($nameDetails) : " ";
                         $data['from'] = $customerEmail;
                         $data['role'] = 4;
-                        $data['customer'] = $this->get('user.service')->createUserInstance($customerEmail, $data['fullname'], $supportRole);
+                        $data['customer'] = $this->get('user.service')->createUserInstance($customerEmail, $data['fullname'], $supportRole, $extras = ["active" => true]);
                     } else {
                         $userDetail = $em->getRepository('UVDeskCoreBundle:User')->find($data['customer']->getId());
                         $data['email'] = $customerEmail = $data['customer']->getEmail();
