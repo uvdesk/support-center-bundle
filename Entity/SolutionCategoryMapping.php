@@ -6,21 +6,28 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * SolutionCategoryMapping
+ * @ORM\Entity
+ * @ORM\Table(name="uv_solution_category_mapping")
  */
 class SolutionCategoryMapping
 {
     /**
      * @var integer
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
      * @var integer
+     * @ORM\Column(type="integer")
      */
     private $solutionId;
 
     /**
      * @var integer
+     * @ORM\Column(type="integer")
      */
     private $categoryId;
 

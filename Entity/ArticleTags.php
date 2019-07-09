@@ -6,11 +6,16 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ArticleTags
+ * @ORM\Entity(repositoryClass=null)
+ * @ORM\Table(name="uv_article_tags")
  */
 class ArticleTags
 {
     /**
      * @var integer
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
@@ -18,11 +23,13 @@ class ArticleTags
 
     /**
      * @var integer
+     * @ORM\Column(type="integer")
      */
     private $articleId;
 
     /**
      * @var integer
+     * @ORM\Column(type="integer")
      */
     private $tagId;
 

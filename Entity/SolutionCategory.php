@@ -2,38 +2,51 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * SolutionCategory
+ * @ORM\Entity(repositoryClass="Webkul\UVDesk\SupportCenterBundle\Repository\SolutionCategory")
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(name="uv_solution_category")
  */
 class SolutionCategory
 {
     /**
      * @var int
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=100)
      */
     private $name;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $description;
 
     /**
      * @var int
+     * @ORM\Column(type="integer", nullable=true, options={"default": 1})
      */
     private $sortOrder;
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=255, options={"default": "ascending"}, nullable=true)
      */
     private $sorting;
 
     /**
      * @var string
+     * @ORM\Column(type="datetime")
      */
     private $dateAdded;
 
@@ -169,11 +182,13 @@ class SolutionCategory
     }
     /**
      * @var int|null
+     * @ORM\Column(type="integer", nullable=true, options={"default": 0})
      */
     private $status = 0;
 
     /**
      * @var \DateTime
+     * @ORM\Column(type="datetime")
      */
     private $dateUpdated;
 

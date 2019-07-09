@@ -6,36 +6,49 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ArticleFeedback
+ * @ORM\Entity(repositoryClass=null)
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(name="uv_article_feedback")
  */
 class ArticleFeedback
 {
     /**
      * @var integer
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
      * @var boolean
+     * @ORM\Column(type="boolean")
      */
     private $isHelpful;
 
     /**
      * @var string
+     * @ORM\Column(type="text", nullable=true)
      */
     private $description;
 
     /**
      * @var \DateTime
+     * @ORM\Column(type="datetime")
      */
     private $createdAt;
 
     /**
      * @var \Webkul\UVDesk\SupportCenterBundle\Entity\Article
+     * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\SupportCenterBundle\Entity\Article")
+     * @ORM\JoinColumn(name="article_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $article;
 
     /**
      * @var \Webkul\UVDesk\CoreBundle\Entity\User
+     * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\CoreBundle\Entity\User")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $ratedCustomer;
 

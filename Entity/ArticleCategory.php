@@ -6,11 +6,18 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ArticleCategory
+ * @ORM\Entity(repositoryClass=null)
+ * @ORM\Table(name="uv_article_category")
+ * @ORM\HasLifecycleCallbacks
+ * 
  */
 class ArticleCategory
 {
     /**
      * @var integer
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
@@ -21,11 +28,13 @@ class ArticleCategory
 
     /**
      * @var integer
+     * @ORM\Column(type="integer", name="article_id")
      */
     private $articleId;
 
     /**
      * @var integer
+     * @ORM\Column(type="integer", name="category_id")
      */
     private $categoryId;
 
