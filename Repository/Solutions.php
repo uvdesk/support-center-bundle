@@ -191,8 +191,10 @@ class Solutions extends \Doctrine\ORM\EntityRepository
                  ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\Article','aa','WITH', 'ac.articleId = aa.id')
                  ->where('sac.solutionId = :solutionId')
                  ->andwhere('ac.id IS NOT NULL')
+                 ->andwhere('aa.status != :status')
                  ->setParameters([
                     'solutionId' => $id,
+                    'status' => 0
                  ])
                  ->getQuery()
                  ->getSingleScalarResult();
