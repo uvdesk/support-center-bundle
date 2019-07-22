@@ -164,7 +164,7 @@
                 <div class="uv-aside-brick">
                     <h6>{{ 'Timestamp'|trans }}</h6>
                     <span class="uv-icon-timestamp"></span>
-                    <span>{{ ticket.createdAt|date('m-d-y h:i:s A') }}</span>
+                    <span>{{ ticket.createdAt|date('m-d-y h:i A') }}</span>
                 </div>
 
                 <div class="uv-hr"></div>
@@ -233,7 +233,7 @@
                             <span>
                                 <span class="uv-ticket-strip-label">{{ 'Created'|trans }} -</span>
                                 <span class="timeago" data-timestamp="{{ (ticket.createdAt|date('m-d-y h:i:s A')) }}" title="{{ ticket.createdAt|date('m-d-y h:i:s A') }}">
-                                    {{ ticket.createdAt|date('m-d-y h:i:s A') }}
+                                    {{ ticket.createdAt|date('m-d-y h:i A') }}
                                 </span>
                             </span>
                             <span>
@@ -255,7 +255,7 @@
                                 <div class="uv-ticket-strip">
                                     <span>
                                         <span class="timeago uv-margin-0" data-timestamp="ticket.createdAt" title="{{ ticket.createdAt|date('m-d-y h:i:s A') }}">
-                                            {{ ticket.createdAt|date('m-d-y h:i:s A') }}
+                                            {{ ticket.createdAt|date('m-d-y h:i A') }}
                                         </span>
                                         - {{ createThread.user.name }}
                                         <span class="uv-ticket-strip-label">
