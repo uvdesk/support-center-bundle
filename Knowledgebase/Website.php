@@ -300,6 +300,7 @@ class Website extends Controller
             'articleTags' => $articleRepository->getTagsByArticle($article->getId()),
             'articleAuthor' => $articleRepository->getArticleAuthorDetails($article->getId()),
             'relatedArticles' => $articleRepository->getAllRelatedyByArticle(['locale' => $request->getLocale(), 'articleId' => $article->getId()], [1]),
+            'popArticles'  => $articleRepository->getPopularTranslatedArticles($request->getLocale())
         ];
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/article.html.twig',$article_details);
