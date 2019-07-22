@@ -20,7 +20,7 @@
 					<ul>
 						{% for article in articles %}
 							{# <li> {% if article.stared %}<span class="uv-icon-star uv-pre"></span>{% endif %} <a href="{{path('helpdesk_knowledgebase_read_article', {'article': article.id})}}">{{article.name}}</a></li> #}
-							<li> {% if article %}
+							<li> {% if article.stared %}
 								<span class="uv-icon-star uv-pre"></span>
 								{% endif %}
 									<a href="{{path('helpdesk_knowledgebase_read_slug_article', {'slug': article.slug})}}">

@@ -133,7 +133,7 @@
 						required: true,
 						msg: "{{ 'This field is mandatory'|trans }}"
 					}, {
-						pattern: '^[ a-zA-z ]*$',
+						pattern: '^((?![$%<]).)*$',
 						msg: "{{ 'This field must have valid characters only'|trans }}"
 					},{
 						maxLength:50,
