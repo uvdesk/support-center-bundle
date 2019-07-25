@@ -46,8 +46,8 @@ class ArticleFeedback
     private $article;
 
     /**
-     * @var \Webkul\UVDesk\CoreBundle\Entity\User
-     * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\CoreBundle\Entity\User")
+     * @var \Webkul\UVDesk\CoreFrameworkBundle\Entity\User
+     * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\CoreFrameworkBundle\Entity\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $ratedCustomer;
@@ -158,10 +158,10 @@ class ArticleFeedback
     /**
      * Set ratedCustomer
      *
-     * @param \Webkul\UVDesk\CoreBundle\Entity\User $ratedCustomer
+     * @param \Webkul\UVDesk\CoreFrameworkBundle\Entity\User $ratedCustomer
      * @return ArticleFeedback
      */
-    public function setRatedCustomer(\Webkul\UVDesk\CoreBundle\Entity\User $ratedCustomer = null)
+    public function setRatedCustomer(\Webkul\UVDesk\CoreFrameworkBundle\Entity\User $ratedCustomer = null)
     {
         $this->ratedCustomer = $ratedCustomer;
 
@@ -171,7 +171,7 @@ class ArticleFeedback
     /**
      * Get ratedCustomer
      *
-     * @return \Webkul\UVDesk\CoreBundle\Entity\User 
+     * @return \Webkul\UVDesk\CoreFrameworkBundle\Entity\User 
      */
     public function getRatedCustomer()
     {

@@ -18,7 +18,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormError;
 use Doctrine\ORM\EntityRepository;
 
-use Webkul\UVDesk\CoreBundle\Entity\Ticket as TicketEntity;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket as TicketEntity;
 
 class Ticket extends AbstractType
 {   
@@ -48,7 +48,7 @@ class Ticket extends AbstractType
         }
 
         $builder->add('type', EntityType::class, array(
-            'class' => 'UVDeskCoreBundle:TicketType',
+            'class' => 'UVDeskCoreFrameworkBundle:TicketType',
             'choice_label' => 'description',
             'multiple' => false,
             'mapped' => false,

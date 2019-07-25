@@ -3,7 +3,7 @@
 namespace Webkul\UVDesk\SupportCenterBundle\Fixtures;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Webkul\UVDesk\CoreBundle\Entity as CoreEntities;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 use Doctrine\Bundle\FixturesBundle\Fixture as DoctrineFixture;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportCenterEntities;
 
@@ -30,7 +30,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
 
     public function load(ObjectManager $entityManager)
     {
-        $website = $entityManager->getRepository('UVDeskCoreBundle:Website')->findOneByCode('knowledgebase');
+        $website = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
         
         if (empty($website)) {
             ($website = new CoreEntities\Website())

@@ -1,5 +1,5 @@
 <?php 
-namespace Webkul\SupportCenterBundle\Form;
+namespace Webkul\UVDesk\SupportCenterBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

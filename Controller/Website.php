@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\SupportCenterBundle\Knowledgebase;
+namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -24,7 +24,7 @@ class Website extends Controller
     protected function isWebsiteActive()
     {
        $em = $this->getDoctrine()->getManager();
-       $frontWebsite = $em->getRepository('UVDeskCoreBundle:Website')->findOneBy(['code' => 'customer']);
+       $frontWebsite = $em->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneBy(['code' => 'customer']);
 
        return $frontWebsite ? $frontWebsite->getIsActive() : false;
     }

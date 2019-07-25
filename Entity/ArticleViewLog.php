@@ -28,7 +28,7 @@ class ArticleViewLog
 
     /**
      * @var \Webkul\UserBundle\Entity\User
-     * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\CoreBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\CoreFrameworkBundle\Entity\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
      */
     private $user;
@@ -80,7 +80,7 @@ class ArticleViewLog
      * @param \Webkul\UserBundle\Entity\User $user
      * @return ArticleViewLog
      */
-    public function setUser(\Webkul\UVDesk\CoreBundle\Entity\User $user = null)
+    public function setUser(\Webkul\UVDesk\CoreFrameworkBundle\Entity\User $user = null)
     {
         $this->user = $user;
 
