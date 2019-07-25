@@ -429,7 +429,7 @@
 
 {% block footer %}
     {{ parent() }}
-    {{ include('@UVDeskCore/Templates/attachment.html.twig') }}
+    {{ include('@UVDeskCoreFramework/Templates/attachment.html.twig') }}
 
     <script id="thread_list_item_tmp" type="text/template">
         <div class="uv-ticket-strip">
@@ -863,7 +863,7 @@
         });
     </script>
 
-    {{ include("@UVDeskCore/Templates/tinyMCE.html.twig") }}
+    {{ include("@UVDeskCoreFramework/Templates/tinyMCE.html.twig") }}
 
 	<script>
 		sfTinyMce.init({

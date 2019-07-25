@@ -1,18 +1,18 @@
 <?php
 
-namespace Webkul\UVDesk\SupportCenterBundle\Knowledgebase;
+namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
-use Webkul\UVDesk\CoreBundle\Entity\Thread;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Thread;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Webkul\UVDesk\CoreBundle\Entity\TicketRating;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\TicketRating;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Webkul\UVDesk\CoreBundle\Entity\Ticket as TicketEntity;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket as TicketEntity;
 use Webkul\UVDesk\SupportCenterBundle\Form\Ticket as TicketForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Webkul\UVDesk\CoreBundle\Workflow\Events as CoreWorkflowEvents;
+use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
 
 class Ticket extends Controller
 {
@@ -26,7 +26,7 @@ class Ticket extends Controller
     }
     protected function getWebsiteDetails()
     {
-        $knowledgebaseWebsite = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreBundle:Website')->findOneByCode('knowledgebase');
+        $knowledgebaseWebsite = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
         
         return $knowledgebaseWebsite;
     }
@@ -57,7 +57,7 @@ class Ticket extends Controller
             if($_POST) {
                 $error = false;
                 $message = '';
-                $ticketType = $em->getRepository('UVDeskCoreBundle:TicketType')->find($request->request->get('type'));
+                $ticketType = $em->getRepository('UVDeskCoreFrameworkBundle:TicketType')->find($request->request->get('type'));
                 
                 if($request->files->get('customFields') && !$this->get('file.service')->validateAttachmentsSize($request->files->get('customFields'))) {
                     $error = true;
@@ -93,7 +93,7 @@ class Ticket extends Controller
                     $name = explode(' ', $request->request->get('name'));
                 }
 
-                $website = $em->getRepository('UVDeskCoreBundle:Website')->findOneByCode('knowledgebase');
+                $website = $em->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
                 if(!empty($email) && $this->container->get('ticket.service')->isEmailBlocked($email, $website)) {
                     $request->getSession()->getFlashBag()->set('warning', $this->get('translator')->trans('Warning ! Cannot create ticket, given email is blocked by admin.'));
                     return $this->redirect($this->generateUrl('helpdesk_customer_create_ticket'));
@@ -114,13 +114,13 @@ class Ticket extends Controller
                     );
 
                     $em = $this->getDoctrine()->getManager();
-                    $data['type'] = $em->getRepository('UVDeskCoreBundle:TicketType')->find($request->request->get('type'));
+                    $data['type'] = $em->getRepository('UVDeskCoreFrameworkBundle:TicketType')->find($request->request->get('type'));
 
                     if(!is_object($data['customer'] = $this->container->get('security.token_storage')->getToken()->getUser()) == "anon.") {
-                        $supportRole = $em->getRepository('UVDeskCoreBundle:SupportRole')->findOneByCode("ROLE_CUSTOMER");
+                        $supportRole = $em->getRepository('UVDeskCoreFrameworkBundle:SupportRole')->findOneByCode("ROLE_CUSTOMER");
 
                         $customerEmail = $params['email'] = $request->request->get('from');
-                        $customer = $em->getRepository('UVDeskCoreBundle:User')->findOneBy(array('email' => $customerEmail));
+                        $customer = $em->getRepository('UVDeskCoreFrameworkBundle:User')->findOneBy(array('email' => $customerEmail));
                         $params['flag'] = (!$customer) ? 1 : 0;$request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('Success ! Ticket has been created successfully.'));
 
                         $data['firstName'] = current($nameDetails = explode(' ', $request->request->get('name')));
@@ -130,7 +130,7 @@ class Ticket extends Controller
                         $data['role'] = 4;
                         $data['customer'] = $this->get('user.service')->createUserInstance($customerEmail, $data['fullname'], $supportRole, $extras = ["active" => true]);
                     } else {
-                        $userDetail = $em->getRepository('UVDeskCoreBundle:User')->find($data['customer']->getId());
+                        $userDetail = $em->getRepository('UVDeskCoreFrameworkBundle:User')->find($data['customer']->getId());
                         $data['email'] = $customerEmail = $data['customer']->getEmail();
                         $nameCollection = [$userDetail->getFirstName(), $userDetail->getLastName()];
                         $name = implode(' ', $nameCollection);
@@ -208,7 +208,7 @@ class Ticket extends Controller
     public function ticketList(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $ticketRepo = $em->getRepository('UVDeskCoreBundle:Ticket');
+        $ticketRepo = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket');
 
         $currentUser = $this->get('security.token_storage')->getToken()->getUser();
         if(!$currentUser || $currentUser == "anon.") {
@@ -226,7 +226,7 @@ class Ticket extends Controller
     {
         $this->isWebsiteActive();
         $data = $request->request->all();
-        $ticket = $this->getDoctrine()->getRepository('UVDeskCoreBundle:Ticket')->find($id);
+        $ticket = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($id);
 
         if($_POST) {
             if(str_replace(' ','',str_replace('&nbsp;','',trim(strip_tags($data['message'], '<img>')))) != "") {
@@ -243,7 +243,7 @@ class Ticket extends Controller
                 $thread = $this->get('ticket.service')->createThread($ticket, $data);
 
                 $em = $this->getDoctrine()->getManager();
-                $status = $em->getRepository('UVDeskCoreBundle:TicketStatus')->findOneByCode($data['status']);
+                $status = $em->getRepository('UVDeskCoreFrameworkBundle:TicketStatus')->findOneByCode($data['status']);
                 if($status) {
                     $flag = 0;
                     if($ticket->getStatus() != $status) {
@@ -303,7 +303,7 @@ class Ticket extends Controller
 
         $json = array();
         if($request->isXmlHttpRequest()) {
-            $repository = $this->getDoctrine()->getRepository('UVDeskCoreBundle:Ticket');
+            $repository = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:Ticket');
     
             $json = $repository->getAllCustomerTickets($request->query, $this->container);
         }
@@ -325,10 +325,10 @@ class Ticket extends Controller
 
         $json = array();
         if($request->isXmlHttpRequest()) {
-            $ticket = $this->getDoctrine()->getRepository('UVDeskCoreBundle:Ticket')->find($request->attributes->get('id'));
+            $ticket = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($request->attributes->get('id'));
             // $this->denyAccessUnlessGranted('FRONT_VIEW', $ticket);
 
-            $repository = $this->getDoctrine()->getRepository('UVDeskCoreBundle:Thread');
+            $repository = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:Thread');
             $json = $repository->getAllCustomerThreads($request->attributes->get('id'),$request->query, $this->container);
         }
 
@@ -343,7 +343,7 @@ class Ticket extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $ticket = $em->getRepository('UVDeskCoreBundle:Ticket')->find($id);
+        $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($id);
 
         if(!$ticket)
             $this->noResultFound();
@@ -370,9 +370,9 @@ class Ticket extends Controller
         $count = intval($data['rating']);
         
         if($count > 0 || $count < 6) {
-            $ticket = $em->getRepository('UVDeskCoreBundle:Ticket')->find($id);
+            $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($id);
             $customer = $this->get('user.service')->getCurrentUser();
-            $rating = $em->getRepository('UVDeskCoreBundle:TicketRating')->findOneBy(array('ticket' => $id,'customer'=>$customer->getId()));
+            $rating = $em->getRepository('UVDeskCoreFrameworkBundle:TicketRating')->findOneBy(array('ticket' => $id,'customer'=>$customer->getId()));
             if($rating) {
                 $rating->setcreatedAt(new \DateTime);
                 $rating->setStars($count);
@@ -401,7 +401,7 @@ class Ticket extends Controller
     public function downloadAttachmentZip(Request $request)
     {
         $threadId = $request->attributes->get('threadId');
-        $attachmentRepository = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreBundle:Attachment');
+        $attachmentRepository = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreFrameworkBundle:Attachment');
 
         $attachment = $attachmentRepository->findByThread($threadId);
 
@@ -432,7 +432,7 @@ class Ticket extends Controller
     public function downloadAttachment(Request $request)
     {
         $attachmendId = $request->attributes->get('attachmendId');
-        $attachmentRepository = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreBundle:Attachment');
+        $attachmentRepository = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreFrameworkBundle:Attachment');
         $attachment = $attachmentRepository->findOneById($attachmendId);
         $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
 
@@ -458,7 +458,7 @@ class Ticket extends Controller
         $json = array();
         $content = json_decode($request->getContent(), true);
         $em = $this->getDoctrine()->getManager();
-        $ticket = $em->getRepository('UVDeskCoreBundle:Ticket')->find($content['ticketId']);
+        $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($content['ticketId']);
         
         if ($request->getMethod() == "POST") {
             if ($content['email'] == $ticket->getCustomer()->getEmail()) {
@@ -472,17 +472,17 @@ class Ticket extends Controller
                     'role' => 4,
                 );
 
-                $supportRole = $em->getRepository('UVDeskCoreBundle:SupportRole')->findOneByCode('ROLE_CUSTOMER');
+                $supportRole = $em->getRepository('UVDeskCoreFrameworkBundle:SupportRole')->findOneByCode('ROLE_CUSTOMER');
                 $collaborator = $this->get('user.service')->createUserInstance($data['from'], $data['firstName'], $supportRole, $extras = ["active" => true]);
                 
-                $checkTicket = $em->getRepository('UVDeskCoreBundle:Ticket')->isTicketCollaborator($ticket,$content['email']);
+                $checkTicket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->isTicketCollaborator($ticket,$content['email']);
                 
                 if (!$checkTicket) {
                     $ticket->addCollaborator($collaborator);
                     $em->persist($ticket);
                     $em->flush();
                     $ticket->lastCollaborator = $collaborator;
-                    $collaborator = $em->getRepository('UVDeskCoreBundle:User')->find($collaborator->getId());
+                    $collaborator = $em->getRepository('UVDeskCoreFrameworkBundle:User')->find($collaborator->getId());
                    
 
                     $json['collaborator'] =  $this->get('user.service')->getCustomerPartialDetailById($collaborator->getId());
@@ -494,7 +494,7 @@ class Ticket extends Controller
                 }
             }
         } elseif ($request->getMethod() == "DELETE") {
-            $collaborator = $em->getRepository('UVDeskCoreBundle:User')->findOneBy(array('id' => $request->attributes->get('id')));
+            $collaborator = $em->getRepository('UVDeskCoreFrameworkBundle:User')->findOneBy(array('id' => $request->attributes->get('id')));
             
             if ($collaborator) {
                 $ticket->removeCollaborator($collaborator);

@@ -402,7 +402,7 @@ class KnowledgebaseWebsite
     }
     /**
      * @var \Webkul\UVDesk\SupportCenterBundle\Entity\website
-     * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\CoreBundle\Entity\Website", inversedBy="website")
+     * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\CoreFrameworkBundle\Entity\Website", inversedBy="website")
      * @ORM\JoinColumn(name="website", referencedColumnName="id")
      */
     private $website;
@@ -453,11 +453,11 @@ class KnowledgebaseWebsite
     /**
      * Set website.
      *
-     * @param \Webkul\UVDesk\CoreBundle\Entity\website|null $website
+     * @param \Webkul\UVDesk\CoreFrameworkBundle\Entity\website|null $website
      *
      * @return KnowledgebaseWebsite
      */
-    public function setWebsite(\Webkul\UVDesk\CoreBundle\Entity\Website $website = null)
+    public function setWebsite(\Webkul\UVDesk\CoreFrameworkBundle\Entity\Website $website = null)
     {
         $this->website = $website;
 
@@ -467,7 +467,7 @@ class KnowledgebaseWebsite
     /**
      * Get website.
      *
-     * @return \Webkul\UVDesk\CoreBundle\Entity\Website|null
+     * @return \Webkul\UVDesk\CoreFrameworkBundle\Entity\Website|null
      */
     public function getWebsite()
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\SupportCenterBundle\Workstation;
+namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
@@ -13,7 +13,7 @@ use Webkul\UVDesk\SupportCenterBundle\Entity\Article as ArticleEntity;
 use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory;
 use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleRelatedArticle;
 use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleHistory;
-use Webkul\UVDesk\CoreBundle\Entity\Tag;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Tag;
 use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleTags;
 use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
 use Webkul\UVDesk\SupportCenterBundle\Form;
@@ -276,7 +276,7 @@ class Article extends Controller
                             $entityManager->persist($articleTagMapping);
                             $entityManager->flush();
                         } elseif ($data['action'] == 'create') {
-                            $tag = $entityManager->getRepository('UVDeskCoreBundle:Tag')->findOneBy(['name' => $data['name']]);
+                            $tag = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Tag')->findOneBy(['name' => $data['name']]);
 
                             if (!$tag) {
                                 $tag = new Tag();

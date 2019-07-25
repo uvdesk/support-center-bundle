@@ -2,7 +2,7 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Templates\Email\Resources\Customer;
 
-use Webkul\UVDesk\CoreBundle\Templates\Email\UVDeskEmailTemplateInterface;
+use Webkul\UVDesk\CoreFrameworkBundle\Templates\Email\UVDeskEmailTemplateInterface;
 
 abstract class AccountCreated implements UVDeskEmailTemplateInterface
 {
