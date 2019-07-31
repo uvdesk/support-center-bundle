@@ -35,20 +35,20 @@ Class Customer extends Controller
 
     protected function encodePassword(User $user, $plainPassword)
     {
-      return  $encodedPassword = $this->container->get('security.password_encoder')->encodePassword($user, $plainPassword);
+        return  $encodedPassword = $this->container->get('security.password_encoder')->encodePassword($user, $plainPassword);
     }
 
     protected function isLoginDisabled()
     {
         $entityManager = $this->getDoctrine()->getManager();
         $website = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
-        
+
         if (!empty($website)) {
             $configuration = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite')->findOneBy([
                 'website' => $website->getId(),
                 'isActive' => 1,
             ]);
-            
+
             if (!empty($configuration) && $configuration->getDisableCustomerLogin()) {
                 return true;
             }
@@ -74,25 +74,25 @@ Class Customer extends Controller
         $session->remove(Security::AUTHENTICATION_ERROR);
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/login.html.twig', [
-                'searchDisable' => true,
-                'last_username' => $session->get(Security::LAST_USERNAME),
-                'error'         => $error,
-                'breadcrumbs' => [
-                    [
-                        'label' => $this->get('translator')->trans('Support Center'),
-                        'url' => $this->generateUrl('helpdesk_knowledgebase')
-                    ], [
-                        'label' => $this->get('translator')->trans('Sign In'),
-                        'url' => '#'
-                    ]
+            'searchDisable' => true,
+            'last_username' => $session->get(Security::LAST_USERNAME),
+            'error'         => $error,
+            'breadcrumbs' => [
+                [
+                    'label' => $this->get('translator')->trans('Support Center'),
+                    'url' => $this->generateUrl('helpdesk_knowledgebase')
+                ], [
+                    'label' => $this->get('translator')->trans('Sign In'),
+                    'url' => '#'
                 ]
-            ]);
+            ]
+        ]);
     }
 
     public function forgotPassword(Request $request)
     {
         if ($this->isLoginDisabled()) {
-            $this->addFlash('warning','Warning ! Customer Login disabled by admin.');
+            $this->addFlash('warning', $this->get('translator')->trans('Warning ! Customer Login disabled by admin.'));
             return $this->redirect($this->generateUrl('webkul_support_center_front_solutions'));
         }
 
@@ -102,10 +102,10 @@ Class Customer extends Controller
             $data = $request->request->all();
             $repository = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:User');
             $user = $entityManager->getRepository('UVDeskCoreFrameworkBundle:User')->findOneBy(array('email' => $data['email']));
-            
+
             if ($user) {
                 $key = time();
-                
+
                 // Trigger agent forgot event
                 $event = new GenericEvent(CoreWorkflowEvents\Customer\ForgotPassword::getId(), [
                     'entity' => $user,
@@ -114,14 +114,14 @@ Class Customer extends Controller
                 $this->get('event_dispatcher')->dispatch('uvdesk.automation.workflow.execute', $event);
 
                 $request->getSession()->getFlashBag()->set('success', 'Please check your mail for password update.');
-                
+
                 return $this->redirect($this->generateUrl('helpdesk_customer_login'));
                 //@TODO: NEEDS TO SEND EMAIL FOR CHANGE PASSWORD URL.
             } else {
                 $request->getSession()->getFlashBag()->set('warning','This Email is not registered with us.');
             }
         }
-        
+
         return $this->render('@UVDeskSupportCenter/Knowledgebase/forgotPassword.html.twig', [
             'searchDisable' => true,
             'breadcrumbs' => [
@@ -137,7 +137,7 @@ Class Customer extends Controller
         if ($this->isLoginDisabled() || (empty($email) || empty($verificationCode))) {
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
         }
-        
+
         $entityManager = $this->getDoctrine()->getManager();
         $request = $this->get('request_stack')->getCurrentRequest();
 
@@ -147,14 +147,14 @@ Class Customer extends Controller
         if (empty($user) || null == $user->getCustomerInstance() || $user->getVerificationCode() != $verificationCode) {
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
         }
-        
+
         if ($request->getMethod() == 'POST') {
             $updatedCredentials = $request->request->all();
-            
+
             if ($updatedCredentials['password'] === $updatedCredentials['confirmPassword']) {
                 $user->setPassword($this->encodePassword($user, $updatedCredentials['password']));
                 $user->setVerificationCode(TokenGenerator::generateToken());
-                
+
                 $entityManager->persist($user);
                 $entityManager->flush();
 
@@ -196,14 +196,14 @@ Class Customer extends Controller
             $validMimeType = ['image/jpeg', 'image/png', 'image/jpg'];
             if (isset($dataFiles['profileImage'])) {
                 if (!in_array($dataFiles['profileImage']->getMimeType(), $validMimeType)) {
-                    $this->addFlash('warning', 'Error ! Profile image is not valid, please upload a valid format');
+                    $this->addFlash('warning', $this->get('translator')->trans('Error ! Profile image is not valid, please upload a valid format'));
                     return $this->redirect($this->generateUrl('helpdesk_customer_account'));
                 }
-            } 
+            }
 
             $checkUser = $em->getRepository('UVDeskCoreFrameworkBundle:User')->findOneBy(array('email'=>$data['email']));
             $errorFlag = 0;
-            
+
             if ($checkUser) {
                 if($checkUser->getId() != $user->getId())
                     $errorFlag = 1;
@@ -211,15 +211,15 @@ Class Customer extends Controller
 
             if (!$errorFlag) {
                 $password = $user->getPassword();
-                
+
                 $form = $this->createForm(UserProfile::class, $user);
                 $form->handleRequest($request);
                 $form->submit(true);
-                
+
                 if ($form->isValid()) {
                     if ($data != null && (!empty($data['password']['first']))) {
                         $encodedPassword = $this->container->get('security.password_encoder')->encodePassword($user, $data['password']['first']);
-                        
+
                         if (!empty($encodedPassword) ) {
                             $user->setPassword($encodedPassword);
                         }
@@ -234,7 +234,7 @@ Class Customer extends Controller
                     $em->flush();
 
                     $userInstance = $em->getRepository('UVDeskCoreFrameworkBundle:UserInstance')->findOneBy(array('user' => $user->getId()));
-                    
+
                     if (isset($dataFiles['profileImage'])) {
                         $assetDetails = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($dataFiles['profileImage'], 'profile');
                         $userInstance->setProfileImagePath($assetDetails['path']);
@@ -244,7 +244,7 @@ Class Customer extends Controller
                     $em->persist($userInstance);
                     $em->flush();
 
-                    $this->addFlash('success','Success ! Profile updated successfully.');
+                    $this->addFlash('success', $this->get('translator')->trans('Success ! Profile updated successfully.'));
                     return $this->redirect($this->generateUrl('helpdesk_customer_account'));
                 } else {
                     $errors = $form->getErrors();
@@ -253,11 +253,11 @@ Class Customer extends Controller
                     $errors = $this->getFormErrors($form);
                 }
             } else {
-                $this->addFlash('warning','Error ! User with same email is already exist.');
+                $this->addFlash('warning', $this->get('translator')->trans('Error ! User with same email is already exist.'));
                 return $this->redirect($this->generateUrl('helpdesk_customer_account'));
             }
         }
-        
+
         return $this->render('@UVDeskSupportCenter/Knowledgebase/customerAccount.html.twig', [
             'searchDisable' => true,
             'user' => $user,
@@ -271,7 +271,7 @@ Class Customer extends Controller
         if (empty($searchQuery)) {
             return $this->redirect($this->generateUrl('helpdesk_customer_ticket_collection'));
         }
-  
+
         $articleCollection = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Article')->getArticleBySearch($request);
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/search.html.twig', [
@@ -284,5 +284,5 @@ Class Customer extends Controller
         ]);
 
     }
-    
+
 }

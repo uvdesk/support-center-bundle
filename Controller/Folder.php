@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
 
 class Folder extends Controller
-{  
+{
     public function listFolders(Request $request)
     {
         if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
@@ -20,14 +20,14 @@ class Folder extends Controller
         $totalKnowledgebaseFolders = count($entityManager->getRepository('UVDeskSupportCenterBundle:Solutions')->findAll());
         $totalKnowledgebaseCategories = count($entityManager->getRepository('UVDeskSupportCenterBundle:SolutionCategory')->findAll());
         $totalKnowledgebaseArticles = count($entityManager->getRepository('UVDeskSupportCenterBundle:Article')->findAll());
-       
+
         return $this->render('@UVDeskSupportCenter/Staff/Folders/listFolders.html.twig', [
             'articleCount' => $totalKnowledgebaseArticles,
             'categoryCount' => $totalKnowledgebaseCategories,
             'solutionCount' => $totalKnowledgebaseFolders,
         ]);
     }
-   
+
     public function createFolder(Request $request)
     {
         if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
@@ -40,17 +40,17 @@ class Folder extends Controller
         if ($request->getMethod() == "POST") {
             $entityManager = $this->getDoctrine()->getManager();
             $solutionImage = $request->files->get('solutionImage');
-            
+
             if ($imageFile = $request->files->get('solutionImage')) {
                 if (!preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
-                   
-                    $message = 'Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).';
+
+                    $message = $this->get('translator')->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
                     $this->addFlash('warning', $message);
 
                     return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
                 }
             }
-              
+
             $data = $request->request->all();
             $folder->setName($data['name']);
             $folder->setDescription($data['description']);
@@ -58,13 +58,13 @@ class Folder extends Controller
             if(isset($solutionImage)){
                 $assetDetails = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($solutionImage, 'knowledgebase');
                 $folder->setSolutionImage($assetDetails['path']);
-            } 
+            }
             $folder->setDateAdded( new \DateTime());
             $folder->setDateUpdated( new \DateTime());
             $folder->setSortOrder(1);
             $entityManager->persist($folder);
             $entityManager->flush();
-            $message = 'Success! Folder has been added successfully.';
+            $message = $this->get('translator')->trans('Success! Folder has been added successfully.');
 
             $this->addFlash('success', $message);
 
@@ -94,12 +94,12 @@ class Folder extends Controller
         if ($request->getMethod() == "POST") {
             $formData = $request->request->all();
             $solutionImage = $request->files->get('solutionImage');
-          
+
             if ($imageFile = $request->files->get('solutionImage')) {
                 if (!preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
-                    $message = 'Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).';
+                    $message = $this->get('translator')->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
                     $this->addFlash('warning', $message);
-                    
+
                     return $this->render('@UVDeskSupportCenter/Staff/Folders/updateFolder.html.twig', [
                         'folder' => $folder
                     ]);
@@ -120,7 +120,7 @@ class Folder extends Controller
 
             $entityManager->persist($knowledgebaseFolder);
             $entityManager->flush();
-            
+
             $this->addFlash('success', 'Folder updated successfully.');
             return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_folders_collection'));
         }

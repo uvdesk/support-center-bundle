@@ -15,48 +15,48 @@ class Category extends Controller
 {
     const LIMIT = 10;
 
-    public function categoryList(Request $request)    
+    public function categoryList(Request $request)
     {
         if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
-        
+
         $solutions = $this->getDoctrine()
-                           ->getRepository('UVDeskSupportCenterBundle:Solutions')
-                           ->getAllSolutions(null, $this->container, 'a.id, a.name');
+            ->getRepository('UVDeskSupportCenterBundle:Solutions')
+            ->getAllSolutions(null, $this->container, 'a.id, a.name');
 
         $solutions = array_map(function($solution){
             return [
                 'id'=>$solution['id'],
                 'name'=>$solution['name'],
                 'categoriesCount'=>$this->getDoctrine()
-                                        ->getRepository('UVDeskSupportCenterBundle:Solutions')
-                                        ->getCategoriesCountBySolution($solution['id'])
-                ];
+                    ->getRepository('UVDeskSupportCenterBundle:Solutions')
+                    ->getCategoriesCountBySolution($solution['id'])
+            ];
         },$solutions);
         return $this->render('@UVDeskSupportCenter/Staff/Category/categoryList.html.twig', [
             'solutions' => $solutions
         ]);
     }
 
-    public function categoryListBySolution(Request $request)    
+    public function categoryListBySolution(Request $request)
     {
         if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $solution = $this->getDoctrine()
-                            ->getRepository('UVDeskSupportCenterBundle:Solutions')
-                            ->findSolutionById(['id' => $request->attributes->get('solution')]);
+            ->getRepository('UVDeskSupportCenterBundle:Solutions')
+            ->findSolutionById(['id' => $request->attributes->get('solution')]);
         if($solution){
             $solution_category = [
                 'solution' => $solution,
                 'solutionArticleCount' => $this->getDoctrine()
-                            ->getRepository('UVDeskSupportCenterBundle:Solutions')
-                            ->getArticlesCountBySolution($request->attributes->get('solution')),
+                    ->getRepository('UVDeskSupportCenterBundle:Solutions')
+                    ->getArticlesCountBySolution($request->attributes->get('solution')),
                 'solutionCategoryCount' => $this->getDoctrine()
-                            ->getRepository('UVDeskSupportCenterBundle:Solutions')
-                            ->getCategoriesCountBySolution($request->attributes->get('solution')),
+                    ->getRepository('UVDeskSupportCenterBundle:Solutions')
+                    ->getCategoriesCountBySolution($request->attributes->get('solution')),
             ];
             return $this->render('@UVDeskSupportCenter/Staff/Category/categoryListBySolution.html.twig',$solution_category);
         }else
@@ -65,7 +65,7 @@ class Category extends Controller
 
     public function categoryListXhr(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {          
+        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -75,7 +75,7 @@ class Category extends Controller
         if($request->attributes->get('solution'))
             $request->query->set('solutionId', $request->attributes->get('solution'));
         else
-            $request->query->set('limit', self::LIMIT);        
+            $request->query->set('limit', self::LIMIT);
         $json =  $repository->getAllCategories($request->query, $this->container);
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
@@ -88,9 +88,9 @@ class Category extends Controller
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
-        if ($request->attributes->get('id')) { 
+        if ($request->attributes->get('id')) {
             $category = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:SolutionCategory')->findOneById($request->attributes->get('id'));
-            
+
             if (!$category) {
                 $this->noResultFound();
             }
@@ -101,72 +101,72 @@ class Category extends Controller
         $categorySolutions = [];
         if($category->getId())
             $categorySolutions = $this->getDoctrine()
-                            ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
-                            ->getSolutionsByCategory($category->getId());
+                ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
+                ->getSolutionsByCategory($category->getId());
 
         $errors = [];
         if($request->getMethod() == "POST") {
-                $data = $request->request->all();
-                $em = $this->getDoctrine()->getManager();
-                $category->setName($data['name']);
-                $category->setDescription($data['description']);
-                $category->setSortOrder($data['sortOrder']);
-                $category->setDateAdded(new \DateTime());
-                $category->setDateUpdated(new \DateTime());
-                $category->setSorting($data['sorting']);
-                $category->setStatus($data['status']);
-                $em->persist($category);
-                $em->flush();
+            $data = $request->request->all();
+            $em = $this->getDoctrine()->getManager();
+            $category->setName($data['name']);
+            $category->setDescription($data['description']);
+            $category->setSortOrder($data['sortOrder']);
+            $category->setDateAdded(new \DateTime());
+            $category->setDateUpdated(new \DateTime());
+            $category->setSorting($data['sorting']);
+            $category->setStatus($data['status']);
+            $em->persist($category);
+            $em->flush();
 
-                $tempSolutions = explode(',', $request->request->get('tempSolutions'));                
-                $em = $this->getDoctrine()->getManager();
+            $tempSolutions = explode(',', $request->request->get('tempSolutions'));
+            $em = $this->getDoctrine()->getManager();
 
-                $oldSolutions = [];
-                if($categorySolutions)
-                {
-                    foreach ($categorySolutions as $solution) {
-                        if($key = array_search($solution['id'], $tempSolutions))
-                            unset($tempSolutions[$key]);
-                        else
-                            $oldSolutions[] = $solution['id'];
-                    }
-                
-                    if($oldSolutions){
-                        $this->getDoctrine()
-                            ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
-                            ->removeSolutionsByCategory($category->getId(), $oldSolutions);
-                    }
-                }
-                
-                if($tempSolutions){
-                    foreach($tempSolutions as $solution){
-                        if($solution) {
-                            $solutionCategoryMapping = new SolutionCategoryMapping();
-                            $solutionCategoryMapping->setSolutionId($solution);
-                            $solutionCategoryMapping->setCategoryId($category->getId());
-                            $em->persist($solutionCategoryMapping);
-                        }
-                    }
+            $oldSolutions = [];
+            if($categorySolutions)
+            {
+                foreach ($categorySolutions as $solution) {
+                    if($key = array_search($solution['id'], $tempSolutions))
+                        unset($tempSolutions[$key]);
+                    else
+                        $oldSolutions[] = $solution['id'];
                 }
 
-                $em->flush();
-                $message = 'Success! Category has been added successfully.';
+                if($oldSolutions){
+                    $this->getDoctrine()
+                        ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
+                        ->removeSolutionsByCategory($category->getId(), $oldSolutions);
+                }
+            }
 
-                $this->addFlash('success', $message);
+            if($tempSolutions){
+                foreach($tempSolutions as $solution){
+                    if($solution) {
+                        $solutionCategoryMapping = new SolutionCategoryMapping();
+                        $solutionCategoryMapping->setSolutionId($solution);
+                        $solutionCategoryMapping->setCategoryId($category->getId());
+                        $em->persist($solutionCategoryMapping);
+                    }
+                }
+            }
 
-                return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_category_collection'));
+            $em->flush();
+            $message = $this->get('translator')->trans('Success! Category has been added successfully.');
+
+            $this->addFlash('success', $message);
+
+            return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_category_collection'));
         }
 
         $solutions = $this->getDoctrine()
-                           ->getRepository('UVDeskSupportCenterBundle:Solutions')
-                           ->getAllSolutions(null, $this->container, 'a.id, a.name');
+            ->getRepository('UVDeskSupportCenterBundle:Solutions')
+            ->getAllSolutions(null, $this->container, 'a.id, a.name');
 
         return $this->render('@UVDeskSupportCenter/Staff/Category/categoryForm.html.twig', [
-                                'category' => $category,
-                                'categorySolutions' => $categorySolutions,
-                                'solutions' => $solutions,
-                                'errors' => json_encode($errors)
-                            ]);
+            'category' => $category,
+            'categorySolutions' => $categorySolutions,
+            'solutions' => $solutions,
+            'errors' => json_encode($errors)
+        ]);
     }
 
     public function categoryXhr(Request $request)
@@ -176,7 +176,7 @@ class Category extends Controller
         }
 
         $json = array();
-      
+
         if($request->getMethod() == "POST") {
             $em = $this->getDoctrine()->getManager();
 
@@ -189,12 +189,12 @@ class Category extends Controller
                         $em->getRepository('UVDeskSupportCenterBundle:SolutionCategory')->categorySortingUpdate($id, $sort);
                     }
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = 'Success ! Category sort  order updated successfully.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Category sort  order updated successfully.');
                     break;
                 case 'status':
                     $em->getRepository('UVDeskSupportCenterBundle:SolutionCategory')->bulkCategoryStatusUpdate($dataIds, $data['targetId']);
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = 'Success ! Category status updated successfully.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Category status updated successfully.');
                     break;
                 case 'solutionUpdate':
                     if($data['action'] == 'remove'){
@@ -204,7 +204,7 @@ class Category extends Controller
 
                     }elseif($data['action'] == 'add'){
                         $company = $this->container->get('user.service')->getCurrentCompany();
-                        
+
                         $solutionCategoryMapping = new SolutionCategoryMapping();
                         $solutionCategoryMapping->setSolutionId($data['solutionId']);
                         $solutionCategoryMapping->setCategoryId($data['ids'][0]);
@@ -213,7 +213,7 @@ class Category extends Controller
                         $em->flush();
                     }
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = 'Success ! Folders updated successfully.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Folders updated successfully.');
                     break;
                 case 'delete':
                     if($dataIds){
@@ -226,14 +226,14 @@ class Category extends Controller
                                 //     ]);
                                 $em->remove($category);
                                 $em->flush();
-                            }                           
+                            }
                         }
 
                         $this->removeCategory($dataIds);
 
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] = 'Success ! Categories removed successfully.';
-                     
+                        $json['alertMessage'] = $this->get('translator')->trans('Success ! Categories removed successfully.');
+
                     }
                     break;
             }
@@ -243,21 +243,21 @@ class Category extends Controller
             $id = $content['id'];
             $category = $em->getRepository('UVDeskSupportCenterBundle:SolutionCategory')->find($id);
             if($category) {
-                    $form = $this->createFormBuilder($category, [ 
-                            'data_class' => 'Webkul\UVDeskSupportCenterBundle\Entity\SolutionCategory',
-                            'csrf_protection' => false,
-                            'allow_extra_fields' => true
-                        ])
-                        ->add('name', 'text')
-                        ->add('description', 'textarea')
-                        ->getForm();
-                    
+                $form = $this->createFormBuilder($category, [
+                    'data_class' => 'Webkul\UVDeskSupportCenterBundle\Entity\SolutionCategory',
+                    'csrf_protection' => false,
+                    'allow_extra_fields' => true
+                ])
+                    ->add('name', 'text')
+                    ->add('description', 'textarea')
+                    ->getForm();
+
                 $form->submit($content);
                 $form->handleRequest($request);
                 if ($form->isValid()) {
                     $em->persist($category);
                     $em->flush();
-                    
+
                     $json['alertClass'] = 'success';
                     $json['alertMessage'] ='Success ! Category updated successfully.';
                 } else {
@@ -266,7 +266,7 @@ class Category extends Controller
                 }
             } else {
                 $json['alertClass'] = 'danger';
-                $json['alertMessage'] = $this->translate('Error ! Category does not exist.');
+                $json['alertMessage'] =  $this->get('translator')->trans('Error ! Category does not exist.');
             }
         } elseif($request->getMethod() == "PATCH") { //UPDATE STATUS
             $em = $this->getDoctrine()->getManager();
@@ -279,16 +279,16 @@ class Category extends Controller
                         $category->setStatus($content['value']);
                         $em->persist($category);
                         $em->flush();
-                        
+
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] = 'Success ! Category status updated successfully.';
+                        $json['alertMessage'] = $this->get('translator')->trans('Success ! Category status updated successfully.');
                         break;
                     default:
                         break;
                 }
             } else {
                 $json['alertClass'] = 'danger';
-                $json['alertMessage'] = 'Error ! Category is not exist.';
+                $json['alertMessage'] = $this->get('translator')->trans('Error ! Category is not exist.');
             }
         }
 
