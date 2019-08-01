@@ -46,6 +46,17 @@ class Article extends EntityRepository
         unset($data['solutionId']);
     }
 
+    public function getTotalArticlesBySupportTag($supportTag)
+    {
+        $result = $this->getEntityManager()->createQueryBuilder()
+            ->select('COUNT(articleTags) as totalArticle')
+            ->from('UVDeskSupportCenterBundle:ArticleTags', 'articleTags')
+            ->where('articleTags.tagId = :supportTag')->setParameter('supportTag', $supportTag)
+            ->getQuery()->getResult();
+        
+        return !empty($result) ? $result[0]['totalArticle'] : 0;
+    }
+
     public function getAllHistoryByArticle($params)
     {
         $qbS = $this->getEntityManager()->createQueryBuilder();
