@@ -113,20 +113,29 @@ Class Customer extends Controller
 
                 $this->get('event_dispatcher')->dispatch('uvdesk.automation.workflow.execute', $event);
 
-                $request->getSession()->getFlashBag()->set('success', 'Please check your mail for password update.');
+                $request->getSession()->getFlashBag()->set(
+                    'success',
+                    $this->get('translator')->trans('Please check your mail for password update.')
+                );
 
                 return $this->redirect($this->generateUrl('helpdesk_customer_login'));
                 //@TODO: NEEDS TO SEND EMAIL FOR CHANGE PASSWORD URL.
             } else {
-                $request->getSession()->getFlashBag()->set('warning','This Email is not registered with us.');
+                $request->getSession()->getFlashBag()->set(
+                    'warning',
+                    $this->get('translator')->trans('This Email is not registered with us.')
+                );
             }
         }
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/forgotPassword.html.twig', [
             'searchDisable' => true,
             'breadcrumbs' => [
-                ['label' => 'Support Center', 'url' => $this->generateUrl('helpdesk_knowledgebase')],
-                ['label' => 'Forgot Password','url' => '#']
+                [
+                    'label' => $this->get('translator')->trans('Support Center'),
+                    'url' => $this->generateUrl('helpdesk_knowledgebase')
+                ],
+                ['label' => $this->get('translator')->trans('Forgot Password'), 'url' => '#']
             ]
         ]);
     }
@@ -161,7 +170,10 @@ Class Customer extends Controller
                 $request->getSession()->getFlashBag()->set('success', 'Your password has been updated successfully.');
                 return $this->redirect($this->generateUrl('helpdesk_customer_login'));
             } else {
-                $request->getSession()->getFlashBag()->set('warning', "Password don't match.");
+                $request->getSession()->getFlashBag()->set(
+                    'warning',
+                    $this->get('translator')->trans('Password don\'t match.')
+                );
             }
         }
 
@@ -169,10 +181,10 @@ Class Customer extends Controller
             'searchDisable' => true,
             'breadcrumbs' => [
                 [
-                    'label' =>'Support Center',
+                    'label' => $this->get('translator')->trans('Support Center'),
                     'url' => 'helpdesk_knowledgebase'
                 ], [
-                    'label' => 'Account Validation',
+                    'label' => $this->get('translator')->trans('Account Validation'),
                     'url' => '#'
                 ]
             ]

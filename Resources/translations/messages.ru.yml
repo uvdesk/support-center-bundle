@@ -19,8 +19,8 @@ Password: Пароль
 'Save Changes': 'Сохранить изменения'
 'You can''t merge an account with itself.': 'Вы не можете объединить аккаунт с самим собой.'
 'This field is mandatory': 'Это поле является обязательным'
-'Email address is invalid': 'Адрес электронной почты недействителен'
-'Contact number is invalid': 'Контактный номер недействителен'
+'Email address is invalid': 'Адрес электронной почты некорректен'
+'Contact number is invalid': 'Контактный номер некорректен'
 'Password must contains 8 Characters': 'Пароль должен содержать 8 символов'
 'The passwords does not match': 'Пароли не совпадают'
 'No Category Found!': 'Категория не найдена!'
@@ -51,7 +51,7 @@ Name: Название
 Type: Тип
 'Select type': 'Выберите тип'
 'Choose ticket type': 'Выберите тип заявки'
-Subject: Предмет
+Subject: Тема
 'Ticket subject': 'Тема заявки'
 Message: Сообщение
 'Ticket query message': 'Основное сообщение заявки'
@@ -254,7 +254,7 @@ Account: 'Учетная запись'
 'Sign Out': Выход
 Home: Главная
 'Contact Us': 'Связаться с нами'
-'Sign In': 'Войти в систему'
+'Sign In': 'Войти'
 'Enter search keyword': 'Введите поисковое ключевое слово'
 'Knowledge Base': 'База знаний'
 'Your browser does not support JavaScript or You disabled JavaScript, Please enable those !': 'Ваш браузер не поддерживает JavaScript или Вы отключили JavaScript, пожалуйста, включите их!'
@@ -298,6 +298,7 @@ HELP: ПОМОЩЬ
 'Success ! Folders updated successfully.': 'Удача! Папки успешно обновлены.'
 'Success ! Categories removed successfully.': 'Удача! Категории успешно удалены.'
 'Success ! Profile updated successfully.': 'Удача! Профиль успешно обновлен.'
+'Success ! Ticket has been created successfully.': 'Удача! Заявка была успешно создана.'
 'Warning ! This is not a valid request': 'Предупреждение! Это неверный запрос'
 'Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).': 'Предупреждение! Предоставьте действительный файл изображения. (Рекомендуется: формат PNG, JPG или GIF).'
 'Warning ! Customer Login disabled by admin.': 'Предупреждение! Вход для клиентов отключен администратором.'
