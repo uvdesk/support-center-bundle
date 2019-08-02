@@ -599,14 +599,13 @@ class Article extends EntityRepository
     public function getPopularTranslatedArticles($locale)
     {
         $qb = $this->getEntityManager()->createQueryBuilder()
-                ->select('a.id', 'a.name', 'a.slug', 'a.content')
-                ->from($this->getEntityName(), 'a')
-                ->andwhere('a.status = :status')
-                ->setParameter('status', 1)
-                ->addOrderBy('a.viewed', Criteria::DESC)
-                ->setMaxResults(10);
+            ->select('a.id', 'a.name', 'a.slug', 'a.content', 'a.stared')
+            ->from($this->getEntityName(), 'a')
+            ->andwhere('a.status = :status')
+            ->setParameter('status', 1)
+            ->addOrderBy('a.viewed', Criteria::DESC)
+            ->setMaxResults(10);
        
-        $results = $qb->getQuery()->getArrayResult();
-        return $results;
+        return $qb->getQuery()->getArrayResult();
     }
 }
