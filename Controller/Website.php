@@ -49,7 +49,7 @@ class Website extends Controller
 
         $twigResponse = [
             'searchDisable' => false,
-            'popArticles' => $this->container->get('user.service')->getPopularArticles(),
+            'popArticles' => $articleRepository->getPopularTranslatedArticles($request->getLocale()),
             'solutions' => $solutionRepository->getAllSolutions(new ParameterBag($parameterBag), $this->container, 'a', [1]),
         ];
 
