@@ -13,6 +13,9 @@ use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket as TicketEntity;
 use Webkul\UVDesk\SupportCenterBundle\Form\Ticket as TicketForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
+use UVDesk\CommunityPackages\UVDesk\FormComponent\Services\CustomFieldsService;
+use UVDesk\CommunityPackages\UVDesk\FormComponent\Entity\CustomFields;
+use UVDesk\CommunityPackages\UVDesk\FormComponent\Entity\TicketCustomFieldsValues;
 
 class Ticket extends Controller
 {
@@ -59,7 +62,7 @@ class Ticket extends Controller
                 $message = '';
                 $ticketType = $em->getRepository('UVDeskCoreFrameworkBundle:TicketType')->find($request->request->get('type'));
                 
-                if($request->files->get('customFields') && !$this->get('file.service')->validateAttachmentsSize($request->files->get('customFields'))) {
+                if($request->files->get('customFields') && !$this->customFieldsService->validateAttachmentsSize($request->files->get('customFields'))) {
                     $error = true;
                     $this->addFlash(
                             'warning',
@@ -337,7 +340,7 @@ class Ticket extends Controller
         return $response;
     }
 
-    public function ticketView(int $id, Request $request)
+    public function ticketView(int $id, Request $request, CustomFieldsService $customFieldsService)
     {
         $this->isWebsiteActive();
 
@@ -357,6 +360,68 @@ class Ticket extends Controller
             'searchDisable' => true,
         ];
 
+        // Custom Field Collection
+            $customFieldRepository = $em->getRepository('UVDeskFormComponentPackage:CustomFields');
+            $customFieldCollection = $customFieldsService->getCustomFieldsArray('customer');
+
+            $ticketCustomFieldArrayCollection = [];
+            $ticketCustomFieldCollection = $em->getRepository('UVDeskFormComponentPackage:TicketCustomFieldsValues')->findBy(['ticket' => $ticket]);
+        
+            if (!empty($ticketCustomFieldCollection)) {
+                foreach ($ticketCustomFieldCollection as $ticketCustomField) {
+                    $ticketCustomFieldArrayCollection[$ticketCustomField->getTicketCustomFieldsValues()->getId()] = [
+                        'id' => $ticketCustomField->getId(),
+                        'encrypted' => $ticketCustomField->getEncrypted() ? true : false,
+                        'targetCustomField' => $ticketCustomField->getTicketCustomFieldsValues()->getId(),
+                    ];
+
+                    switch ($ticketCustomField->getTicketCustomFieldsValues()->getFieldType()) {
+                        case 'select':
+                        case 'radio':
+                        case 'checkbox':
+                            $fieldId = [];
+                            $fieldValue = [];
+
+                            if ($ticketCustomField->getEncrypted()) {
+                                    $ticketCustomField->decryptEntity();
+                            }
+
+                            $fieldOptions = json_decode($ticketCustomField->getValue(), true);
+                            if (empty($fieldOptions)) {
+                                    $fieldOptions = explode(',', $ticketCustomField->getValue());
+                            } else {
+                                if (!is_array($fieldOptions)) {
+                                    $fieldOptions = [$fieldOptions];
+                                }
+                            }
+
+                            foreach ($ticketCustomField->getTicketCustomFieldsValues()->getCustomFieldValues() as $multipleFieldValue) {
+                                if (in_array($multipleFieldValue->getId(), $fieldOptions)) {
+                                    $fieldId[] = $multipleFieldValue->getId();
+                                    $fieldValue[] = $multipleFieldValue->getName();
+                                }
+                            }
+
+                            $ticketCustomFieldArrayCollection[$ticketCustomField->getTicketCustomFieldsValues()->getId()]['valueId'] = $fieldId;
+                            $ticketCustomFieldArrayCollection[$ticketCustomField->getTicketCustomFieldsValues()->getId()]['value'] = $ticketCustomField->getEncrypted() ? null: implode('</br>', $fieldValue);
+                            break;
+                        default:
+                            $ticketCustomFieldArrayCollection[$ticketCustomField->getTicketCustomFieldsValues()->getId()]['value'] = (!$ticketCustomField->getEncrypted()
+                                ? (is_array(trim($ticketCustomField->getValue(), '"'))
+                                    ? json_encode(trim($ticketCustomField->getValue(), '"'))
+                                    : strip_tags(htmlentities(trim($ticketCustomField->getValue(), '"')))
+                                )
+                                : null
+                            );
+                            break;
+                    }
+                }
+            }
+            if (!empty($ticketCustomFieldCollection) || !empty($customFieldCollection)) {
+                $twigResponse['customFieldCollection'] = $customFieldCollection;
+            }
+            $twigResponse['ticketCustomFieldCollection'] = $ticketCustomFieldArrayCollection;
+        
         return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketView.html.twig', $twigResponse);
     }
     // Ticket rating
@@ -483,7 +548,7 @@ class Ticket extends Controller
                     $em->flush();
                     $ticket->lastCollaborator = $collaborator;
                     $collaborator = $em->getRepository('UVDeskCoreFrameworkBundle:User')->find($collaborator->getId());
-                   
+                    
 
                     $json['collaborator'] =  $this->get('user.service')->getCustomerPartialDetailById($collaborator->getId());
                     $json['alertClass'] = 'success';
