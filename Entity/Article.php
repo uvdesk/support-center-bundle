@@ -4,7 +4,6 @@ namespace Webkul\UVDesk\SupportCenterBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Article
@@ -31,7 +30,6 @@ class Article
     /**
      * @var string
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Slug(fields={"slug"}, style="camel", separator="-")
      */
     private $slug;
 
