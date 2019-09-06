@@ -5,7 +5,7 @@ namespace Webkul\UVDesk\SupportCenterBundle\UIComponents\Dashboard\Homepage\Item
 use Webkul\UVDesk\CoreFrameworkBundle\Dashboard\Segments\HomepageSectionItem;
 use Webkul\UVDesk\CoreFrameworkBundle\UIComponents\Dashboard\Homepage\Sections\Settings;
 
-class SpamSettings extends HomepageSectionItem
+class BlockSpam extends HomepageSectionItem
 {
     CONST SVG = <<<SVG
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="60px" height="60px" viewBox="0 0 60 60">
@@ -20,7 +20,7 @@ SVG;
 
     public static function getTitle() : string
     {
-        return "Spam Settings";
+        return "Block Spam";
     }
 
     public static function getRouteName() : string
