@@ -135,7 +135,7 @@
             display: inline-block;
             width: 20px;
             height: 20px;
-            background-image: url('../../../../../bundles/webkuldefault/images/uvdesk-kb-sprite.svg');
+            background-image: url('../../../../../bundles/uvdeskcoreframework/images/uvdesk-kb-sprite.svg');
             background-position: -176px -91px;
             vertical-align: middle;
         }
@@ -209,7 +209,7 @@
                 <aside id="uv-customfield-view" class="uv-customfield-view" style="margin-top: 20px;">
                     <div style="position: relative;">
                         <h6>{{ 'Custom Field'|trans }}</h6>
-                        <span class="uv-customize cfield-manage-pta" style="width: 15px; height: 15px; position: absolute; background-image: url('../../../../../bundles/webkuldefault/images/uvdesk-sprite.svg'); background-position: -44px -46px; top: 4px; cursor: pointer;" title="{{ 'Manage Ticket Custom Fields'|trans }}" data-toggle="tooltip" data-placement="bottom"></span>
+                        <span class="uv-customize cfield-manage-pta" style="width: 15px; height: 15px; position: absolute; background-image: url('../../../../../bundles/uvdeskcoreframework/images/uvdesk-sprite.svg'); background-position: -44px -46px; top: 2.5px; right: 20px; cursor: pointer;" title="{{ 'Manage Ticket Custom Fields'|trans }}" data-toggle="tooltip" data-placement="bottom"></span>
                     </div>
                     <p style="padding-right: 20px; color: #6F6F6F; font-style: italic;">{{ 'Manage Custom Fields to provide additional details with the ticket.'|trans }}</p>
 
@@ -430,6 +430,11 @@
 {% block footer %}
     {{ parent() }}
     {{ include('@UVDeskCoreFramework/Templates/attachment.html.twig') }}
+
+    {% if customFieldCollection is defined %}
+        {% include('@_uvdesk_extension_uvdesk_form-component\\widgets\\CustomFields\\ticketSidebarCustomFieldValidation.html.twig') with {'headerCustomFields':  customFieldCollection} %}
+        {% include('@_uvdesk_extension_uvdesk_form-component\\widgets\\CustomFields\\customFieldSnippetCustomer.html.twig') %}
+    {% endif %}
 
     <script id="thread_list_item_tmp" type="text/template">
         <div class="uv-ticket-strip">
