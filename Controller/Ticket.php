@@ -348,8 +348,14 @@ class Ticket extends Controller
 
         $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($id);
 
-        if(!$ticket)
-            $this->noResultFound();
+        if ($ticket) {    
+            $currentUser = $this->get('security.token_storage')->getToken()->getUser();
+            $collaborators = array_map( function ($collaborator) { return $collaborator->getId(); }, $ticket->getCollaborators()->getValues());
+            $accessableUsers = array_merge($collaborators, [$ticket->getCustomer()->getId()]);
+            if (!in_array($currentUser->getId(), $accessableUsers)) {
+                $this->noResultFound();
+            }
+        }
         
         $ticket->setIsCustomerViewed(1);
         $em->persist($ticket);
