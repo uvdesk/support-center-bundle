@@ -103,7 +103,7 @@ Class Customer extends Controller
             $repository = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:User');
             $user = $entityManager->getRepository('UVDeskCoreFrameworkBundle:User')->findOneBy(array('email' => $data['email']));
             
-            if ($user) {
+            if ($user && $user->getCustomerInstance()) {
                 $key = time();
                 
                 // Trigger agent forgot event
