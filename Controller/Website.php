@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\SupportCenterBundle\Knowledgebase;
+namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -24,7 +24,7 @@ class Website extends Controller
     protected function isWebsiteActive()
     {
        $em = $this->getDoctrine()->getManager();
-       $frontWebsite = $em->getRepository('UVDeskCoreBundle:Website')->findOneBy(['code' => 'customer']);
+       $frontWebsite = $em->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneBy(['code' => 'customer']);
 
        return $frontWebsite ? $frontWebsite->getIsActive() : false;
     }
@@ -49,7 +49,7 @@ class Website extends Controller
 
         $twigResponse = [
             'searchDisable' => false,
-            'popArticles' => $this->container->get('user.service')->getPopularArticles(),
+            'popArticles' => $articleRepository->getPopularTranslatedArticles($request->getLocale()),
             'solutions' => $solutionRepository->getAllSolutions(new ParameterBag($parameterBag), $this->container, 'a', [1]),
         ];
 
@@ -300,6 +300,7 @@ class Website extends Controller
             'articleTags' => $articleRepository->getTagsByArticle($article->getId()),
             'articleAuthor' => $articleRepository->getArticleAuthorDetails($article->getId()),
             'relatedArticles' => $articleRepository->getAllRelatedyByArticle(['locale' => $request->getLocale(), 'articleId' => $article->getId()], [1]),
+            'popArticles'  => $articleRepository->getPopularTranslatedArticles($request->getLocale())
         ];
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/article.html.twig',$article_details);
@@ -355,7 +356,7 @@ class Website extends Controller
 
         $company = $this->getCompany();
         $user = $this->container->get('user.service')->getCurrentUser();
-        $response = ['code' => 404, 'content' => ['alertClass' => 'danger', 'alertMessage' => 'An unexpected error occurred. Please try again later.']];
+        $response = ['code' => 404, 'content' => ['alertClass' => 'danger', 'alertMessage' => $this->get('translator')->trans('An unexpected error occurred. Please try again later.')]];
 
         if (!empty($user) && $user != 'anon.') {
             $entityManager = $this->getDoctrine()->getEntityManager();
@@ -368,7 +369,7 @@ class Website extends Controller
                     $isArticleHelpful = ('positive' == strtolower($providedFeedback)) ? true : false;
                     $articleFeedback = $entityManager->getRepository('WebkulSupportCenterBundle:ArticleFeedback')->findOneBy(['article' => $article, 'ratedCustomer' => $user]);
 
-                    $response = ['code' => 200, 'content' => ['alertClass' => 'success', 'alertMessage' => 'Feedback saved successfully.']];
+                    $response = ['code' => 200, 'content' => ['alertClass' => 'success', 'alertMessage' => $this->get('translator')->trans('Feedback saved successfully.')]];
 
                     if (empty($articleFeedback)) {
                         $articleFeedback = new \Webkul\SupportCenterBundle\Entity\ArticleFeedback();
@@ -380,19 +381,19 @@ class Website extends Controller
                         $articleFeedback->setCreatedAt(new \DateTime('now'));
                     } else {
                         $articleFeedback->setIsHelpful($isArticleHelpful);
-                        $response['content']['alertMessage'] = 'Feedback updated successfully.';
+                        $response['content']['alertMessage'] = $this->get('translator')->trans('Feedback updated successfully.');
                     }
 
                     $entityManager->persist($articleFeedback);
                     $entityManager->flush();
                 } else {
-                    $response['content']['alertMessage'] = 'Invalid feedback provided.';
+                    $response['content']['alertMessage'] = $this->get('translator')->trans('Invalid feedback provided.');
                 }
             } else {
-                $response['content']['alertMessage'] = 'Article not found.';
+                $response['content']['alertMessage'] = $this->get('translator')->trans('Article not found.');
             }
         } else {
-            $response['content']['alertMessage'] = 'You need to login to your account before can perform this action.';
+            $response['content']['alertMessage'] = $this->get('translator')->trans('You need to login to your account before can perform this action.');
         }
 
         return new Response(json_encode($response['content']), $response['code'], ['Content-Type: application/json']);

@@ -107,7 +107,7 @@
 {% block footer %}
 	{% set isTicketViewPage = (app.user.id is defined ? true : false) %}
 	{{ parent() }}
-	{{ include('@UVDeskCore/Templates/attachment.html.twig') }}
+	{{ include('@UVDeskCoreFramework/Templates/attachment.html.twig') }}
 
 	<script src='https://www.google.com/recaptcha/api.js'></script>
 

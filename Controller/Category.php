@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\SupportCenterBundle\Workstation;
+namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -189,12 +189,12 @@ class Category extends Controller
                         $em->getRepository('UVDeskSupportCenterBundle:SolutionCategory')->categorySortingUpdate($id, $sort);
                     }
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = 'Success ! Category sort  order updated successfully.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Category sort  order updated successfully.');
                     break;
                 case 'status':
                     $em->getRepository('UVDeskSupportCenterBundle:SolutionCategory')->bulkCategoryStatusUpdate($dataIds, $data['targetId']);
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = 'Success ! Category status updated successfully.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Category status updated successfully.');
                     break;
                 case 'solutionUpdate':
                     if($data['action'] == 'remove'){
@@ -213,7 +213,7 @@ class Category extends Controller
                         $em->flush();
                     }
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = 'Success ! Folders updated successfully.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Folders updated successfully.');
                     break;
                 case 'delete':
                     if($dataIds){
@@ -232,7 +232,7 @@ class Category extends Controller
                         $this->removeCategory($dataIds);
 
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] = 'Success ! Categories removed successfully.';
+                        $json['alertMessage'] = $this->get('translator')->trans('Success ! Categories removed successfully.');
                      
                     }
                     break;
@@ -259,7 +259,7 @@ class Category extends Controller
                     $em->flush();
                     
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] ='Success ! Category updated successfully.';
+                    $json['alertMessage'] =$this->get('translator')->trans('Success ! Category updated successfully.');
                 } else {
                     $json['alertClass'] = 'danger';
                     $json['errors'] = json_encode($this->getFormErrors($form));
@@ -281,14 +281,14 @@ class Category extends Controller
                         $em->flush();
                         
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] = 'Success ! Category status updated successfully.';
+                        $json['alertMessage'] =$this->get('translator')->trans('Success ! Category status updated successfully.');
                         break;
                     default:
                         break;
                 }
             } else {
                 $json['alertClass'] = 'danger';
-                $json['alertMessage'] = 'Error ! Category is not exist.';
+                $json['alertMessage'] = $this->get('translator')->trans('Error ! Category is not exist.');
             }
         }
 

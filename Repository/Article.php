@@ -46,13 +46,24 @@ class Article extends EntityRepository
         unset($data['solutionId']);
     }
 
+    public function getTotalArticlesBySupportTag($supportTag)
+    {
+        $result = $this->getEntityManager()->createQueryBuilder()
+            ->select('COUNT(articleTags) as totalArticle')
+            ->from('UVDeskSupportCenterBundle:ArticleTags', 'articleTags')
+            ->where('articleTags.tagId = :supportTag')->setParameter('supportTag', $supportTag)
+            ->getQuery()->getResult();
+        
+        return !empty($result) ? $result[0]['totalArticle'] : 0;
+    }
+
     public function getAllHistoryByArticle($params)
     {
         $qbS = $this->getEntityManager()->createQueryBuilder();
 
         $results = $qbS->select('a.id, a.dateAdded, a.content')
                         ->from('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleHistory', 'a')
-                        ->leftJoin('Webkul\UVDesk\CoreBundle\Entity\User','u','WITH', 'a.userId = u.id')
+                        ->leftJoin('Webkul\UVDesk\CoreFrameworkBundle\Entity\User','u','WITH', 'a.userId = u.id')
                         ->leftJoin('u.userInstance', 'ud')
                         ->addSelect("CONCAT(u.firstName,' ',u.lastName) AS name")
                         ->andwhere('a.articleId = :articleId')
@@ -254,7 +265,7 @@ class Article extends EntityRepository
 
         $results = $queryBuilder->select('DISTINCT t.id, t.name')
                 ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleTags','at','WITH', 'at.articleId = a.id')
-                ->leftJoin('Webkul\UVDesk\CoreBundle\Entity\Tag','t','WITH', 'at.tagId = t.id')
+                ->leftJoin('Webkul\UVDesk\CoreFrameworkBundle\Entity\Tag','t','WITH', 'at.tagId = t.id')
                 ->andwhere('at.articleId = :articleId')
                 ->setParameters([
                     'articleId' => $id,
@@ -482,7 +493,7 @@ class Article extends EntityRepository
             ->select('a')
             ->from('UVDeskSupportCenterBundle:Article', 'a')
             ->leftJoin('UVDeskSupportCenterBundle:ArticleTags', 'at', 'WITH', 'at.articleId = a.id')
-            ->leftJoin('UVDeskCoreBundle:Tag', 't', 'WITH', 't.id = at.tagId')
+            ->leftJoin('UVDeskCoreFrameworkBundle:Tag', 't', 'WITH', 't.id = at.tagId')
             ->andwhere('a.status = :status')->setParameter('status', 1)
             ->orderBy(
                 (!empty($sort)) ? 'a.' . $sort : 'a.id',
@@ -512,7 +523,7 @@ class Article extends EntityRepository
 
         $queryBuilder = $this->getEntityManager()->createQueryBuilder()
             ->select('ud')
-            ->from('UVDeskCoreBundle:UserInstance', 'ud')
+            ->from('UVDeskCoreFrameworkBundle:UserInstance', 'ud')
             ->leftJoin('UVDeskSupportCenterBundle:ArticleHistory', 'ah', 'WITH', 'ah.userId = ud.user')
             ->where('ah.articleId = :articleId')->setParameter('articleId', $articleId)
             // ->andWhere('ud.companyId = :companyId')->setParameter('companyId', $companyId)
@@ -588,14 +599,13 @@ class Article extends EntityRepository
     public function getPopularTranslatedArticles($locale)
     {
         $qb = $this->getEntityManager()->createQueryBuilder()
-                ->select('a.id', 'a.name', 'a.slug', 'a.content')
-                ->from($this->getEntityName(), 'a')
-                ->andwhere('a.status = :status')
-                ->setParameter('status', 1)
-                ->addOrderBy('a.viewed', Criteria::DESC)
-                ->setMaxResults(10);
+            ->select('a.id', 'a.name', 'a.slug', 'a.content', 'a.stared')
+            ->from($this->getEntityName(), 'a')
+            ->andwhere('a.status = :status')
+            ->setParameter('status', 1)
+            ->addOrderBy('a.viewed', Criteria::DESC)
+            ->setMaxResults(10);
        
-        $results = $qb->getQuery()->getArrayResult();
-        return $results;
+        return $qb->getQuery()->getArrayResult();
     }
 }

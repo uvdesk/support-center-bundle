@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\SupportCenterBundle\Workstation;
+namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Doctrine\Common\Collections\Criteria;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -44,7 +44,7 @@ class Folder extends Controller
             if ($imageFile = $request->files->get('solutionImage')) {
                 if (!preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
                    
-                    $message = 'Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).';
+                    $message = $this->get('translator')->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
                     $this->addFlash('warning', $message);
 
                     return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
@@ -64,7 +64,7 @@ class Folder extends Controller
             $folder->setSortOrder(1);
             $entityManager->persist($folder);
             $entityManager->flush();
-            $message = 'Success! Folder has been added successfully.';
+            $message = $this->get('translator')->trans('Success! Folder has been added successfully.');
 
             $this->addFlash('success', $message);
 
@@ -121,7 +121,7 @@ class Folder extends Controller
             $entityManager->persist($knowledgebaseFolder);
             $entityManager->flush();
             
-            $this->addFlash('success', 'Folder updated successfully.');
+            $this->addFlash('success', $this->get('translator')->trans('Folder updated successfully.'));
             return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_folders_collection'));
         }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\SupportCenterBundle\Workstation;
+namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +19,7 @@ class Branding extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         $settingType = $request->attributes->get('type');
         $userService = $this->container->get('user.service');
-        $website = $entityManager->getRepository('UVDeskCoreBundle:Website')->findOneBy(['code'=>"knowledgebase"]);
+        $website = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneBy(['code'=>"knowledgebase"]);
         $configuration = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite')->findOneBy(['website' => $website->getId(),'isActive' => 1]);
         
         if ($request->getMethod() == 'POST') {
@@ -44,7 +44,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
+                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
 
                     break;
                 case "knowledgebase":
@@ -76,7 +76,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
+                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
                     break;
                 case "seo":
                     $configuration->setMetaDescription($params['metaDescription']);  
@@ -85,7 +85,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
+                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
                     break;
                 case "links":
                     $footerLinks=[];
@@ -115,7 +115,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
+                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
                     break;
                 case "broadcasting":
                     $params['broadcasting']['isActive'] = array_key_exists('isActive', $params['broadcasting']) ? true  : false;
@@ -125,7 +125,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
+                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
                     break;
                 case 'advanced':
                     $configuration->setCustomCSS($request->request->get('customCSS'));
@@ -133,7 +133,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', 'Success ! Branding details saved successfully.');
+                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
                     break;
                 case 'time':
                     $configuration->getWebsite()->setTimezone($params['form']['timezone']);
@@ -142,7 +142,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', 'Success ! Time details saved successfully.');
+                    $this->addFlash('success', $this->get('translator')->trans('Success ! Time details saved successfully.'));
                     break;
                 default:
                     break;
@@ -163,8 +163,8 @@ class Branding extends Controller
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository('UVDeskCoreBundle:Website')->findOneBy(['code'=>"knowledgebase"]);
+        $entityManager = $this->getDoctrine()->ge++tManager();
+        $website = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneBy(['code'=>"knowledgebase"]);
         if(!$website) {
             // return not found
         }
@@ -178,7 +178,7 @@ class Branding extends Controller
             $entityManager->persist($configuration);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Spam setting saved successfully.');
+            $this->addFlash('success',$this->get('translator')->trans('Spam setting saved successfully.'));
 
             return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_spam'));
         }

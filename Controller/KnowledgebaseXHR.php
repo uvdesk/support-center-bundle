@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\SupportCenterBundle\Workstation;
+namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,14 +44,14 @@ class KnowledgebaseXHR extends Controller
                             $entityManager->persist($solution);
                             $entityManager->flush();                            
                             $json['alertClass'] = 'success';
-                            $json['alertMessage'] = 'Success ! Folder status updated successfully.';
+                            $json['alertMessage'] = $this->get('translator')->trans('Success ! Folder status updated successfully.');
                             break;
                         default:
                             break;
                     }
                 } else {
                     $json['alertClass'] = 'danger';
-                    $json['alertMessage'] = 'Error ! Folder is not exist.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Error ! Folder is not exist.');
                 }
             break;
             case "PUT":
@@ -67,12 +67,12 @@ class KnowledgebaseXHR extends Controller
                         $entityManager->flush();
                         
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] ='Success ! Folder updated successfully.';
+                        $json['alertMessage'] =$this->get('translator')->trans('Success ! Folder updated successfully.');
                         
                   
                 } else {
                     $json['alertClass'] = 'danger';
-                    $json['alertMessage'] = 'Error ! Folder does not exist.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Error ! Folder does not exist.');
                 }
             break;
             case "DELETE":
@@ -86,16 +86,16 @@ class KnowledgebaseXHR extends Controller
                     $entityManager->flush();
 
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = 'Success ! Folder deleted successfully.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Folder deleted successfully.');
                 }else{
 
                     $json['alertClass'] = 'error';
-                    $json['alertMessage'] = "Warning ! Folder doesn't exists!";
+                    $json['alertMessage'] = $this->get('translator')->trans("Warning ! Folder doesn't exists!");
                 }
             break;
             default:
                 $json['alertClass'] = 'error';
-                $json['alertMessage'] = "Warning ! Bad request !";
+                $json['alertMessage'] = $this->get('translator')->trans("Warning ! Bad request !");
             break;
 
         }

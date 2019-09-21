@@ -1,15 +1,15 @@
 <?php
 
-namespace Webkul\UVDesk\SupportCenterBundle\Knowledgebase;
+namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
-use Webkul\UVDesk\CoreBundle\Entity\User;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
-use Webkul\UVDesk\CoreBundle\Form\UserProfile;
-use Webkul\UVDesk\CoreBundle\Utils\TokenGenerator;
+use Webkul\UVDesk\CoreFrameworkBundle\Form\UserProfile;
+use Webkul\UVDesk\CoreFrameworkBundle\Utils\TokenGenerator;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Webkul\UVDesk\CoreBundle\Workflow\Events as CoreWorkflowEvents;
+use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
 
 Class Customer extends Controller
 {
@@ -41,7 +41,7 @@ Class Customer extends Controller
     protected function isLoginDisabled()
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository('UVDeskCoreBundle:Website')->findOneByCode('knowledgebase');
+        $website = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
         
         if (!empty($website)) {
             $configuration = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite')->findOneBy([
@@ -92,7 +92,7 @@ Class Customer extends Controller
     public function forgotPassword(Request $request)
     {
         if ($this->isLoginDisabled()) {
-            $this->addFlash('warning','Warning ! Customer Login disabled by admin.');
+            $this->addFlash('warning',$this->get('translator')->trans('Warning ! Customer Login disabled by admin.'));
             return $this->redirect($this->generateUrl('webkul_support_center_front_solutions'));
         }
 
@@ -100,8 +100,8 @@ Class Customer extends Controller
             $entityManager = $this->getDoctrine()->getManager();
             $user = new User();
             $data = $request->request->all();
-            $repository = $this->getDoctrine()->getRepository('UVDeskCoreBundle:User');
-            $user = $entityManager->getRepository('UVDeskCoreBundle:User')->findOneBy(array('email' => $data['email']));
+            $repository = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:User');
+            $user = $entityManager->getRepository('UVDeskCoreFrameworkBundle:User')->findOneBy(array('email' => $data['email']));
             
             if ($user) {
                 $key = time();
@@ -118,7 +118,7 @@ Class Customer extends Controller
                 return $this->redirect($this->generateUrl('helpdesk_customer_login'));
                 //@TODO: NEEDS TO SEND EMAIL FOR CHANGE PASSWORD URL.
             } else {
-                $request->getSession()->getFlashBag()->set('warning','This Email is not registered with us.');
+                $request->getSession()->getFlashBag()->set('warning',$this->get('translator')->trans('This Email is not registered with us.'));
             }
         }
         
@@ -142,7 +142,7 @@ Class Customer extends Controller
         $request = $this->get('request_stack')->getCurrentRequest();
 
         // Validate request
-        $user = $entityManager->getRepository('UVDeskCoreBundle:User')->findOneByEmail($email);
+        $user = $entityManager->getRepository('UVDeskCoreFrameworkBundle:User')->findOneByEmail($email);
 
         if (empty($user) || null == $user->getCustomerInstance() || $user->getVerificationCode() != $verificationCode) {
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
@@ -158,10 +158,10 @@ Class Customer extends Controller
                 $entityManager->persist($user);
                 $entityManager->flush();
 
-                $request->getSession()->getFlashBag()->set('success', 'Your password has been updated successfully.');
+                $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('Your password has been updated successfully.'));
                 return $this->redirect($this->generateUrl('helpdesk_customer_login'));
             } else {
-                $request->getSession()->getFlashBag()->set('warning', "Password don't match.");
+                $request->getSession()->getFlashBag()->set('warning', $this->get('translator')->trans("Password don't match."));
             }
         }
 
@@ -196,12 +196,12 @@ Class Customer extends Controller
             $validMimeType = ['image/jpeg', 'image/png', 'image/jpg'];
             if (isset($dataFiles['profileImage'])) {
                 if (!in_array($dataFiles['profileImage']->getMimeType(), $validMimeType)) {
-                    $this->addFlash('warning', 'Error ! Profile image is not valid, please upload a valid format');
+                    $this->addFlash('warning', $this->get('translator')->trans('Error ! Profile image is not valid, please upload a valid format'));
                     return $this->redirect($this->generateUrl('helpdesk_customer_account'));
                 }
             } 
 
-            $checkUser = $em->getRepository('UVDeskCoreBundle:User')->findOneBy(array('email'=>$data['email']));
+            $checkUser = $em->getRepository('UVDeskCoreFrameworkBundle:User')->findOneBy(array('email'=>$data['email']));
             $errorFlag = 0;
             
             if ($checkUser) {
@@ -233,7 +233,7 @@ Class Customer extends Controller
                     $em->persist($user);
                     $em->flush();
 
-                    $userInstance = $em->getRepository('UVDeskCoreBundle:UserInstance')->findOneBy(array('user' => $user->getId()));
+                    $userInstance = $em->getRepository('UVDeskCoreFrameworkBundle:UserInstance')->findOneBy(array('user' => $user->getId()));
                     
                     if (isset($dataFiles['profileImage'])) {
                         $assetDetails = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($dataFiles['profileImage'], 'profile');
