@@ -3325,6 +3325,20 @@ p {
     margin-left: 0px;
   }
 }
+/* customer-ticket-attachment  */
+.uv-tooltip {
+  padding: 2px 10px;
+  position: absolute;
+  background: #9E9E9E;
+  z-index: 10000;
+  color: #fff;
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 @media screen and (max-width: 1024px) {
   .uv-rtl .uv-kudo .uv-kudo-button {
     padding: 10px;
