@@ -163,7 +163,7 @@ class Branding extends Controller
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
-        $entityManager = $this->getDoctrine()->ge++tManager();
+        $entityManager = $this->getDoctrine()->getManager();
         $website = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneBy(['code'=>"knowledgebase"]);
         if(!$website) {
             // return not found
