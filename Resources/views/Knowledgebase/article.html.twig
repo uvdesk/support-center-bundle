@@ -43,7 +43,7 @@
 			{% if feedbacks is defined and feedbacks.enabled == true %}
 				<section id="feedbacks" class="article-feedbacks">
 					{% if feedbacks.submitted == true %}
-						<p>Thank you for your feedback!</p>
+						<p>{{'Thank you for your feedback!'|trans}}</p>
 					{% endif %}
 				</section>
 			{% endif %}
@@ -82,10 +82,10 @@
 	{# Article Feedbacks #}
 	{% if feedbacks is defined and feedbacks.enabled == true and feedbacks.submitted == false %}
 		<script id="article_feedback_template" type="text/template">
-			<p>Was this article helpful?</p>
+			<p>{{'Was this article helpful?'|trans}}</p>
 			<ul>
-				<li class="uv-btn-small article-badge-pta" data-feedback="positive">Yes</li>
-				<li class="uv-btn-small article-badge-pta" data-feedback="negative">No</li>
+				<li class="uv-btn-small article-badge-pta" data-feedback="positive">{{'Yes'|trans}}</li>
+				<li class="uv-btn-small article-badge-pta" data-feedback="negative">{{'No'|trans}}</li>
 			</ul>
 		</script>
 

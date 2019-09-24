@@ -74,18 +74,18 @@
 				validation: {
 					'name': [{
 						required: true,
-						msg: 'This field is mandatory'
+						msg: "{{'This field is mandatory'|trans}}"
 					}, {
 						pattern: '^((?![$%<]).)*$',
-						msg: 'This field must have valid characters only'
+						msg: "{{'This field must have valid characters only'|trans}}"
 					},
 					{
 						maxLength:40,
-						msg:"This field contain maximum 40 charectures."
+						msg:"{{'This field contain maximum 40 charectures.'|trans}}"
 					}],
 					'description': {
 						required: true,
-						msg:'This field is mandatory'
+						msg:"{{'This field is mandatory'|trans}}"
 					}
 				}
 			});

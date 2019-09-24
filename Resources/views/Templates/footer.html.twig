@@ -3,8 +3,8 @@
 		<div class="uv-footer-wrapper">
 			<div class="uv-footer-lt">
 				<ul>
-					<li><a href="{{ path('helpdesk_knowledgebase_folder') }}">Home</a></li>
-					<li><a href="#" class="uv-open-popup" data-target="cookie-dialog-modal">Cookie Policy</a></li>
+					<li><a href="{{ path('helpdesk_knowledgebase_folder') }}">{{'Home'|trans}}</a></li>
+					<li><a href="#" class="uv-open-popup" data-target="cookie-dialog-modal">{{'Cookie Policy'|trans}}</a></li>
 					{% for footerLink in websiteConfiguration.footerLinks %}
 						<li><a href="{{ footerLink.url }}" target="_blank">{{ footerLink.label }}</a></li>
 					{% endfor %}
