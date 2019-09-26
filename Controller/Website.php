@@ -24,9 +24,10 @@ class Website extends Controller
     protected function isWebsiteActive()
     {
        $em = $this->getDoctrine()->getManager();
-       $frontWebsite = $em->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneBy(['code' => 'customer']);
-
-       return $frontWebsite ? $frontWebsite->getIsActive() : false;
+       $website = $em->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneBy(['code' => 'knowledgebase']);
+       $configuration = $em->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite')->findOneBy(['website' => $website->getId(),'isActive' => 1]);
+       
+       return $configuration ? $configuration->getStatus() : false;
     }
 
     protected function noResultFound()
@@ -36,7 +37,8 @@ class Website extends Controller
 
     public function home(Request $request)
     {
-        $this->isWebsiteActive();
+        if(!$this->isWebsiteActive())
+            $this->noResultFound();
 
         $parameterBag = [
             'visibility' => 'public',
@@ -93,7 +95,8 @@ class Website extends Controller
 
     public function listCategories(Request $request)
     {
-        $this->isWebsiteActive();
+        if(!$this->isWebsiteActive())
+            $this->noResultFound();
 
         $solutionRepository = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Solutions');
         $categoryCollection = $solutionRepository->getAllCategories(10, 4);
@@ -106,7 +109,8 @@ class Website extends Controller
 
     public function viewFolder(Request $request)
     {
-        $this->isWebsiteActive();
+        if(!$this->isWebsiteActive())
+            $this->noResultFound();
         
         if(!$request->attributes->get('solution'))
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
@@ -154,7 +158,8 @@ class Website extends Controller
 
     public function viewFolderArticle(Request $request)
     {
-        $this->isWebsiteActive();
+        if(!$this->isWebsiteActive())
+            $this->noResultFound();
 
         if(!$request->attributes->get('solution'))
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
@@ -201,7 +206,8 @@ class Website extends Controller
 
     public function viewCategory(Request $request)
     {
-        $this->isWebsiteActive();
+        if(!$this->isWebsiteActive())
+            $this->noResultFound();
 
         if(!$request->attributes->get('category'))
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
@@ -246,7 +252,8 @@ class Website extends Controller
    
     public function viewArticle(Request $request)
     {
-        $this->isWebsiteActive();
+        if(!$this->isWebsiteActive())
+            $this->noResultFound();
        
         if (!$request->attributes->get('article') && !$request->attributes->get('slug')) {
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
@@ -308,7 +315,8 @@ class Website extends Controller
 
     public function searchKnowledgebase(Request $request)
     {
-        $this->isWebsiteActive();
+        if(!$this->isWebsiteActive())
+            $this->noResultFound();
 
         $searchQuery = $request->query->get('s');
         if (empty($searchQuery)) {
@@ -325,7 +333,8 @@ class Website extends Controller
 
     public function viewTaggedResources(Request $request)
     {
-        $this->isWebsiteActive();
+        if(!$this->isWebsiteActive())
+            $this->noResultFound();
 
         $tagQuery = $request->attributes->get('tag');
         if (empty($tagQuery)) {
@@ -349,7 +358,9 @@ class Website extends Controller
     {
         dump("RateArticleAction called");
         die;
-        $this->isWebsiteActive();
+        if(!$this->isWebsiteActive())
+            $this->noResultFound();
+            
         if ($request->getMethod() != 'POST') {
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
         }

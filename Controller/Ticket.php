@@ -13,6 +13,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket as TicketEntity;
 use Webkul\UVDesk\SupportCenterBundle\Form\Ticket as TicketForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class Ticket extends Controller
 {
@@ -337,7 +338,7 @@ class Ticket extends Controller
         return $response;
     }
 
-    public function ticketView(int $id, Request $request)
+    public function ticketView(int $id, Request $request, UserInterface $user)
     {
         $this->isWebsiteActive();
 
@@ -347,17 +348,21 @@ class Ticket extends Controller
 
         if(!$ticket)
             $this->noResultFound();
-        
-        $ticket->setIsCustomerViewed(1);
-        $em->persist($ticket);
-        $em->flush();
-        
-        $twigResponse = [
-            'ticket' => $ticket,
-            'searchDisable' => true,
-        ];
 
-        return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketView.html.twig', $twigResponse);
+        if($ticket->getCustomer()->getId() == $user->getId()){
+            $ticket->setIsCustomerViewed(1);
+            $em->persist($ticket);
+            $em->flush();
+            
+            $twigResponse = [
+                'ticket' => $ticket,
+                'searchDisable' => true,
+            ];
+    
+            return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketView.html.twig', $twigResponse);
+        } else {
+            $this->noResultFound();
+        } 
     }
     // Ticket rating
     public function rateTicket(Request $request) {
