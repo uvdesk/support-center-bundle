@@ -2,18 +2,21 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\ParameterBag;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Doctrine\Common\Collections\Criteria;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Webkul\UVDesk\SupportCenterBundle\Entity\Article;
-use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
-use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
 use Webkul\UVDesk\SupportCenterBundle\Form;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ParameterBag;
+use Webkul\UVDesk\SupportCenterBundle\Entity\Article;
+use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleViewLog;
+use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website as CoreWebsite;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+
 
 class Website extends Controller
 {
@@ -21,22 +24,25 @@ class Website extends Controller
     private $limit = 5;
     private $company;
 
-    protected function isWebsiteActive()
+    private function isKnowledgebaseActive()
     {
-       $em = $this->getDoctrine()->getManager();
-       $frontWebsite = $em->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneBy(['code' => 'customer']);
+        $entityManager = $this->getDoctrine()->getManager();
+        $website = $entityManager->getRepository(CoreWebsite::class)->findOneByCode('knowledgebase');
 
-       return $frontWebsite ? $frontWebsite->getIsActive() : false;
-    }
+        if (!empty($website)) {
+            $knowledgebaseWebsite = $entityManager->getRepository(KnowledgebaseWebsite::class)->findOneByWebsite($website->getId());
 
-    protected function noResultFound()
-    {
-        throw new NotFoundHttpException('Permission Denied !');
+            if (!empty($knowledgebaseWebsite) && true == $knowledgebaseWebsite->getIsActive()) {
+                return true;
+            }
+        }
+
+        throw new NotFoundHttpException('Page Not Found');
     }
 
     public function home(Request $request)
     {
-        $this->isWebsiteActive();
+        $this->isKnowledgebaseActive();
 
         $parameterBag = [
             'visibility' => 'public',
@@ -93,7 +99,7 @@ class Website extends Controller
 
     public function listCategories(Request $request)
     {
-        $this->isWebsiteActive();
+        $this->isKnowledgebaseActive();
 
         $solutionRepository = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Solutions');
         $categoryCollection = $solutionRepository->getAllCategories(10, 4);
@@ -106,7 +112,7 @@ class Website extends Controller
 
     public function viewFolder(Request $request)
     {
-        $this->isWebsiteActive();
+        $this->isKnowledgebaseActive();
         
         if(!$request->attributes->get('solution'))
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
@@ -154,7 +160,7 @@ class Website extends Controller
 
     public function viewFolderArticle(Request $request)
     {
-        $this->isWebsiteActive();
+        $this->isKnowledgebaseActive();
 
         if(!$request->attributes->get('solution'))
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
@@ -201,7 +207,7 @@ class Website extends Controller
 
     public function viewCategory(Request $request)
     {
-        $this->isWebsiteActive();
+        $this->isKnowledgebaseActive();
 
         if(!$request->attributes->get('category'))
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
@@ -246,7 +252,7 @@ class Website extends Controller
    
     public function viewArticle(Request $request)
     {
-        $this->isWebsiteActive();
+        $this->isKnowledgebaseActive();
        
         if (!$request->attributes->get('article') && !$request->attributes->get('slug')) {
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
@@ -308,7 +314,7 @@ class Website extends Controller
 
     public function searchKnowledgebase(Request $request)
     {
-        $this->isWebsiteActive();
+        $this->isKnowledgebaseActive();
 
         $searchQuery = $request->query->get('s');
         if (empty($searchQuery)) {
@@ -325,7 +331,7 @@ class Website extends Controller
 
     public function viewTaggedResources(Request $request)
     {
-        $this->isWebsiteActive();
+        $this->isKnowledgebaseActive();
 
         $tagQuery = $request->attributes->get('tag');
         if (empty($tagQuery)) {
@@ -347,54 +353,55 @@ class Website extends Controller
 
     public function rateArticle($articleId, Request $request)
     {
-        dump("RateArticleAction called");
-        die;
-        $this->isWebsiteActive();
-        if ($request->getMethod() != 'POST') {
-            return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
-        }
+        $this->isKnowledgebaseActive();
 
-        $company = $this->getCompany();
-        $user = $this->container->get('user.service')->getCurrentUser();
+        // @TODO: Refactor
+            
+        // if ($request->getMethod() != 'POST') {
+        //     return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
+        // }
+
+        // $company = $this->getCompany();
+        // $user = $this->container->get('user.service')->getCurrentUser();
         $response = ['code' => 404, 'content' => ['alertClass' => 'danger', 'alertMessage' => 'An unexpected error occurred. Please try again later.']];
 
-        if (!empty($user) && $user != 'anon.') {
-            $entityManager = $this->getDoctrine()->getEntityManager();
-            $article = $entityManager->getRepository('WebkulSupportCenterBundle:Article')->findOneBy(['id' => $articleId, 'companyId' => $company->getId()]);
+        // if (!empty($user) && $user != 'anon.') {
+        //     $entityManager = $this->getDoctrine()->getEntityManager();
+        //     $article = $entityManager->getRepository('WebkulSupportCenterBundle:Article')->findOneBy(['id' => $articleId, 'companyId' => $company->getId()]);
 
-            if (!empty($article)) {
-                $providedFeedback = $request->request->get('feedback');
+        //     if (!empty($article)) {
+        //         $providedFeedback = $request->request->get('feedback');
 
-                if (!empty($providedFeedback) && in_array(strtolower($providedFeedback), ['positive', 'neagtive'])) {
-                    $isArticleHelpful = ('positive' == strtolower($providedFeedback)) ? true : false;
-                    $articleFeedback = $entityManager->getRepository('WebkulSupportCenterBundle:ArticleFeedback')->findOneBy(['article' => $article, 'ratedCustomer' => $user]);
+        //         if (!empty($providedFeedback) && in_array(strtolower($providedFeedback), ['positive', 'neagtive'])) {
+        //             $isArticleHelpful = ('positive' == strtolower($providedFeedback)) ? true : false;
+        //             $articleFeedback = $entityManager->getRepository('WebkulSupportCenterBundle:ArticleFeedback')->findOneBy(['article' => $article, 'ratedCustomer' => $user]);
 
-                    $response = ['code' => 200, 'content' => ['alertClass' => 'success', 'alertMessage' => 'Feedback saved successfully.']];
+        //             $response = ['code' => 200, 'content' => ['alertClass' => 'success', 'alertMessage' => 'Feedback saved successfully.']];
 
-                    if (empty($articleFeedback)) {
-                        $articleFeedback = new \Webkul\SupportCenterBundle\Entity\ArticleFeedback();
+        //             if (empty($articleFeedback)) {
+        //                 $articleFeedback = new \Webkul\SupportCenterBundle\Entity\ArticleFeedback();
 
-                        // $articleBadge->setDescription('');
-                        $articleFeedback->setIsHelpful($isArticleHelpful);
-                        $articleFeedback->setArticle($article);
-                        $articleFeedback->setRatedCustomer($user);
-                        $articleFeedback->setCreatedAt(new \DateTime('now'));
-                    } else {
-                        $articleFeedback->setIsHelpful($isArticleHelpful);
-                        $response['content']['alertMessage'] = 'Feedback updated successfully.';
-                    }
+        //                 // $articleBadge->setDescription('');
+        //                 $articleFeedback->setIsHelpful($isArticleHelpful);
+        //                 $articleFeedback->setArticle($article);
+        //                 $articleFeedback->setRatedCustomer($user);
+        //                 $articleFeedback->setCreatedAt(new \DateTime('now'));
+        //             } else {
+        //                 $articleFeedback->setIsHelpful($isArticleHelpful);
+        //                 $response['content']['alertMessage'] = 'Feedback updated successfully.';
+        //             }
 
-                    $entityManager->persist($articleFeedback);
-                    $entityManager->flush();
-                } else {
-                    $response['content']['alertMessage'] = 'Invalid feedback provided.';
-                }
-            } else {
-                $response['content']['alertMessage'] = 'Article not found.';
-            }
-        } else {
-            $response['content']['alertMessage'] = 'You need to login to your account before can perform this action.';
-        }
+        //             $entityManager->persist($articleFeedback);
+        //             $entityManager->flush();
+        //         } else {
+        //             $response['content']['alertMessage'] = 'Invalid feedback provided.';
+        //         }
+        //     } else {
+        //         $response['content']['alertMessage'] = 'Article not found.';
+        //     }
+        // } else {
+        //     $response['content']['alertMessage'] = 'You need to login to your account before can perform this action.';
+        // }
 
         return new Response(json_encode($response['content']), $response['code'], ['Content-Type: application/json']);
     }
