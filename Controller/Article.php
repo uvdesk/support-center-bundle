@@ -21,17 +21,17 @@ use Webkul\UVDesk\SupportCenterBundle\Form;
 class Article extends Controller
 {
     public function articleList(Request $request)
-    {       
+    {
         $solutions = $this->getDoctrine()
-                           ->getRepository('UVDeskSupportCenterBundle:Solutions')
-                           ->getAllSolutions(null, $this->container, 'a.id, a.name');
+            ->getRepository('UVDeskSupportCenterBundle:Solutions')
+            ->getAllSolutions(null, $this->container, 'a.id, a.name');
         if ($solutions) {
             foreach($solutions as $key => $solution) {
                 $solutions[$key]['categories'] = $this->getDoctrine()
-                                                    ->getRepository('UVDeskSupportCenterBundle:Solutions')
-                                                    ->getCategoriesWithCountBySolution($solution['id']);
+                    ->getRepository('UVDeskSupportCenterBundle:Solutions')
+                    ->getCategoriesWithCountBySolution($solution['id']);
             }
-        }  
+        }
 
         return $this->render('@UVDeskSupportCenter/Staff/Articles/articleList.html.twig', [
             'solutions' => $solutions
@@ -41,23 +41,23 @@ class Article extends Controller
     public function articleListByCategory(Request $request)
     {
         $category = $this->getDoctrine()
-                            ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
-                            ->findCategoryById(['id' => $request->attributes->get('category')]);
+            ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
+            ->findCategoryById(['id' => $request->attributes->get('category')]);
 
         if ($category) {
             return $this->render('@UVDeskSupportCenter/Staff/Articles/articleListByCategory.html.twig',[
                 'category' => $category,
                 'articleCount'      => $this->getDoctrine()
-                                        ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
-                                        ->getArticlesCountByCategory($request->attributes->get('category')),
+                    ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
+                    ->getArticlesCountByCategory($request->attributes->get('category')),
 
                 'categorySolutions' => $this->getDoctrine()
-                                        ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
-                                        ->getSolutionsByCategory($request->attributes->get('category')),
+                    ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
+                    ->getSolutionsByCategory($request->attributes->get('category')),
 
                 'solutions'         => $this->getDoctrine()
-                                        ->getRepository('UVDeskSupportCenterBundle:Solutions')
-                                        ->getAllSolutions(null, $this->container, 'a.id, a.name')
+                    ->getRepository('UVDeskSupportCenterBundle:Solutions')
+                    ->getAllSolutions(null, $this->container, 'a.id, a.name')
             ]);
         } else {
             $this->noResultFound();
@@ -66,22 +66,22 @@ class Article extends Controller
 
     public function ArticleListBySolution(Request $request)
     {
-        
+
 
         $solution = $this->getDoctrine()
-                            ->getRepository('UVDeskSupportCenterBundle:Solutions')
-                            ->findSolutionById(['id' => $request->attributes->get('solution')]);
+            ->getRepository('UVDeskSupportCenterBundle:Solutions')
+            ->findSolutionById(['id' => $request->attributes->get('solution')]);
 
         if ($solution) {
             return $this->render('@UVDeskSupportCenter/Staff/Articles/articleListBySolution.html.twig', [
                 'solution' => $solution,
                 'solutionArticleCount'  => $this->getDoctrine()
-                                                ->getRepository('UVDeskSupportCenterBundle:Solutions')
-                                                ->getArticlesCountBySolution($request->attributes->get('solution')),
+                    ->getRepository('UVDeskSupportCenterBundle:Solutions')
+                    ->getArticlesCountBySolution($request->attributes->get('solution')),
 
                 'solutionCategoryCount' => $this->getDoctrine()
-                                                ->getRepository('UVDeskSupportCenterBundle:Solutions')
-                                                ->getCategoriesCountBySolution($request->attributes->get('solution')),
+                    ->getRepository('UVDeskSupportCenterBundle:Solutions')
+                    ->getCategoriesCountBySolution($request->attributes->get('solution')),
             ]);
         } else {
             $this->noResultFound();
@@ -90,12 +90,12 @@ class Article extends Controller
 
     public function articleListXhr(Request $request)
     {
-        $json = array();       
+        $json = array();
         $repository = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Article');
-        
+
         if($request->attributes->get('category'))
             $request->query->set('categoryId', $request->attributes->get('category'));
-        
+
         if($request->attributes->get('solution'))
             $request->query->set('solutionId', $request->attributes->get('solution'));
 
@@ -145,8 +145,8 @@ class Article extends Controller
     {
         if ($filterArray) {
             return $this->getDoctrine()
-                        ->getRepository('UVDeskSupportCenterBundle:Article')
-                        ->findOneBy($filterArray);
+                ->getRepository('UVDeskSupportCenterBundle:Article')
+                ->findOneBy($filterArray);
         }
 
         return false;
@@ -165,18 +165,18 @@ class Article extends Controller
 
         $articleCategory = $articleTags = [];
         if ($article->getId()) {
-             $articleCategory = $this->getDoctrine()
-                             ->getRepository('UVDeskSupportCenterBundle:Article')
-                             ->getCategoryByArticle($article->getId());
+            $articleCategory = $this->getDoctrine()
+                ->getRepository('UVDeskSupportCenterBundle:Article')
+                ->getCategoryByArticle($article->getId());
 
-             $articleTags = $this->getDoctrine()
-                             ->getRepository('UVDeskSupportCenterBundle:Article')
-                             ->getTagsByArticle($article->getId());
+            $articleTags = $this->getDoctrine()
+                ->getRepository('UVDeskSupportCenterBundle:Article')
+                ->getTagsByArticle($article->getId());
         }
 
         $categories = $this->getDoctrine()
-                            ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
-                            ->getAllCategories(null, $this->container, 'a.id, a.name');
+            ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
+            ->getAllCategories(null, $this->container, 'a.id, a.name');
 
         if ($request->attributes->get('id')) {
             return  $this->render('@UVDeskSupportCenter/Staff/Articles/articleForm.html.twig', [
@@ -186,12 +186,12 @@ class Article extends Controller
                 'categories' => $categories
             ]);
         }
-      
+
         return $this->render( '@UVDeskSupportCenter/Staff/Articles/articleAddForm.html.twig', [ 'article' => $article ] );
     }
     public function articleXhr(Request $request)
-    {    
-        $json = array();       
+    {
+        $json = array();
 
         if ($request->getMethod() == "POST") {
             $data = $request->request->get("data");
@@ -200,7 +200,7 @@ class Article extends Controller
             if (isset($data['actionType'])) {
                 switch ($data['actionType']) {
                     case 'articleUpdate':
-                    case 'articleSave': 
+                    case 'articleSave':
                         if ('articleSave' == $data['actionType']  && !empty($resources['articles']['showAlert']) ) {
                             $json['alertClass'] = 'danger';
 
@@ -228,20 +228,20 @@ class Article extends Controller
                                 $article->setMetaTitle($data['metaTitle']);
                                 $article->setKeywords($data['keywords']);
                                 $article->setMetaDescription($data['metaDescription']);
-                              
+
                                 $updateRevisionHistory = false;
 
                                 if ($article->getContent() == null || trim($article->getContent()) != trim($data['content'])) {
-                                  
+
                                     $updateRevisionHistory = true;
                                     $article->setContent($data['content']);
                                 }
-                                
+
                                 $entityManager->persist($article);
                                 $entityManager->flush();
 
                                 $json['alertClass'] = 'success';
-                                $json['alertMessage'] = 'Success! Article updated successfully';
+                                $json['alertMessage'] = $this->get('translator')->trans('Success! Article updated successfully');
 
                                 if (!$data['ids'][0]) {
                                     $json['redirect'] = $this->generateUrl('helpdesk_member_knowledgebase_update_article', array('id' => $article->getId()));
@@ -253,20 +253,20 @@ class Article extends Controller
                             }
                         } else {
                             $json['alertClass'] = 'danger';
-                            $json['alertMessage'] = 'Warning ! This is not a valid request';
+                            $json['alertMessage'] = $this->get('translator')->trans('Warning ! This is not a valid request');
                         }
                         break;
                     case 'status':
                         $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->bulkArticleStatusUpdate($data['ids'], $data['targetId']);
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] = 'Success ! Article updated successfully.';
+                        $json['alertMessage'] = $this->get('translator')->trans('Success ! Article updated successfully.');
                         break;
                     case 'tagUpdate':
-                        if ($data['action'] == 'remove') {                            
+                        if ($data['action'] == 'remove') {
                             $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->removeTagByArticle($data['ids'][0], [$data['entityId']]);
-                            
+
                             $json['alertClass'] = 'success';
-                            $json['alertMessage'] = 'Success ! Tag removed successfully.';
+                            $json['alertMessage'] = $this->get('translator')->trans('Success ! Tag removed successfully.');
                             break;
                         } elseif ($data['action'] == 'add') {
                             $articleTagMapping = new ArticleTags();
@@ -297,7 +297,7 @@ class Article extends Controller
                         }
 
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] = 'Success ! Tags Saved successfully.';
+                        $json['alertMessage'] = $this->get('translator')->trans('Success ! Tags Saved successfully.');
                         break;
                     case 'contentUpdate':
                         $article = $this->getArticle(['id' => $data['ids'][0]]);
@@ -306,10 +306,10 @@ class Article extends Controller
                             if (trim($article->getContent()) != trim($data['content']))
                                 $this->updateContent($article, $data['content']);
                             $json['alertClass'] = 'success';
-                            $json['alertMessage'] = 'Success ! Revision restored successfully.';
+                            $json['alertMessage'] = $this->get('translator')->trans('Success ! Revision restored successfully.');
                         } else {
                             $json['alertClass'] = 'danger';
-                            $json['alertMessage'] = 'Warning ! This is not a valid request' ;
+                            $json['alertMessage'] = $this->get('translator')->trans('Warning ! This is not a valid request');
                         }
 
                         break;
@@ -323,20 +323,20 @@ class Article extends Controller
                             $articleCategoryMapping = new ArticleCategory();
                             $articleCategoryMapping->setArticleId($data['ids'][0]);
                             $articleCategoryMapping->setCategoryId($data['entityId']);
-                            
+
                             $entityManager->persist($articleCategoryMapping);
                             $entityManager->flush();
                         }
 
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] = 'Success ! Categories updated successfully.';
+                        $json['alertMessage'] = $this->get('translator')->trans('Success ! Categories updated successfully.');
                         break;
                     case 'relatedUpdate':
                         if ($data['action'] == 'remove') {
                             $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->removeRelatedByArticle($data['ids'][0], [$data['entityId']]);
 
                             $json['alertClass'] = 'success';
-                            $json['alertMessage'] = 'Success ! Article Related removed successfully.';
+                            $json['alertMessage'] = $this->get('translator')->trans('Success ! Article Related removed successfully.');
                         } else if($data['action'] == 'add') {
                             $relatedArticles = $entityManager->getRepository('UVDeskSupportCenterBundle:ArticleRelatedArticle')->findBy([
                                 'articleId' => $data['ids'][0],
@@ -349,27 +349,27 @@ class Article extends Controller
 
                             } elseif ($data['ids'][0] == $data['entityId']) {
                                 $json['alertClass'] = 'danger';
-                                $json['alertMessage'] = 'Success ! Cannot add self as relative article.';
+                                $json['alertMessage'] = $this->get('translator')->trans('Success ! Cannot add self as relative article.');
 
                             } else {
                                 $articleRelatedMapping = new ArticleRelatedArticle();
                                 $articleRelatedMapping->setArticleId($data['ids'][0]);
-                                $articleRelatedMapping->setRelatedArticleId($data['entityId']);  
+                                $articleRelatedMapping->setRelatedArticleId($data['entityId']);
                                 $entityManager->persist($articleRelatedMapping);
                                 $entityManager->flush();
 
                                 $json['alertClass'] = 'success';
-                                $json['alertMessage'] = 'Success ! Article Related updated successfully.';
+                                $json['alertMessage'] = $this->get('translator')->trans('Success ! Article Related updated successfully.');
                             }
                         }
 
                         break;
-                    
+
                     case 'delete':
                         if ($data['ids']) {
                             foreach ($data['ids'] as $id) {
                                 $article = $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->find($id);
-                                if ($article) {                                  
+                                if ($article) {
                                     $entityManager->remove($article);
                                     $entityManager->flush();
                                 }
@@ -378,24 +378,24 @@ class Article extends Controller
                         }
 
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] = 'Success ! Articles removed successfully.';
+                        $json['alertMessage'] = $this->get('translator')->trans('Success ! Articles removed successfully.');
                         break;
                     default:
                         $json['alertClass'] = 'danger';
-                        $json['alertMessage'] = 'Warning ! This is not a valid request';
+                        $json['alertMessage'] = $this->get('translator')->trans('Warning ! This is not a valid request');
                 }
             }
         } elseif ($request->getMethod() == "PATCH") {
             $entityManager = $this->getDoctrine()->getManager();
 
             $data = json_decode($request->getContent(), true);
-            
+
             if (isset($data['editType']))
                 switch($data['editType']) {
                     case 'status':
                         $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->bulkArticleStatusUpdate([$data['id']], $data['value']);
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] = 'Success ! Article status updated successfully.';
+                        $json['alertMessage'] = $this->get('translator')->trans('Success ! Article status updated successfully.');
 
                         break;
                     case "stared":
@@ -425,19 +425,19 @@ class Article extends Controller
                                     $this->updateContent($request, $articleBase, $data['content']);
 
                                 $json['alertClass'] = 'success';
-                                $json['alertMessage'] = 'Success! Article updated successfully';
+                                $json['alertMessage'] = $this->get('translator')->trans('Success! Article updated successfully');
                             }
                         }
-                    
+
                     case 'status':
                         $entityManager->getRepository('WebkulSupportCenterBundle:Article')->bulkArticleStatusUpdate([$data['id']], $data['value']);
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] = $this->translate('Success ! Article status updated successfully.');
+                        $json['alertMessage'] =  $this->get('translator')->trans('Success ! Article status updated successfully.');
                         break;
-                    
+
                     default:
                         $json['alertClass'] = 'danger';
-                        $json['alertMessage'] = $this->translate('Warning ! This is not a valid request');
+                        $json['alertMessage'] =  $this->get('translator')->trans('Warning ! This is not a valid request');
                 }
         }
         $response = new Response(json_encode($json));

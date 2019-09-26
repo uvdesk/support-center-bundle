@@ -9,7 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class KnowledgebaseXHR extends Controller
 {
     public function listFoldersXHR(Request $request)
-    {  
+    {
         if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
@@ -42,39 +42,39 @@ class KnowledgebaseXHR extends Controller
                         case 'status':
                             $solution->setVisibility($content['value']);
                             $entityManager->persist($solution);
-                            $entityManager->flush();                            
+                            $entityManager->flush();
                             $json['alertClass'] = 'success';
-                            $json['alertMessage'] = 'Success ! Folder status updated successfully.';
+                            $json['alertMessage'] = $this->get('translator')->trans('Success ! Folder status updated successfully.');
                             break;
                         default:
                             break;
                     }
                 } else {
                     $json['alertClass'] = 'danger';
-                    $json['alertMessage'] = 'Error ! Folder is not exist.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Error ! Folder is not exist.');
                 }
-            break;
+                break;
             case "PUT":
-              
+
                 $content = json_decode($request->getContent(), true);
                 $solutionId = $content['id'];
                 $solution = $entityManager->getRepository('UVDeskSupportCenterBundle:Solutions')->find($solutionId);
                 if($solution) {
-                    
-                        $solution->setName($content['name']);
-                        $solution->setDescription($content['description']);
-                        $entityManager->persist($solution);
-                        $entityManager->flush();
-                        
-                        $json['alertClass'] = 'success';
-                        $json['alertMessage'] ='Success ! Folder updated successfully.';
-                        
-                  
+
+                    $solution->setName($content['name']);
+                    $solution->setDescription($content['description']);
+                    $entityManager->persist($solution);
+                    $entityManager->flush();
+
+                    $json['alertClass'] = 'success';
+                    $json['alertMessage'] ='Success ! Folder updated successfully.';
+
+
                 } else {
                     $json['alertClass'] = 'danger';
-                    $json['alertMessage'] = 'Error ! Folder does not exist.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Error ! Folder does not exist.');
                 }
-            break;
+                break;
             case "DELETE":
                 $solutionId = $request->attributes->get('folderId');
                 $solutionBase = $entityManager->getRepository('UVDeskSupportCenterBundle:Solutions')->find($solutionId);
@@ -86,20 +86,20 @@ class KnowledgebaseXHR extends Controller
                     $entityManager->flush();
 
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = 'Success ! Folder deleted successfully.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Folder deleted successfully.');
                 }else{
 
                     $json['alertClass'] = 'error';
                     $json['alertMessage'] = "Warning ! Folder doesn't exists!";
                 }
-            break;
+                break;
             default:
                 $json['alertClass'] = 'error';
                 $json['alertMessage'] = "Warning ! Bad request !";
-            break;
+                break;
 
         }
-      
+
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
