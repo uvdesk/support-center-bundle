@@ -2,18 +2,18 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Thread;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\TicketRating;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Thread;
 use Symfony\Component\Validator\Constraints\DateTime;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket as TicketEntity;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\TicketRating;
 use Webkul\UVDesk\SupportCenterBundle\Form\Ticket as TicketForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket as TicketEntity;
 use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class Ticket extends Controller
 {
@@ -22,9 +22,11 @@ class Ticket extends Controller
         $error = false;
         $currentKnowledgebase = $this->getWebsiteDetails();
         
-        if(!$currentKnowledgebase)
+        if (!$currentKnowledgebase) {
             $this->noResultFound();
+        }
     }
+
     protected function getWebsiteDetails()
     {
         $knowledgebaseWebsite = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
@@ -338,31 +340,32 @@ class Ticket extends Controller
         return $response;
     }
 
-    public function ticketView(int $id, Request $request, UserInterface $user)
+    public function ticketView($id, Request $request)
     {
         $this->isWebsiteActive();
 
-        $em = $this->getDoctrine()->getManager();
+        $entityManager = $this->getDoctrine()->getManager();
+        $ticket = $entityManager->getRepository(TicketEntity::class)->findOneById($id);
 
-        $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($id);
+        if (empty($ticket)) {
+            throw new NotFoundHttpException('Page Not Found!');
+        }
 
-        if(!$ticket)
-            $this->noResultFound();
+        $currentUser = $this->get('user.service')->getCurrentUser();
 
-        if($ticket->getCustomer()->getId() == $user->getId()){
+        if (!empty($currentUser) && $currentUser->getId() == $ticket->getCustomer()->getId()) {
             $ticket->setIsCustomerViewed(1);
-            $em->persist($ticket);
-            $em->flush();
-            
-            $twigResponse = [
-                'ticket' => $ticket,
-                'searchDisable' => true,
-            ];
-    
-            return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketView.html.twig', $twigResponse);
-        } else {
-            $this->noResultFound();
-        } 
+
+            $entityManager->persist($ticket);
+            $entityManager->flush();
+        }
+        
+        $twigResponse = [
+            'ticket' => $ticket,
+            'searchDisable' => true,
+        ];
+
+        return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketView.html.twig', $twigResponse);
     }
     // Ticket rating
     public function rateTicket(Request $request) {
