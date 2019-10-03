@@ -1,7 +1,7 @@
 {% extends "@UVDeskCoreFramework//Templates//layout.html.twig" %}
 
 {% block title %} 
-	{% trans %}Block Spam{% endtrans %}
+	{% trans %}Spam Settings{% endtrans %}
 {% endblock %}
 
 {% block pageContent %}
@@ -13,7 +13,7 @@
 		{{ uvdesk_extensibles.getRegisteredComponent(asideTemplate).renderSidebar(asideSidebarReference) | raw }}
 		
 		<div class="uv-view {% if app.request.cookies and app.request.cookies.get('uv-asideView') %}uv-aside-view{% endif %}">
-			<h1>{{ 'Block Spam'|trans }}</h1>
+			<h1>{{ 'Spam Settings'|trans }}</h1>
 			<!--Form-->
 			<form method="post" action="{{ path('helpdesk_member_knowledgebase_spam') }}">
 				<!-- Field -->
