@@ -226,7 +226,7 @@ Class Customer extends Controller
 
                 $form = $this->createForm(UserProfile::class, $user);
                 $form->handleRequest($request);
-                $form->submit(true);
+                $form->submit($data);
 
                 if ($form->isValid()) {
                     if ($data != null && (!empty($data['password']['first']))) {

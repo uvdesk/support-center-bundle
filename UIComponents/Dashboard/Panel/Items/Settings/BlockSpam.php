@@ -9,7 +9,7 @@ class BlockSpam implements PanelSidebarItemInterface
 {
     public static function getTitle() : string
     {
-        return "Block Spam";
+        return "Spam Settings";
     }
 
     public static function getRouteName() : string
