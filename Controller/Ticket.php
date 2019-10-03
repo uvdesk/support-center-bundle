@@ -363,6 +363,7 @@ class Ticket extends Controller
         $twigResponse = [
             'ticket' => $ticket,
             'searchDisable' => true,
+            'initialThread' => $this->get('ticket.service')->getTicketInitialThreadDetails($ticket),
         ];
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketView.html.twig', $twigResponse);
