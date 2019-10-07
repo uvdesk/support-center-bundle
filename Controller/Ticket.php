@@ -109,7 +109,8 @@ class Ticket extends Controller
                     $data = array(
                         'from' => $email, //email$request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('Success ! Ticket has been created successfully.'));
                         'subject' => $request->request->get('subject'),
-                        'reply' => strip_tags($request->request->get('reply')), //#212 removing html tags for security
+                        // @TODO: We need to filter js (XSS) instead of html
+                        'reply' => strip_tags($request->request->get('reply')),
                         'firstName' => $name[0],
                         'lastName' => isset($name[1]) ? $name[1] : '',
                         'role' => 4,
@@ -237,8 +238,10 @@ class Ticket extends Controller
                     $this->noResultFound();
                 $data['ticket'] = $ticket;
                 $data['user'] = $this->get('user.service')->getCurrentUser();
-                $badChar = array('&lt;script&gt;','&lt;/script&gt;'); //#212 removing script tag from message body
-                $data['message'] = str_replace($badChar, '', $data['message']);
+
+                // @TODO: Refactor -> Why are we filtering only these two characters?
+                $data['message'] = str_replace(['&lt;script&gt;', '&lt;/script&gt;'], '', $data['message']);
+
                 $userDetail = $this->get('user.service')->getCustomerPartialDetailById($data['user']->getId());
                 $data['fullname'] = $userDetail['name'];
                 $data['source'] = 'website';
