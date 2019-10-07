@@ -228,7 +228,7 @@
 							<div class="uv-element-block uv-element-block-textarea">
 								<label class="uv-field-label">{{ 'Content'|trans }}</label>
 								<div class="uv-field-block uv-margin-top-5">
-									<textarea name="content" class="uv-field" id="article_content">{{article.content}}</textarea>
+									<textarea name="content" class="uv-field">{{article.content}}</textarea>
 								</div>
 							</div>
 							<!-- //Field -->
@@ -578,7 +578,7 @@
 			        if(this.model.isValid(true) && contentNotHasError) {
 						formData['ids'] = [this.articleId];
 						formData['actionType'] = 'articleUpdate';
-						formData['content'] = $('textarea#article_content').val();
+						formData['content'] = tinyMCE.get('content').getContent();
 						{% for localeCode, localeName in uvdesk_service.getLocales() %}
 							var localeType = '{{ localeCode }}';
 						{% endfor %}
@@ -646,10 +646,7 @@
 				},
 				renderArticlePreview: function(e){
 					e.preventDefault();
-					var article_content = $('#article_content').val();
-					//tinyMCE.get('content').focus();
-					console.log(article_content);
-					article_content
+					var article_content = tinyMCE.get('content').getContent();
 
 					$('body').append(this.previewTemplate());
 					$('body').find('#preview-modal .uv-html-preview').html('<h1 style="margin-bottom: 30px;">' + articlemodel.attributes.name + '</h1>' + article_content);
@@ -1145,16 +1142,17 @@
 			});
 		});
 	</script>
+
 	{{ include("@UVDeskSupportCenter/Templates/tinyMCE.html.twig") }}
+
     <script>
-		{# var toolbarOptions = sfTinyMce.options.toolbar;
-        initializeArticleTinymce = function() {
-			sfTinyMce.init({
-				selector: 'textarea[name*="content"]',
-				toolbar: toolbarOptions + ' | insert | styleselect | alignleft aligncenter alignright alignjustify | outdent indent | code',
-			});
-		}; #}
-		
-        
+		var toolbarOptions = sfTinyMce.options.toolbar;
+        sfTinyMce.init({
+			selector: 'textarea[name*="content"]',
+			toolbar: toolbarOptions + ' | insert | styleselect | alignleft aligncenter alignright alignjustify | outdent indent | code | translate',
+			setup: function (editor) {
+                addTranslateButton(editor);
+			},
+        });
     </script>
 {% endblock %}
