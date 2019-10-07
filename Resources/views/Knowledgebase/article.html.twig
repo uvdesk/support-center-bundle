@@ -16,7 +16,7 @@
 		<div class="uv-paper-section">
 			<section>
 				<h1 {% if article.stared %}class="uv-starred"{% endif %}>{{ article.name }}</h1>
-				<p>{{ article.content }}</p>
+				<p>{{ article.content |raw }}</p>
 				<div class="uv-author">
 					{% if articleAuthor is defined and articleAuthor is not empty %}
 						<div class="uv-author-avatar">
@@ -36,9 +36,6 @@
 				</div>
 			</section>
 
-			<section class="uv-editor" style="overflow-x: auto;">
-				{{ article.content|raw }}
-			</section>
 
 			{% if feedbacks is defined and feedbacks.enabled == true %}
 				<section id="feedbacks" class="article-feedbacks">

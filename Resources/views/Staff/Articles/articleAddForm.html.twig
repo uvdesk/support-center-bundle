@@ -153,10 +153,7 @@
 			        if(this.model.isValid(true) && contentNotHasError) {
 						formData['ids'] = [this.articleId];
 						formData['actionType'] = 'articleSave';
-						//formData['content'] = tinyMCE.get('content').getContent();
-					
-						//formData['content'] = $('.uv-field').val();
-						formData['content'] =$('#content').val();
+						formData['content'] = tinyMCE.get('content').getContent();
                    
 						this.articleEntityUpdate(formData);
 			        } else {
@@ -173,8 +170,8 @@
                     form = $('#article-form');
                     form.find('.uv-field-message').remove()
 
-                   // var html = tinyMCE.get(formType).getContent();
-                    var html = $('#content').val();
+                    var html = tinyMCE.get(formType).getContent();
+                    //var html = $('#content').val();
 
 					console.log("message value : ",html);
 
