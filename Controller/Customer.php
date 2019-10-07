@@ -242,7 +242,6 @@ Class Customer extends Controller
                     $user->setFirstName($data['firstName']);
                     $user->setLastName($data['lastName']);
                     $user->setEmail($data['email']);
-                    // issue 177 - timezone
                     $user->setTimeZone($data['timezone']);
                     $em->persist($user);
                     $em->flush();
