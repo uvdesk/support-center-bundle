@@ -267,11 +267,7 @@
                                 </span>
                                 </div>
                                 <div class="uv-ticket-main-lt">
-                                    {% if customer.smallThumbnail %}
-                                        <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}{{ customer.smallThumbnail }}">
-                                    {% else %}
-                                        <img src="{{ asset(default_customer_image_path) }}">
-                                    {% endif %}
+                                   <img src="{{ initialThread.user.thumbnail ? app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') ~ (initialThread.user.thumbnail) : asset(default_customer_image_path) }}">
                                 </div>
                                 <div class="uv-ticket-main-rt">
                                     <span class="uv-ticket-member-name">
