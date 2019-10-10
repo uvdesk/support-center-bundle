@@ -590,6 +590,9 @@
                     form.find('.reply-status').val(element.attr('data-id'));
                     form.find('.uv-field-message').remove()
 
+                    if (!window.fileView.validateFormDataSize(e)) {
+                        return;
+                    }
                     var html = tinyMCE.get("reply-area").getContent();
                     if(app.appView.htmlText(html) != '' || -1 != html.indexOf('<img')) {
                         this.stopDraftSaveFlag = 1;

@@ -179,7 +179,7 @@
 					var data = currentElement.closest('form').serializeObject();
 					this.model.set(data);
 
-					if(this.model.isValid(true)) {
+					if(this.model.isValid(true) && window.fileView.validateFormDataSize(e)) {
 						$('#create-ticket-form').submit();
 						$('form').find('#create-ticket-btn').attr('disabled', 'disabled');
 					}

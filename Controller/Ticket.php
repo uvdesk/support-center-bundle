@@ -176,9 +176,11 @@ class Ticket extends Controller
                     $errors = array_merge($errors, $formErrors);
                 }
             } else {
+                // @TODO: Refactor -> Put the common code inside a service
+                $post_max_size = $this->getPostMaxSize();
                 $this->addFlash(
                     'warning',
-                    $this->get('translator')->trans("Warning ! Post size can not exceed 25MB")
+                    $this->get('translator')->trans("Warning ! Post size can not exceed $post_max_size")
                 );
             }
 
@@ -277,9 +279,10 @@ class Ticket extends Controller
                 );
             }
         } else {
+            $post_max_size = $this->getPostMaxSize();
             $this->addFlash(
                 'warning',
-                $this->get('translator')->trans("Warning ! Post size can not exceed 25MB")
+                $this->get('translator')->trans("Warning ! Post size can not exceed $post_max_size")
             );
         }
 
@@ -525,5 +528,29 @@ class Ticket extends Controller
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
+    }
+
+    private function getPostMaxSize() {
+        $post_max_size = ini_get('post_max_size');
+        if ($post_max_size) {
+            $unit = strtolower(substr($post_max_size, -1));
+            $size = substr($post_max_size, 0, -1);
+            switch($unit) {
+                case 'm':
+                    $post_max_size = (float) $size;
+                    break;
+                case 'k':
+                    $post_max_size = (float)$size / (1024);
+                    break;
+                default:
+                    $post_max_size = (float)$size / (1024 * 1024);
+            }
+
+            $post_max_size = number_format($post_max_size, 2 , '.', '');
+            $post_max_size .= 'MB';
+        } else {
+            $post_max_size = '8MB';
+        }
+        return $post_max_size;
     }
 }
