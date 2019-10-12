@@ -356,7 +356,10 @@ class Ticket extends Controller
         }
 
         $currentUser = $this->get('user.service')->getCurrentUser();
-
+        
+        //Get customer's local timezone to display in ticketView.html.twig
+        $customerTicketLocalTimezone = $this->get('user.service')->getCustomerTicketLocalTimezone($currentUser->getId(), $id);
+        
         if (!empty($currentUser) && $currentUser->getId() == $ticket->getCustomer()->getId()) {
             $ticket->setIsCustomerViewed(1);
 
@@ -365,6 +368,8 @@ class Ticket extends Controller
         }
         
         $twigResponse = [
+            //Pass customer's localtime zone to template
+            'customerTicketLocalTimezone' => $customerTicketLocalTimezone,
             'ticket' => $ticket,
             'searchDisable' => true,
             'initialThread' => $this->get('ticket.service')->getTicketInitialThreadDetails($ticket),
