@@ -239,6 +239,7 @@ Class Customer extends Controller
                         $user->setPassword($password);
                     }
 
+                    $user->setTimeZone($data['timezone']);
                     $user->setFirstName($data['firstName']);
                     $user->setLastName($data['lastName']);
                     $user->setEmail($data['email']);
