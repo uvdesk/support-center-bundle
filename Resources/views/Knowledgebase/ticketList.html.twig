@@ -148,7 +148,7 @@
         	<a class="not-shiny" href="<%- path %>">
 				<%  if(agent) { %>
                     <% if(agent.smallThumbnail != null) { %>
-                        <img class="uv-table-agent" src="<%- agent.smallThumbnail %>" alt=""/>
+                        <img class="uv-table-agent" src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}<%- agent.smallThumbnail %>" alt=""/>
                     <% } else { %>
                         <img class="uv-table-agent" src="{{ asset(default_agent_image_path) }}" alt=""/>
                     <% } %>
