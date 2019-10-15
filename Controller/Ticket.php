@@ -355,9 +355,9 @@ class Ticket extends Controller
             throw new NotFoundHttpException('Page Not Found!');
         }
 
-        $currentUser = $this->get('user.service')->getCurrentUser();
-
-        if (!empty($currentUser) && $currentUser->getId() == $ticket->getCustomer()->getId()) {
+        $user = $this->get('user.service')->getSessionUser();
+        
+        if (!empty($user) && $user->getId() == $ticket->getCustomer()->getId()) {
             $ticket->setIsCustomerViewed(1);
 
             $entityManager->persist($ticket);
@@ -368,6 +368,7 @@ class Ticket extends Controller
             'ticket' => $ticket,
             'searchDisable' => true,
             'initialThread' => $this->get('ticket.service')->getTicketInitialThreadDetails($ticket),
+            'localizedCreateAtTime' => $this->get('user.service')->getLocalizedFormattedTime($user, $ticket->getCreatedAt()),
         ];
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketView.html.twig', $twigResponse);
