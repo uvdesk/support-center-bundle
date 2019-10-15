@@ -9,7 +9,6 @@ use Webkul\UVDesk\CoreFrameworkBundle\Form\UserProfile;
 use Webkul\UVDesk\CoreFrameworkBundle\Utils\TokenGenerator;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
 
 Class Customer extends Controller
 {
@@ -83,108 +82,6 @@ Class Customer extends Controller
                     'url' => $this->generateUrl('helpdesk_knowledgebase')
                 ], [
                     'label' => $this->get('translator')->trans('Sign In'),
-                    'url' => '#'
-                ]
-            ]
-        ]);
-    }
-
-    public function forgotPassword(Request $request)
-    {
-        if ($this->isLoginDisabled()) {
-            $this->addFlash('warning', $this->get('translator')->trans('Warning ! Customer Login disabled by admin.'));
-            return $this->redirect($this->generateUrl('webkul_support_center_front_solutions'));
-        }
-
-        if ($request->getMethod() == 'POST') {
-            $entityManager = $this->getDoctrine()->getManager();
-            $user = new User();
-            $data = $request->request->all();
-            $repository = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:User');
-            $user = $entityManager->getRepository('UVDeskCoreFrameworkBundle:User')->findOneBy(array('email' => $data['email']));
-
-            if ($user) {
-                $key = time();
-
-                // Trigger agent forgot event
-                $event = new GenericEvent(CoreWorkflowEvents\Customer\ForgotPassword::getId(), [
-                    'entity' => $user,
-                ]);
-
-                $this->get('event_dispatcher')->dispatch('uvdesk.automation.workflow.execute', $event);
-
-                $request->getSession()->getFlashBag()->set(
-                    'success',
-                    $this->get('translator')->trans('Please check your mail for password update.')
-                );
-
-                return $this->redirect($this->generateUrl('helpdesk_customer_login'));
-                //@TODO: NEEDS TO SEND EMAIL FOR CHANGE PASSWORD URL.
-            } else {
-                $request->getSession()->getFlashBag()->set(
-                    'warning',
-                    $this->get('translator')->trans('This Email is not registered with us.')
-                );
-            }
-        }
-
-        return $this->render('@UVDeskSupportCenter/Knowledgebase/forgotPassword.html.twig', [
-            'searchDisable' => true,
-            'breadcrumbs' => [
-                [
-                    'label' => $this->get('translator')->trans('Support Center'),
-                    'url' => $this->generateUrl('helpdesk_knowledgebase')
-                ],
-                ['label' => $this->get('translator')->trans('Forgot Password'), 'url' => '#']
-            ]
-        ]);
-    }
-
-
-    public function updateCredentials($email, $verificationCode)
-    {
-        if ($this->isLoginDisabled() || (empty($email) || empty($verificationCode))) {
-            return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
-        }
-
-        $entityManager = $this->getDoctrine()->getManager();
-        $request = $this->get('request_stack')->getCurrentRequest();
-
-        // Validate request
-        $user = $entityManager->getRepository('UVDeskCoreFrameworkBundle:User')->findOneByEmail($email);
-
-        if (empty($user) || null == $user->getCustomerInstance() || $user->getVerificationCode() != $verificationCode) {
-            return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
-        }
-
-        if ($request->getMethod() == 'POST') {
-            $updatedCredentials = $request->request->all();
-
-            if ($updatedCredentials['password'] === $updatedCredentials['confirmPassword']) {
-                $user->setPassword($this->encodePassword($user, $updatedCredentials['password']));
-                $user->setVerificationCode(TokenGenerator::generateToken());
-
-                $entityManager->persist($user);
-                $entityManager->flush();
-
-                $request->getSession()->getFlashBag()->set('success', 'Your password has been updated successfully.');
-                return $this->redirect($this->generateUrl('helpdesk_customer_login'));
-            } else {
-                $request->getSession()->getFlashBag()->set(
-                    'warning',
-                    $this->get('translator')->trans('Password don\'t match.')
-                );
-            }
-        }
-
-        return $this->render('@UVDeskSupportCenter/Knowledgebase/resetPassword.html.twig', [
-            'searchDisable' => true,
-            'breadcrumbs' => [
-                [
-                    'label' => $this->get('translator')->trans('Support Center'),
-                    'url' => 'helpdesk_knowledgebase'
-                ], [
-                    'label' => $this->get('translator')->trans('Account Validation'),
                     'url' => '#'
                 ]
             ]
