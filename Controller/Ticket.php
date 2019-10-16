@@ -355,12 +355,9 @@ class Ticket extends Controller
             throw new NotFoundHttpException('Page Not Found!');
         }
 
-        $currentUser = $this->get('user.service')->getCurrentUser();
+        $user = $this->get('user.service')->getSessionUser();
         
-        //Get customer's local timezone to display in ticketView.html.twig
-        $customerTicketLocalTimezone = $this->get('user.service')->getCustomerTicketLocalTimezone($currentUser->getId(), $id);
-        
-        if (!empty($currentUser) && $currentUser->getId() == $ticket->getCustomer()->getId()) {
+        if (!empty($user) && $user->getId() == $ticket->getCustomer()->getId()) {
             $ticket->setIsCustomerViewed(1);
 
             $entityManager->persist($ticket);
@@ -368,11 +365,10 @@ class Ticket extends Controller
         }
         
         $twigResponse = [
-            //Pass customer's localtime zone to template
-            'customerTicketLocalTimezone' => $customerTicketLocalTimezone,
             'ticket' => $ticket,
             'searchDisable' => true,
             'initialThread' => $this->get('ticket.service')->getTicketInitialThreadDetails($ticket),
+            'localizedCreateAtTime' => $this->get('user.service')->getLocalizedFormattedTime($user, $ticket->getCreatedAt()),
         ];
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketView.html.twig', $twigResponse);

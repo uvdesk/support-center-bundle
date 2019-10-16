@@ -164,7 +164,7 @@
                 <div class="uv-aside-brick">
                     <h6>{{ 'Timestamp'|trans }}</h6>
                     <span class="uv-icon-timestamp"></span>
-                    <span>{{ customerTicketLocalTimezone }}</span>
+                    <span>{{ localizedCreateAtTime }}</span>
                 </div>
 
                 <div class="uv-hr"></div>
@@ -232,8 +232,8 @@
                         <div class="uv-ticket-strip">
                             <span>
                                 <span class="uv-ticket-strip-label">{{ 'Created'|trans }} -</span>
-                                <span class="timeago" data-timestamp="{{ customerTicketLocalTimezone }}" title="{{ customerTicketLocalTimezone }}">
-                                    {{ customerTicketLocalTimezone }} 
+                                <span class="timeago" data-timestamp="{{ localizedCreateAtTime }}" title="{{ localizedCreateAtTime }}">
+                                    {{ localizedCreateAtTime }} 
                                 </span>
                             </span>
                             <span>
@@ -254,8 +254,8 @@
                             <div class="uv-ticket-main create">
                                 <div class="uv-ticket-strip">
                                     <span>
-                                        <span class="timeago uv-margin-0" data-timestamp="ticket.createdAt" title="{{ customerTicketLocalTimezone }}">
-                                            {{ customerTicketLocalTimezone }}
+                                        <span class="timeago uv-margin-0" data-timestamp="ticket.createdAt" title="{{ localizedCreateAtTime }}">
+                                            {{ localizedCreateAtTime }}
                                         </span>
                                         - {{ createThread.user.name }}
                                         <span class="uv-ticket-strip-label">
@@ -267,7 +267,7 @@
                                 </span>
                                 </div>
                                 <div class="uv-ticket-main-lt">
-                                   <img src="{{ initialThread.user.thumbnail ? app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') ~ (initialThread.user.thumbnail) : asset(default_customer_image_path) }}">
+                                   <img src="{{ initialThread.user.thumbnail ? app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') ~ (initialThread.user.thumbnail) : initialThread.createdBy == 'customer' ? asset(default_customer_image_path) : asset(default_agent_image_path) }}">
                                 </div>
                                 <div class="uv-ticket-main-rt">
                                     <span class="uv-ticket-member-name">
