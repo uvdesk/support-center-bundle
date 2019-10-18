@@ -9,6 +9,9 @@ use Webkul\UVDesk\CoreFrameworkBundle\Form\UserProfile;
 use Webkul\UVDesk\CoreFrameworkBundle\Utils\TokenGenerator;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website as CoreWebsite;
 use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
 
 Class Customer extends Controller
@@ -22,10 +25,18 @@ Class Customer extends Controller
 
     protected function isWebsiteActive()
     {
-        $error = false;
+        $entityManager = $this->getDoctrine()->getManager();
+        $website = $entityManager->getRepository(CoreWebsite::class)->findOneByCode('knowledgebase');
+  
+        if (!empty($website)) {
+            $knowledgebaseWebsite = $entityManager->getRepository(KnowledgebaseWebsite::class)->findOneBy(['website'=>$website->getId(), 'status'=>1]);
+            
+            if (!empty($knowledgebaseWebsite) && true == $knowledgebaseWebsite->getIsActive()) {
+                return true;
+            }
+        }
 
-        if($error)
-            $this->noResultFound();
+        $this->noResultFound();
     }
 
     protected function noResultFound()
@@ -59,6 +70,7 @@ Class Customer extends Controller
 
     public function login(Request $request)
     {
+        $this->isWebsiteActive();
         if($this->redirectUserToLogin())
             return $this->redirect($this->generateUrl('helpdesk_customer_ticket_collection')); // Replace with Dashboard route
 
@@ -91,6 +103,7 @@ Class Customer extends Controller
 
     public function forgotPassword(Request $request)
     {
+        $this->isWebsiteActive();
         if ($this->isLoginDisabled()) {
             $this->addFlash('warning', $this->get('translator')->trans('Warning ! Customer Login disabled by admin.'));
             return $this->redirect($this->generateUrl('webkul_support_center_front_solutions'));
