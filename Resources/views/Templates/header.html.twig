@@ -49,6 +49,14 @@
             color: {{ websiteConfiguration.linkHoverColor }} !important;
         }
     {% endif %}
+    {% if websiteConfiguration is defined and websiteConfiguration.articleTextColor is defined %}
+        .uv-paper-article .uv-paper-section > section > p {
+            color: {{ websiteConfiguration.articleTextColor }} !important;
+        }
+        .uv-paper-article .uv-paper-section > section > ul {
+            color: {{ websiteConfiguration.articleTextColor }} !important;
+        }
+    {% endif %}
     .goog-te-gadget-simple .goog-te-menu-value, .goog-te-gadget-simple .goog-te-menu-value:hover {
         color: #333!important;
     }
