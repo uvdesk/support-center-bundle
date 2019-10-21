@@ -6,14 +6,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\Thread;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\TicketRating;
 use Webkul\UVDesk\SupportCenterBundle\Form\Ticket as TicketForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket as TicketEntity;
 use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket as TicketEntity;
 use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
 
 class Ticket extends Controller
@@ -21,10 +22,10 @@ class Ticket extends Controller
     protected function isWebsiteActive()
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $website = $this->getWebsiteDetails();
+        $website = $entityManager->getRepository(Website::class)->findOneByCode('knowledgebase');
 
         if (!empty($website)) {
-            $knowledgebaseWebsite = $entityManager->getRepository(KnowledgebaseWebsite::class)->findOneBy(['website'=>$website->getId(), 'status'=>1]);
+            $knowledgebaseWebsite = $entityManager->getRepository(KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => 1]);
             
             if (!empty($knowledgebaseWebsite) && true == $knowledgebaseWebsite->getIsActive()) {
                 return true;
@@ -32,13 +33,6 @@ class Ticket extends Controller
         }
 
         $this->noResultFound();
-    }
-
-    protected function getWebsiteDetails()
-    {
-        $Website = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
-        
-        return $Website;
     }
 
     /**
@@ -55,12 +49,14 @@ class Ticket extends Controller
         $this->isWebsiteActive();
         
         $formErrors = $errors = array();
-        $websiteConfiguration = $this->get('uvdesk.service')->getActiveConfiguration($this->getWebsiteDetails()->getId());
-
-        if(!$websiteConfiguration || !$websiteConfiguration->getTicketCreateOption() || ($websiteConfiguration->getLoginRequiredToCreate() && !$this->getUser()))
-            return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
-
         $em = $this->getDoctrine()->getManager();
+        $website = $em->getRepository(Website::class)->findOneByCode('knowledgebase');
+        $websiteConfiguration = $this->get('uvdesk.service')->getActiveConfiguration($website->getId());
+
+        if (!$websiteConfiguration || !$websiteConfiguration->getTicketCreateOption() || ($websiteConfiguration->getLoginRequiredToCreate() && !$this->getUser())) {
+            return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
+        }
+
         $post = $request->request->all();
 
         if($request->getMethod() == "POST") {

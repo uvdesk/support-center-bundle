@@ -30,7 +30,7 @@ class Website extends Controller
         $website = $entityManager->getRepository(CoreWebsite::class)->findOneByCode('knowledgebase');
 
         if (!empty($website)) {
-            $knowledgebaseWebsite = $entityManager->getRepository(KnowledgebaseWebsite::class)->findOneBy(['website'=>$website->getId(), 'status'=>1]);
+            $knowledgebaseWebsite = $entityManager->getRepository(KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => true]);
 
             if (!empty($knowledgebaseWebsite) && true == $knowledgebaseWebsite->getIsActive()) {
                 return true;
