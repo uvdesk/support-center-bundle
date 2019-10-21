@@ -11,7 +11,6 @@ class EmailTemplates extends DoctrineFixture
 {
     private static $seeds = [
         SupportCenterEmailTemplates\Customer\AccountCreated::class,
-        SupportCenterEmailTemplates\Customer\ForgotPassword::class,
     ];
 
     public function load(ObjectManager $entityManager)
