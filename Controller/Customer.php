@@ -32,11 +32,6 @@ Class Customer extends Controller
         throw new NotFoundHttpException('Permission Denied !');
     }
 
-    protected function encodePassword(User $user, $plainPassword)
-    {
-        return  $encodedPassword = $this->container->get('security.password_encoder')->encodePassword($user, $plainPassword);
-    }
-
     protected function isLoginDisabled()
     {
         $entityManager = $this->getDoctrine()->getManager();
