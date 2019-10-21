@@ -16,8 +16,8 @@
         color: #2750C4;
         text-decoration: none;
     }
-    .uv-profile-block .uv-dropdown-list {
-        top: 72px;
+    .uv-profile-block .uv-bottom-right{
+        top: auto !important;
     }
     .uv-rtl header .uv-header-rt > span {
         display: block;
@@ -47,6 +47,14 @@
     {% if websiteConfiguration is defined and websiteConfiguration.linkHoverColor is defined %}
         a:not(.uv-btn):not(.uv-btn-small):not(.uv-btn-social):not(.uv-table):not(.not-shiny):hover {
             color: {{ websiteConfiguration.linkHoverColor }} !important;
+        }
+    {% endif %}
+    {% if websiteConfiguration is defined and websiteConfiguration.articleTextColor is defined %}
+        .uv-paper-article .uv-paper-section > section > p {
+            color: {{ websiteConfiguration.articleTextColor }} !important;
+        }
+        .uv-paper-article .uv-paper-section > section > ul {
+            color: {{ websiteConfiguration.articleTextColor }} !important;
         }
     {% endif %}
     .goog-te-gadget-simple .goog-te-menu-value, .goog-te-gadget-simple .goog-te-menu-value:hover {

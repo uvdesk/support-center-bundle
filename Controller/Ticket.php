@@ -13,25 +13,32 @@ use Webkul\UVDesk\CoreFrameworkBundle\Entity\TicketRating;
 use Webkul\UVDesk\SupportCenterBundle\Form\Ticket as TicketForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket as TicketEntity;
+use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
 use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
 
 class Ticket extends Controller
 {
     protected function isWebsiteActive()
     {
-        $error = false;
-        $currentKnowledgebase = $this->getWebsiteDetails();
-        
-        if (!$currentKnowledgebase) {
-            $this->noResultFound();
+        $entityManager = $this->getDoctrine()->getManager();
+        $website = $this->getWebsiteDetails();
+
+        if (!empty($website)) {
+            $knowledgebaseWebsite = $entityManager->getRepository(KnowledgebaseWebsite::class)->findOneBy(['website'=>$website->getId(), 'status'=>1]);
+            
+            if (!empty($knowledgebaseWebsite) && true == $knowledgebaseWebsite->getIsActive()) {
+                return true;
+            }
         }
+
+        $this->noResultFound();
     }
 
     protected function getWebsiteDetails()
     {
-        $knowledgebaseWebsite = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
+        $Website = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
         
-        return $knowledgebaseWebsite;
+        return $Website;
     }
 
     /**
