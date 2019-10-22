@@ -6,6 +6,8 @@ This changelog references any relevant changes introduced in 1.0 minor versions.
 * 1.0.1 (2019-10-15)
     * **Issue #79:** User profile gets hidden
     * **Issue #75:** Profile issue inside ticket page
+    * **Misc. Updates:**
+        * Updated README.md with link to the official gitter chat for uvdesk/support-center-bundle
 
 * 1.0.0 (Released on 2019-10-09)
     * **Issue #76:** tinymce text editor added for article section. (raised by papnoisanjeev)
