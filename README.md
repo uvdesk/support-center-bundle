@@ -2,8 +2,12 @@
     <img src="https://s3-ap-southeast-1.amazonaws.com/cdn.uvdesk.com/uvdesk/bundles/webkuldefault/images/uvdesk-wide.svg">
 </a></p>
 
-UVDeskSupportCenterBundle
---------------
+<p align="center">
+    <a href="https://packagist.org/packages/uvdesk/support-center-bundle"><img src="https://poser.pugx.org/uvdesk/support-center-bundle/v/stable.svg" alt="Latest Stable Version"></a>
+    <a href="https://packagist.org/packages/uvdesk/support-center-bundle"><img src="https://poser.pugx.org/uvdesk/support-center-bundle/d/total.svg" alt="Total Downloads"></a>
+    <a href="https://packagist.org/packages/uvdesk/support-center-bundle"><img src="https://poser.pugx.org/uvdesk/support-center-bundle/license.svg" alt="License"></a>
+    <a href="https://gitter.im/uvdesk/support-center-bundle"><img src="https://badges.gitter.im/uvdesk/support-center-bundle.svg" alt="connect on gitter"></a>
+</p>
 
 The **UVDeskSupportCenterBundle** introduces the Support Center portal to the [UVDesk Community][1] helpdesk, a nifty solution to provide your customers with an easy interface to manage their tickets and easily engage with your support staff. The Support Center also includes a Knowledgebase that can be easily managed by your support staff.
 
