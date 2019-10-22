@@ -152,7 +152,7 @@
                     <% } else { %>
                         <img class="uv-table-agent" src="{{ asset(default_agent_image_path) }}" alt=""/>
                     <% } %>
-                    <%- agent.name %>
+                    <%- agent.firstName +' '+(agent.lastName == null ?'':agent.lastName) %>
                 <% } else { %>
                     {{ 'Unassigned'|trans }}
                 <% } %>
