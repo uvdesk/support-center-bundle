@@ -11,15 +11,6 @@ helpdesk_customer_account:
     path:     /account
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Customer::Account
 
-helpdesk_customer_forgot_password:
-    path:     /forgot-password
-    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Customer::forgotPassword
-
-helpdesk_customer_update_account_credentials:
-    path:     /update-credentials/{email}/{verificationCode}
-    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Customer::updateCredentials
-    defaults: { email: 0, verificationCode: 0 }
-
 # Customer ticket routing resources
 helpdesk_customer_ticket_collection:
     path:     /tickets
