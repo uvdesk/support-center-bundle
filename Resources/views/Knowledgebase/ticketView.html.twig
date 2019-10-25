@@ -426,6 +426,7 @@
 {% block footer %}
     {{ parent() }}
     {{ include('@UVDeskCoreFramework/Templates/attachment.html.twig') }}
+    {% set ticketAgent = ticket.agent ? user_service.getAgentDetailById(ticket.agent.id) : null %}
 
     <script id="thread_list_item_tmp" type="text/template">
         <div class="uv-ticket-strip">
@@ -433,7 +434,7 @@
                 <span class="timeago uv-margin-0" data-timestamp="<%= timestamp %>" title="<%= formatedCreatedAt %>">
                     <%= formatedCreatedAt %>
                 </span>
-                - <%- fullname %>
+                - {{ ticketAgent.name }}
                 <span class="uv-ticket-strip-label">
                     {{ 'replied'|trans }}
                 </span>
@@ -457,7 +458,7 @@
         </div>
         <div class="uv-ticket-main-rt">
             <span class="uv-ticket-member-name">
-                <%- fullname %>
+                {{ ticketAgent.name }}
             </span>
             <!-- Message Block -->
             <div class="message">
