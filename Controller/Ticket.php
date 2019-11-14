@@ -353,13 +353,12 @@ class Ticket extends Controller
 
         $entityManager = $this->getDoctrine()->getManager();
         $ticket = $entityManager->getRepository(TicketEntity::class)->findOneById($id);
-
-        if (empty($ticket)) {
+        $user = $this->get('user.service')->getSessionUser();
+        
+        if (empty($ticket) || $user->getId() != $ticket->getCustomer()->getId()) {
             throw new NotFoundHttpException('Page Not Found!');
         }
 
-        $user = $this->get('user.service')->getSessionUser();
-        
         if (!empty($user) && $user->getId() == $ticket->getCustomer()->getId()) {
             $ticket->setIsCustomerViewed(1);
 
