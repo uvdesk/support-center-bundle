@@ -22,8 +22,7 @@ class Article extends Controller
 {
     public function articleList(Request $request)
     {
-  
-	if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_EMAIL_TEMPLATE')) {
+        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
