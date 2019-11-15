@@ -3,13 +3,18 @@ CHANGELOG for 1.0.x
 
 This changelog references any relevant changes introduced in 1.0 minor versions.
 
-* 1.0.2 (2019-11-15)
+* 1.0.3 (2019-11-15)
     * **Issue #24:** Customer can view other customers ticket just by passing ticket id in url
     * **Issue #94:** Knowledgebase folders not displaying correct thumbnail
     * **Misc. Updates:**
         * Included Github issue templates
         * Included "Powered by Uvdesk" to support center panel
         * Updated composer dependencies & set minimum required php version to 7.2
+
+* 1.0.2 (2019-10-22)
+    * **Issue #60:** Cannot disable knowledgebase
+    * **Issue #86:** Article Text Editor is not working with bullets
+    * **Issue #83:** Enable customer/agent to reset password from single route
 
 * 1.0.1 (2019-10-15)
     * **Issue #79:** User profile gets hidden
