@@ -3,6 +3,13 @@ CHANGELOG for 1.0.x
 
 This changelog references any relevant changes introduced in 1.0 minor versions.
 
+* 1.0.2 (2019-11-15)
+    * **Issue #24:** Customer can view other customers ticket just by passing ticket id in url
+    * **Issue #94:** Knowledgebase folders not displaying correct thumbnail
+    * **Misc. Updates:**
+        * Included Github issue templates
+        * Included "Powered by Uvdesk" to support center panel
+
 * 1.0.1 (2019-10-15)
     * **Issue #79:** User profile gets hidden
     * **Issue #75:** Profile issue inside ticket page

@@ -25,8 +25,7 @@
 				<div class="uv-aside-brick">
 					<div class="uv-aside-customer-block">
 						<div class="uv-aside-avatar">
-							{# <img src="{{solution.solutionImage ? solution.solutionImage : defaultImage}}"> #}
-							<img src="https://s3-ap-southeast-1.amazonaws.com/cdn.uvdesk.com/website/183/im%2Cas.png">
+							<img src="{{solution.solutionImage ? app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') ~ (solution.solutionImage) : defaultImage}}">
 						</div>
 						<div class="uv-aside-customer-info">
 							<span class="uv-customize"></span>
