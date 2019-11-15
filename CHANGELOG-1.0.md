@@ -9,6 +9,7 @@ This changelog references any relevant changes introduced in 1.0 minor versions.
     * **Misc. Updates:**
         * Included Github issue templates
         * Included "Powered by Uvdesk" to support center panel
+        * Updated composer dependencies & set minimum required php version to 7.2
 
 * 1.0.1 (2019-10-15)
     * **Issue #79:** User profile gets hidden
