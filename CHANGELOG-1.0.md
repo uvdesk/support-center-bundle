@@ -3,6 +3,11 @@ CHANGELOG for 1.0.x
 
 This changelog references any relevant changes introduced in 1.0 minor versions.
 
+* 1.0.4 (2020-02-12)
+    * **Misc. Updates:**
+        * Included Github issue templates.
+        * Made default article text color equals to black.
+        
 * 1.0.3 (2019-11-15)
     * **Issue #24:** Customer can view other customers ticket just by passing ticket id in url
     * **Issue #94:** Knowledgebase folders not displaying correct thumbnail
