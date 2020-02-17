@@ -8,12 +8,12 @@ class Knowledgebase extends HomepageSection
 {
     public static function getTitle() : string
     {
-        return "Knowledgebase";
+        return self::dynamicTranslation("Knowledgebase");
     }
 
     public static function getDescription() : string
     {
-        return "Knowledgebase is a source of rigid and complex information which helps Customers to help themselves";
+        return self::dynamicTranslation("Knowledgebase is a source of rigid and complex information which helps Customers to help themselves");
     }
 
     public static function getRoles() : array
