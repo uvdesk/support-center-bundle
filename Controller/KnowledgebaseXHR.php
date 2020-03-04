@@ -67,7 +67,7 @@ class KnowledgebaseXHR extends Controller
                     $entityManager->flush();
 
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] ='Success ! Folder updated successfully.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Folder updated successfully.');
 
 
                 } else {
@@ -90,7 +90,7 @@ class KnowledgebaseXHR extends Controller
                 }else{
 
                     $json['alertClass'] = 'error';
-                    $json['alertMessage'] = "Warning ! Folder doesn't exists!";
+                    $json['alertMessage'] = $this->get('translator')->trans('Warning ! Folder does not exists.');
                 }
                 break;
             default:
