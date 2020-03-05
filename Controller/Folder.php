@@ -121,7 +121,8 @@ class Folder extends Controller
             $entityManager->persist($knowledgebaseFolder);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Folder updated successfully.');
+            $this->addFlash('success', $this->get('translator')->trans('Folder updated successfully.'));
+            
             return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_folders_collection'));
         }
 

@@ -259,7 +259,7 @@ class Category extends Controller
                     $em->flush();
 
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] ='Success ! Category updated successfully.';
+                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Category updated successfully.');
                 } else {
                     $json['alertClass'] = 'danger';
                     $json['errors'] = json_encode($this->getFormErrors($form));

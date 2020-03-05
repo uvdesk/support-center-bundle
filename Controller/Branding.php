@@ -178,7 +178,7 @@ class Branding extends Controller
             $entityManager->persist($configuration);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Spam setting saved successfully.');
+            $this->addFlash('success', $this->get('translator')->trans('Spam setting saved successfully.'));
 
             return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_spam'));
         }
