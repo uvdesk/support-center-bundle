@@ -659,21 +659,21 @@
 				validation: {
 					'name': [{
 						required: true,
-						msg: 'This field is mandatory'
+						msg: '{{ "This field is mandatory"|trans }}'
 					},{
 						maxLength:200,
-						msg: 'This field contain maximum 200 charecters only'
+						msg: '{{ "This field contain maximum 200 charecters only"|trans }}'
 					}, {
 						pattern: '^((?![$%<]).)*$',
-						msg: 'This field must have valid characters only'
+						msg: '{{ "This field must have valid characters only"|trans }}'
 					}],
 					'metaTitle':[{
 						maxLength:200,
-						msg: 'This field contain mata title maximum 200 charecters only'
+						msg: '{{ "This field contain mata title maximum 200 charecters only"|trans }}'
 					}],
 					'keywords':[{
 						maxLength:200,
-						msg: 'This field contain keywords maximum 200 charecters only'
+						msg: '{{ "This field contain keywords maximum 200 charecters only"|trans }}'
 					}],
 					'slug': function(val, attr, computed) {
 						var elSlug = $("[name=" + attr + "]");
@@ -685,7 +685,7 @@
 						}
 						
 						if(elSlugValue.length > 100) {
-							return "This field slug contains maximum 100 charecters only.";
+							return '{{ "This field slug contains maximum 100 charecters only."|trans }}';
 						}
 					}
 				},

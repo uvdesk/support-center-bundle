@@ -222,7 +222,7 @@ class Article extends Controller
                         if ($article) {
 
                             if (strlen($data['name']) > 200) {
-                                $json['errors']['name'] = 'Name length must not be greater than 200 !!';
+                                $json['errors']['name'] = $this->get('translator')->trans('Name length must not be greater than 200 !!');
                             }
 
                             if (!$json['errors']) {
@@ -253,7 +253,7 @@ class Article extends Controller
 
                             } else {
                                 $json['alertClass'] = 'danger';
-                                $json['alertMessage'] ='Warning! Correct all field values first!';
+                                $json['alertMessage'] = $this->get('translator')->trans('Warning! Correct all field values first!');
                             }
                         } else {
                             $json['alertClass'] = 'danger';
