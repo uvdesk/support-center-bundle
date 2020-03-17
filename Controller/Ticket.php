@@ -272,18 +272,12 @@ class Ticket extends Controller
 
                 $this->get('event_dispatcher')->dispatch('uvdesk.automation.workflow.execute', $event);
 
-                $this->addFlash('success', "Success ! Reply added successfully.");
+                $this->addFlash('success', $this->get('translator')->trans('Success ! Reply added successfully.'));
             } else {
-                $this->addFlash(
-                    'warning',
-                    $this->get('translator')->trans("Warning ! Reply field can not be blank.")
-                );
+                $this->addFlash('warning', $this->get('translator')->trans('Warning ! Reply field can not be blank.'));
             }
         } else {
-            $this->addFlash(
-                'warning',
-                $this->get('translator')->trans("Warning ! Post size can not exceed 25MB")
-            );
+            $this->addFlash('warning', $this->get('translator')->trans('Warning ! Post size can not exceed 25MB'));
         }
 
         return $this->redirect($this->generateUrl('helpdesk_customer_ticket',array(
@@ -353,7 +347,7 @@ class Ticket extends Controller
 
         $entityManager = $this->getDoctrine()->getManager();
         $user = $this->get('user.service')->getSessionUser();
-        $ticket = $entityManager->getRepository(TicketEntity::class)->findOneBy(['id' => $id, 'customer' => $user]);
+        $ticket = $entityManager->getRepository(TicketEntity::class)->findOneBy(['id' => $id]);
         
         if (empty($ticket)) {
             throw new NotFoundHttpException('Page Not Found!');

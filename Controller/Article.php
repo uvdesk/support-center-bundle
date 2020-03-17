@@ -222,7 +222,7 @@ class Article extends Controller
                         if ($article) {
 
                             if (strlen($data['name']) > 200) {
-                                $json['errors']['name'] = 'Name length must not be greater than 200 !!';
+                                $json['errors']['name'] = $this->get('translator')->trans('Name length must not be greater than 200 !!');
                             }
 
                             if (!$json['errors']) {
@@ -253,7 +253,7 @@ class Article extends Controller
 
                             } else {
                                 $json['alertClass'] = 'danger';
-                                $json['alertMessage'] ='Warning! Correct all field values first!';
+                                $json['alertMessage'] = $this->get('translator')->trans('Warning! Correct all field values first!');
                             }
                         } else {
                             $json['alertClass'] = 'danger';
@@ -349,7 +349,7 @@ class Article extends Controller
 
                             if (count($relatedArticles)) {
                                 $json['alertClass'] = 'success';
-                                $json['alertMessage'] ='Success ! Article Related is already added.';
+                                $json['alertMessage'] = $this->get('translator')->trans('Success ! Article Related is already added.');
 
                             } elseif ($data['ids'][0] == $data['entityId']) {
                                 $json['alertClass'] = 'danger';
@@ -410,7 +410,7 @@ class Article extends Controller
                             $entityManager->flush();
                         }
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] ='Success ! Article star updated successfully.';
+                        $json['alertMessage'] = $this->get('translator')->trans('Success ! Article star updated successfully.');
                         break;
                     case "update":
                         $articleBase = $this->getDoctrine()
@@ -420,7 +420,7 @@ class Article extends Controller
                         if ($articleBase) {
                             if (isset($data['name']) && strlen($data['name']) > 200) {
                                 $json['alertClass'] = 'danger';
-                                $json['alertMessage'] = 'Name length must not be greater than 200 !!';
+                                $json['alertMessage'] = $this->get('translator')->trans('Name length must not be greater than 200 !!');
 
                             } else {
                                 $articleBase->setName($this->get('uvdesk.service')->htmlfilter($data['name']));

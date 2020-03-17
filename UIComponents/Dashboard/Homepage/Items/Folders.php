@@ -20,7 +20,7 @@ SVG;
 
     public static function getTitle() : string
     {
-        return "Folders";
+        return self::dynamicTranslation("Folders");
     }
 
     public static function getRouteName() : string

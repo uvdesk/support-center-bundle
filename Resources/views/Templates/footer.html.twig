@@ -3,8 +3,8 @@
 		<div class="uv-footer-wrapper">
 			<div class="uv-footer-lt">
 				<ul>
-					<li><a href="{{ path('helpdesk_knowledgebase_folder') }}">Home</a></li>
-					<li><a href="#" class="uv-open-popup" data-target="cookie-dialog-modal">Cookie Policy</a></li>
+					<li><a href="{{ path('helpdesk_knowledgebase_folder') }}">{{ 'Home'|trans }}</a></li>
+					<li><a href="#" class="uv-open-popup" data-target="cookie-dialog-modal">{{ 'Cookie Policy'|trans }}</a></li>
 					{% for footerLink in websiteConfiguration.footerLinks %}
 						<li><a href="{{ footerLink.url }}" target="_blank">{{ footerLink.label }}</a></li>
 					{% endfor %}
@@ -12,7 +12,7 @@
 			</div>
 		</div>
     <div class="uv-footer-credit">
-      <span class="uv-credit-text">Powered by <a href="https://www.uvdesk.com" target="_blank">UVdesk</a></span>
+      <span class="uv-credit-text">{{ 'Powered by'|trans }} <a href="https://www.uvdesk.com" target="_blank">UVdesk</a></span>
     </div>
 	</div>
 </div>
