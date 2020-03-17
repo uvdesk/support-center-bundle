@@ -3,6 +3,13 @@ CHANGELOG for 1.0.x
 
 This changelog references any relevant changes introduced in 1.0 minor versions.
 
+* 1.0.5 (2020-03-17)
+    * **Misc. Updates:**
+        * Added Missing translations.
+
+    * **Bug. Fixes:**
+        * **Issue #99:** Getting exception when collaborator login to support panel.
+
 * 1.0.4 (2020-02-12)
     * **Misc. Updates:**
         * Included Github issue templates.
