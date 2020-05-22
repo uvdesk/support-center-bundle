@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Article as ArticleEntity;
 use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory;
 use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleRelatedArticle;
@@ -472,5 +472,14 @@ class Article extends Controller
         $this->getDoctrine()
             ->getRepository('UVDeskSupportCenterBundle:Article')
             ->removeEntryByArticle($article->getId());
+    }
+
+    /**
+     * If customer is playing with url and no result is found then what will happen
+     * @return 
+     */
+    protected function noResultFound()
+    {
+        throw new NotFoundHttpException('Not Found!');
     }
 }

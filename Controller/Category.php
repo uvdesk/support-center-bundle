@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\Common\Collections\Criteria;
-
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
 use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping;
 use Webkul\UVDesk\SupportCenterBundle\Form\Category as CategoryForm;
@@ -59,7 +59,7 @@ class Category extends Controller
                     ->getCategoriesCountBySolution($request->attributes->get('solution')),
             ];
             return $this->render('@UVDeskSupportCenter/Staff/Category/categoryListBySolution.html.twig',$solution_category);
-        }else
+        } else
             $this->noResultFound();
     }
 
@@ -306,5 +306,14 @@ class Category extends Controller
         $this->getDoctrine()
             ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
             ->removeEntryByCategory($category);
+    }
+
+    /**
+     * If customer is playing with url and no result is found then what will happen
+     * @return 
+     */
+    protected function noResultFound()
+    {
+        throw new NotFoundHttpException('Not Found!');
     }
 }
