@@ -405,4 +405,13 @@ class Website extends Controller
 
         return new Response(json_encode($response['content']), $response['code'], ['Content-Type: application/json']);
     }
+
+    /**
+     * If customer is playing with url and no result is found then what will happen
+     * @return 
+     */
+    protected function noResultFound()
+    {
+        throw new NotFoundHttpException('Not Found!');
+    }
 }

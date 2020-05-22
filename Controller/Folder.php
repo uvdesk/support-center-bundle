@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\Criteria;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
 
 class Folder extends Controller
@@ -130,5 +131,14 @@ class Folder extends Controller
             'folder' => $knowledgebaseFolder,
             'errors' => json_encode(!empty($errors) ? $errors : [])
         ]);
+    }
+
+    /**
+     * If customer is playing with url and no result is found then what will happen
+     * @return 
+     */
+    protected function noResultFound()
+    {
+        throw new NotFoundHttpException('Not Found!');
     }
 }
