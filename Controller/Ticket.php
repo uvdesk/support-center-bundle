@@ -17,6 +17,15 @@ use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket as TicketEntity;
 use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
 
+use UVDesk\CommunityPackages\UVDesk\FormComponent\Entity\Form;
+use UVDesk\CommunityPackages\UVDesk\FormComponent\Entity\CustomFields;  
+use UVDesk\CommunityPackages\UVDesk\FormComponent\Entity\SavedCustomFields; 
+use UVDesk\CommunityPackages\UVDesk\FormComponent\Entity\CustomFieldsValues;
+use UVDesk\CommunityPackages\UVDesk\FormComponent\Services\FileUploadService;
+use UVDesk\CommunityPackages\UVDesk\FormComponent\Services\CustomFieldsService;
+use UVDesk\CommunityPackages\UVDesk\FormComponent\Entity\TicketCustomFieldsValues;
+
+
 class Ticket extends Controller
 {
     protected function isWebsiteActive()
@@ -46,6 +55,7 @@ class Ticket extends Controller
 
     public function ticketadd(Request $request)
     {
+ 
         $this->isWebsiteActive();
         
         $formErrors = $errors = array();
@@ -160,6 +170,97 @@ class Ticket extends Controller
 
                     $thread = $this->get('ticket.service')->createTicketBase($data);
                     
+                    //saving custom field data
+                    if(!empty($request->request->get('customFields')))
+                    {
+                        $ticketId = $thread->getTicket()->getId();
+                        $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->findOneById($ticketId);
+                        
+                        $customField = null;
+                        $ticketCustomFieldValue = null;
+
+                        foreach($request->request->get('customFields') as $key=>$value)
+                        {
+                            $cf_id = $key;  
+                            $cfRepo = $this->getDoctrine()->getRepository(CustomFields::class); 
+                            $customField = $cfRepo->findOneBy([
+                                'id' => $cf_id,
+                            ]);
+                            $cfvRepo = $this->getDoctrine()->getRepository(CustomFieldsValues::class); 
+                            $cfValues = $cfvRepo->findOneBy([
+                                'customFields' => $customField->getId(),
+                            ]);    
+                            $customField->setValue($value);
+                            $ticketCustomFieldValue =  new TicketCustomFieldsValues();
+                            $ticketCustomFieldValue->setTicket($ticket); 
+                            $ticketCustomFieldValue->setTicketCustomFieldsValues($customField);
+                            $ticketCustomFieldValue->setTicketCustomFieldValueValues($cfValues);
+                            $ticketCustomFieldValue->setValue($value);
+                            $em->persist($ticketCustomFieldValue);
+                            $em->persist($ticket);
+                            $em->flush(); 
+                        } 
+                    }
+                    // saving custom field file/attachment
+
+                    $submittedCustomFieldFiles = $request->files->get('customFields'); 
+          
+    
+                    if( !empty($submittedCustomFieldFiles) )
+                    {
+    
+        
+                        $baseUploadPath = '/custom-fields/ticket/' . $thread->getId() . '/';
+                        $temporaryFiles = $request->files->get('customFields');
+                    
+                        $uploadedFileCollection = [];
+        
+        
+                        foreach($temporaryFiles as $key => $temporaryFile) {
+                            $fileName = $fileUploadService->uploadFile($temporaryFile, $baseUploadPath, true);
+                            $fileName['key'] = $key;
+                            $uploadedFileCollection[] = $fileName;
+                        }
+    
+                        $cfRepo = $this->getDoctrine()->getRepository(CustomFields::class); 
+                        $ticketCustomFieldsValuesCollection = $entityManager->getRepository('UVDeskFormComponentPackage:TicketCustomFieldsValues')->find($thread);
+                        if (!empty($uploadedFileCollection)) {
+    
+                            foreach ($uploadedFileCollection as $uploadedFile) {
+                                $existingCustomFieldValue = null;
+                                if (!empty($ticketCustomFieldsValuesCollection)) {
+    
+    
+                                    foreach ($ticketCustomFieldsValuesCollection as $ticketCustomField) {
+                                        if ($ticketCustomField->getTicketCustomFieldsValues()->getId() == $uploadedFile['key']) {
+                                            $existingCustomFieldValue = $ticketCustomField;
+                                            break;
+                                        }
+                                    }
+                                }
+    
+                                $uploadedAttachment = $customFieldsService->addFilesEntryToAttachmentTable([$uploadedFile]);
+                                if (!empty($uploadedAttachment[0])) {
+    
+                                    // $customField = $customFieldRepository->findOneById($uploadedFile['key']);
+                                    $customField = $cfRepo->findOneById($uploadedFile['key']);
+                                    $ticketCustomFieldValue = !empty($existingCustomFieldValue) ? $existingCustomFieldValue : new TicketCustomFieldsValues();
+                                    // $ticketCustomFieldValue->setValue($resourceURL);
+                                    $ticketCustomFieldValue->setValue(json_encode(['name' => $uploadedAttachment[0]['name'], 'path' => $uploadedAttachment[0]['path'], 'id' => $uploadedAttachment[0]['id']]));
+                                    $ticketCustomFieldValue->setTicketCustomFieldsValues($customField);
+                                    $ticketCustomFieldValue->setTicket($ticket);
+    
+                                    $em->persist($ticketCustomFieldValue);
+                                    $em->persist($ticket);
+                                    $em->flush();
+                                }
+                            }
+                        }
+                    } //end of file processing
+
+
+
+
                     if ($thread) {
                         $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('Success ! Ticket has been created successfully.'));
                     } else {
