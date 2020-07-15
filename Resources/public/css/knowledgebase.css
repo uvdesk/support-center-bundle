@@ -1212,6 +1212,12 @@ span.uv-sorting:hover.ascend {
     padding: 20px;
     margin: 0px auto;
   }
+  .uv-pop-up-wide {
+    margin-left: -140px;
+    width: 700px;
+    max-width: 80%;
+    margin-right: -191px;
+  }
   .uv-box-server-error .uv-box-server-error-lt {
     width: 100%;
     display: block;
