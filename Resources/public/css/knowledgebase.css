@@ -1540,9 +1540,8 @@ p {
 }
 .uv-header .uv-header-rt .uv-hamburger svg {
   display: block;
-  vertical-align: middle;
-  padding: 27px 0px;
   cursor: pointer;
+  margin-top: 25px;
 }
 .uv-header .uv-header-rt .uv-hamburger svg path {
   fill: #7C70F4;
