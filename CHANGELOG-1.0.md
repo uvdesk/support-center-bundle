@@ -3,6 +3,11 @@ CHANGELOG for 1.0.x
 
 This changelog references any relevant changes introduced in 1.0 minor versions.
 
+* 1.0.8 (2020-07-21)
+    * **Issue #102:** Footer cookie link issue on mobile.
+    * **Issue #101:** Missed mobile menu to login, Missed operator three dots menù in a ticket.
+    * **Issue #24:** Customer can view other's customer's ticket just by passing ticket id in URL
+
 * 1.0.7 (2020-05-26)
     * **Misc. Updates:**
         * Added Not found exception in different part of bundle.
