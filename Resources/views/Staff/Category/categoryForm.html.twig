@@ -142,6 +142,16 @@
 						maxLength:50,
 						msg: "{{ 'This field contain maximum 50 charectures.'|trans }}"
 					}],
+					'description': [{
+						required: true,
+						msg: "{{ 'This field is mandatory'|trans }}"
+					}, {
+						pattern: '^((?![$%<]).)*$',
+						msg: "{{ 'This field must have valid characters only'|trans }}"
+					},{
+						maxLength:60,
+						msg: "{{ 'This field contain maximum 60 charectures.'|trans }}"
+					}],
                     'sortOrder': {
                         pattern: '^[0-9]*$',
                         msg: "{{ 'This field must be a number'|trans }}"
