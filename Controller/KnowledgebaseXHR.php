@@ -4,9 +4,9 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class KnowledgebaseXHR extends Controller
+class KnowledgebaseXHR extends AbstractController
 {
     public function listFoldersXHR(Request $request)
     {

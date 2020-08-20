@@ -5,9 +5,9 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Website;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class Branding extends Controller
+class Branding extends AbstractController
 {
     public function theme(Request $request)
     {
