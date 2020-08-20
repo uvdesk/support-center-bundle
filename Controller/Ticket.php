@@ -9,7 +9,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\Entity\Thread;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\TicketRating;
 use Webkul\UVDesk\SupportCenterBundle\Form\Ticket as TicketForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -17,7 +17,7 @@ use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket as TicketEntity;
 use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
 
-class Ticket extends Controller
+class Ticket extends AbstractController
 {
     protected function isWebsiteActive()
     {

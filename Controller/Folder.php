@@ -3,13 +3,13 @@
 namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Doctrine\Common\Collections\Criteria;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
 
-class Folder extends Controller
+class Folder extends AbstractController
 {
     public function listFolders(Request $request)
     {
