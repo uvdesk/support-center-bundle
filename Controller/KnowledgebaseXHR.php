@@ -10,7 +10,7 @@ class KnowledgebaseXHR extends AbstractController
 {
     public function listFoldersXHR(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -24,7 +24,7 @@ class KnowledgebaseXHR extends AbstractController
 
     public function updateFolderXHR(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -44,14 +44,14 @@ class KnowledgebaseXHR extends AbstractController
                             $entityManager->persist($solution);
                             $entityManager->flush();
                             $json['alertClass'] = 'success';
-                            $json['alertMessage'] = $this->get('translator')->trans('Success ! Folder status updated successfully.');
+                            $json['alertMessage'] = $this->translator->trans('Success ! Folder status updated successfully.');
                             break;
                         default:
                             break;
                     }
                 } else {
                     $json['alertClass'] = 'danger';
-                    $json['alertMessage'] = $this->get('translator')->trans('Error ! Folder is not exist.');
+                    $json['alertMessage'] = $this->translator->trans('Error ! Folder is not exist.');
                 }
                 break;
             case "PUT":
@@ -67,12 +67,12 @@ class KnowledgebaseXHR extends AbstractController
                     $entityManager->flush();
 
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Folder updated successfully.');
+                    $json['alertMessage'] = $this->translator->trans('Success ! Folder updated successfully.');
 
 
                 } else {
                     $json['alertClass'] = 'danger';
-                    $json['alertMessage'] = $this->get('translator')->trans('Error ! Folder does not exist.');
+                    $json['alertMessage'] = $this->translator->trans('Error ! Folder does not exist.');
                 }
                 break;
             case "DELETE":
@@ -86,11 +86,11 @@ class KnowledgebaseXHR extends AbstractController
                     $entityManager->flush();
 
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Folder deleted successfully.');
+                    $json['alertMessage'] = $this->translator->trans('Success ! Folder deleted successfully.');
                 }else{
 
                     $json['alertClass'] = 'error';
-                    $json['alertMessage'] = $this->get('translator')->trans('Warning ! Folder does not exists.');
+                    $json['alertMessage'] = $this->translator->trans('Warning ! Folder does not exists.');
                 }
                 break;
             default:

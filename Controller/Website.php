@@ -128,7 +128,7 @@ class Website extends AbstractController
 
         $breadcrumbs = [
             [
-                'label' => $this->get('translator')->trans('Support Center'),
+                'label' => $this->translator->trans('Support Center'),
                 'url' => $this->generateUrl('helpdesk_knowledgebase')
             ],
             [
@@ -176,7 +176,7 @@ class Website extends AbstractController
 
         $breadcrumbs = [
             [
-                'label' => $this->get('translator')->trans('Support Center'),
+                'label' => $this->translator->trans('Support Center'),
                 'url' => $this->generateUrl('helpdesk_knowledgebase')
             ],
             [
@@ -225,7 +225,7 @@ class Website extends AbstractController
             $this->noResultFound();
 
         $breadcrumbs = [
-            [ 'label' => $this->get('translator')->trans('Support Center'),'url' => $this->generateUrl('helpdesk_knowledgebase') ],
+            [ 'label' => $this->translator->trans('Support Center'),'url' => $this->generateUrl('helpdesk_knowledgebase') ],
             [ 'label' => $category->getName(),'url' => '#' ],
         ];
         
@@ -259,7 +259,7 @@ class Website extends AbstractController
         }
 
         $entityManager = $this->getDoctrine()->getManager();
-        $user = $this->get('user.service')->getCurrentUser();
+        $user = $this->userService->getCurrentUser();
         $articleRepository = $entityManager->getRepository('UVDeskSupportCenterBundle:Article');
 
         if ($request->attributes->get('article')) {
@@ -299,10 +299,10 @@ class Website extends AbstractController
         $article_details = [
             'article' => $article,
             'breadcrumbs' => [
-                ['label' => $this->get('translator')->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
+                ['label' => $this->translator->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
                 ['label' => $article->getName(), 'url' => '#']
             ],
-            'dateAdded' => $this->get('user.service')->convertToTimezone($article->getDateAdded()),
+            'dateAdded' => $this->userService->convertToTimezone($article->getDateAdded()),
             'articleTags' => $articleRepository->getTagsByArticle($article->getId()),
             'articleAuthor' => $articleRepository->getArticleAuthorDetails($article->getId()),
             'relatedArticles' => $articleRepository->getAllRelatedyByArticle(['locale' => $request->getLocale(), 'articleId' => $article->getId()], [1]),
@@ -345,7 +345,7 @@ class Website extends AbstractController
             'articles' => $articleCollection,
             'search' => $tagLabel,
             'breadcrumbs' => [
-                ['label' => $this->get('translator')->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
+                ['label' => $this->translator->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
                 ['label' => $tagLabel, 'url' => '#'],
             ],
         ]);

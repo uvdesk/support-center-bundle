@@ -72,7 +72,7 @@ Class Customer extends AbstractController
 
         /** check disabled customer login **/
         if($this->isLoginDisabled()) {
-            $this->addFlash('warning', $this->get('translator')->trans('Warning ! Customer Login disabled by admin.') );
+            $this->addFlash('warning', $this->translator->trans('Warning ! Customer Login disabled by admin.') );
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
         }
 
@@ -87,10 +87,10 @@ Class Customer extends AbstractController
             'error'         => $error,
             'breadcrumbs' => [
                 [
-                    'label' => $this->get('translator')->trans('Support Center'),
+                    'label' => $this->translator->trans('Support Center'),
                     'url' => $this->generateUrl('helpdesk_knowledgebase')
                 ], [
-                    'label' => $this->get('translator')->trans('Sign In'),
+                    'label' => $this->translator->trans('Sign In'),
                     'url' => '#'
                 ]
             ]
@@ -114,7 +114,7 @@ Class Customer extends AbstractController
             $validMimeType = ['image/jpeg', 'image/png', 'image/jpg'];
             if (isset($dataFiles['profileImage'])) {
                 if (!in_array($dataFiles['profileImage']->getMimeType(), $validMimeType)) {
-                    $this->addFlash('warning', $this->get('translator')->trans('Error ! Profile image is not valid, please upload a valid format'));
+                    $this->addFlash('warning', $this->translator->trans('Error ! Profile image is not valid, please upload a valid format'));
                     return $this->redirect($this->generateUrl('helpdesk_customer_account'));
                 }
             }
@@ -164,7 +164,7 @@ Class Customer extends AbstractController
                     $em->persist($userInstance);
                     $em->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Profile updated successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Profile updated successfully.'));
                     return $this->redirect($this->generateUrl('helpdesk_customer_account'));
                 } else {
                     $errors = $form->getErrors();
@@ -173,7 +173,7 @@ Class Customer extends AbstractController
                     $errors = $this->getFormErrors($form);
                 }
             } else {
-                $this->addFlash('warning', $this->get('translator')->trans('Error ! User with same email is already exist.'));
+                $this->addFlash('warning', $this->translator->trans('Error ! User with same email is already exist.'));
                 return $this->redirect($this->generateUrl('helpdesk_customer_account'));
             }
         }
@@ -198,7 +198,7 @@ Class Customer extends AbstractController
             'search' => $searchQuery,
             'articles' => $articleCollection,
             'breadcrumbs' => [
-                ['label' => $this->get('translator')->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
+                ['label' => $this->translator->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
                 ['label' => $searchQuery, 'url' => '#'],
             ],
         ]);
