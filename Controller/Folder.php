@@ -13,7 +13,7 @@ class Folder extends AbstractController
 {
     public function listFolders(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -31,7 +31,7 @@ class Folder extends AbstractController
 
     public function createFolder(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -45,7 +45,7 @@ class Folder extends AbstractController
             if ($imageFile = $request->files->get('solutionImage')) {
                 if (!preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
 
-                    $message = $this->get('translator')->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
+                    $message = $this->translator->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
                     $this->addFlash('warning', $message);
 
                     return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
@@ -65,7 +65,7 @@ class Folder extends AbstractController
             $folder->setSortOrder(1);
             $entityManager->persist($folder);
             $entityManager->flush();
-            $message = $this->get('translator')->trans('Success! Folder has been added successfully.');
+            $message = $this->translator->trans('Success! Folder has been added successfully.');
 
             $this->addFlash('success', $message);
 
@@ -80,7 +80,7 @@ class Folder extends AbstractController
 
     public function updateFolder($folderId)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -98,7 +98,7 @@ class Folder extends AbstractController
 
             if ($imageFile = $request->files->get('solutionImage')) {
                 if (!preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
-                    $message = $this->get('translator')->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
+                    $message = $this->translator->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
                     $this->addFlash('warning', $message);
 
                     return $this->render('@UVDeskSupportCenter/Staff/Folders/updateFolder.html.twig', [
@@ -122,7 +122,7 @@ class Folder extends AbstractController
             $entityManager->persist($knowledgebaseFolder);
             $entityManager->flush();
 
-            $this->addFlash('success', $this->get('translator')->trans('Folder updated successfully.'));
+            $this->addFlash('success', $this->translator->trans('Folder updated successfully.'));
             
             return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_folders_collection'));
         }

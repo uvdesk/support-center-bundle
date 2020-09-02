@@ -17,7 +17,7 @@ class Category extends AbstractController
 
     public function categoryList(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -41,7 +41,7 @@ class Category extends AbstractController
 
     public function categoryListBySolution(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -65,7 +65,7 @@ class Category extends AbstractController
 
     public function categoryListXhr(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -84,7 +84,7 @@ class Category extends AbstractController
 
     public function category(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -150,7 +150,7 @@ class Category extends AbstractController
             }
 
             $em->flush();
-            $message = $this->get('translator')->trans('Success! Category has been added successfully.');
+            $message = $this->translator->trans('Success! Category has been added successfully.');
 
             $this->addFlash('success', $message);
 
@@ -171,7 +171,7 @@ class Category extends AbstractController
 
     public function categoryXhr(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -189,12 +189,12 @@ class Category extends AbstractController
                         $em->getRepository('UVDeskSupportCenterBundle:SolutionCategory')->categorySortingUpdate($id, $sort);
                     }
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Category sort  order updated successfully.');
+                    $json['alertMessage'] = $this->translator->trans('Success ! Category sort  order updated successfully.');
                     break;
                 case 'status':
                     $em->getRepository('UVDeskSupportCenterBundle:SolutionCategory')->bulkCategoryStatusUpdate($dataIds, $data['targetId']);
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Category status updated successfully.');
+                    $json['alertMessage'] = $this->translator->trans('Success ! Category status updated successfully.');
                     break;
                 case 'solutionUpdate':
                     if($data['action'] == 'remove'){
@@ -213,7 +213,7 @@ class Category extends AbstractController
                         $em->flush();
                     }
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Folders updated successfully.');
+                    $json['alertMessage'] = $this->translator->trans('Success ! Folders updated successfully.');
                     break;
                 case 'delete':
                     if($dataIds){
@@ -232,7 +232,7 @@ class Category extends AbstractController
                         $this->removeCategory($dataIds);
 
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] = $this->get('translator')->trans('Success ! Categories removed successfully.');
+                        $json['alertMessage'] = $this->translator->trans('Success ! Categories removed successfully.');
 
                     }
                     break;
@@ -259,14 +259,14 @@ class Category extends AbstractController
                     $em->flush();
 
                     $json['alertClass'] = 'success';
-                    $json['alertMessage'] = $this->get('translator')->trans('Success ! Category updated successfully.');
+                    $json['alertMessage'] = $this->translator->trans('Success ! Category updated successfully.');
                 } else {
                     $json['alertClass'] = 'danger';
                     $json['errors'] = json_encode($this->getFormErrors($form));
                 }
             } else {
                 $json['alertClass'] = 'danger';
-                $json['alertMessage'] =  $this->get('translator')->trans('Error ! Category does not exist.');
+                $json['alertMessage'] =  $this->translator->trans('Error ! Category does not exist.');
             }
         } elseif($request->getMethod() == "PATCH") { //UPDATE STATUS
             $em = $this->getDoctrine()->getManager();
@@ -281,14 +281,14 @@ class Category extends AbstractController
                         $em->flush();
 
                         $json['alertClass'] = 'success';
-                        $json['alertMessage'] = $this->get('translator')->trans('Success ! Category status updated successfully.');
+                        $json['alertMessage'] = $this->translator->trans('Success ! Category status updated successfully.');
                         break;
                     default:
                         break;
                 }
             } else {
                 $json['alertClass'] = 'danger';
-                $json['alertMessage'] = $this->get('translator')->trans('Error ! Category is not exist.');
+                $json['alertMessage'] = $this->translator->trans('Error ! Category is not exist.');
             }
         }
 
@@ -299,7 +299,7 @@ class Category extends AbstractController
 
     private function removeCategory($category)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 

@@ -11,7 +11,7 @@ class Branding extends AbstractController
 {
     public function theme(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_ADMIN')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_ADMIN')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -44,7 +44,7 @@ class Branding extends AbstractController
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
 
                     break;
                 case "knowledgebase":
@@ -76,7 +76,7 @@ class Branding extends AbstractController
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
                 case "seo":
                     $configuration->setMetaDescription($params['metaDescription']);
@@ -85,7 +85,7 @@ class Branding extends AbstractController
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
                 case "links":
                     $footerLinks=[];
@@ -115,7 +115,7 @@ class Branding extends AbstractController
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
                 case "broadcasting":
                     $params['broadcasting']['isActive'] = array_key_exists('isActive', $params['broadcasting']) ? true  : false;
@@ -125,7 +125,7 @@ class Branding extends AbstractController
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
                 case 'advanced':
                     $configuration->setCustomCSS($request->request->get('customCSS'));
@@ -133,7 +133,7 @@ class Branding extends AbstractController
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
                 case 'time':
                     $configuration->getWebsite()->setTimezone($params['form']['timezone']);
@@ -142,7 +142,7 @@ class Branding extends AbstractController
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Time details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Time details saved successfully.'));
                     break;
                 default:
                     break;
@@ -159,7 +159,7 @@ class Branding extends AbstractController
 
     public function spam(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_ADMIN')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_ADMIN')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -178,7 +178,7 @@ class Branding extends AbstractController
             $entityManager->persist($configuration);
             $entityManager->flush();
 
-            $this->addFlash('success', $this->get('translator')->trans('Spam setting saved successfully.'));
+            $this->addFlash('success', $this->translator->trans('Spam setting saved successfully.'));
 
             return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_spam'));
         }
