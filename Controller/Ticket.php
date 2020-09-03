@@ -16,9 +16,33 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket as TicketEntity;
 use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\TicketService;
+use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
+use Symfony\Component\Translation\TranslatorInterface;
+
 
 class Ticket extends AbstractController
 {
+    private $userService;
+    private $eventDispatcher;
+    private $translator;
+    private $uvdeskService;
+    private $ticketService;
+    private $fileSystem;
+
+    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcher $eventDispatcher, TranslatorInterface $translator, TicketService $ticketService, FileSystem $fileSystem)
+    {
+        $this->userService = $userService;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->translator = $translator;
+        $this->uvdeskService = $uvdeskService;
+        $this->ticketService = $ticketServices;
+        $this->fileSystem = $fileSystem;
+    }
+
     protected function isWebsiteActive()
     {
         $entityManager = $this->getDoctrine()->getManager();
@@ -65,12 +89,12 @@ class Ticket extends AbstractController
                 $message = '';
                 $ticketType = $em->getRepository('UVDeskCoreFrameworkBundle:TicketType')->find($request->request->get('type'));
                 
-                if($request->files->get('customFields') && !$this->get('file.service')->validateAttachmentsSize($request->files->get('customFields'))) {
+                if($request->files->get('customFields') && !$this->fileSystem->validateAttachmentsSize($request->files->get('customFields'))) {
                     $error = true;
                     $this->addFlash(
                             'warning',
                             $this->translator->trans("Warning ! Files size can not exceed %size% MB", [
-                                '%size%' => $this->container->getParameter('max_upload_size')
+                                '%size%' => $this->getParameter('max_upload_size')
                             ])
                         );
                 }
@@ -100,7 +124,7 @@ class Ticket extends AbstractController
                 }
 
                 $website = $em->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
-                if(!empty($email) && $this->container->get('ticket.service')->isEmailBlocked($email, $website)) {
+                if(!empty($email) && $this->ticketService->isEmailBlocked($email, $website)) {
                     $request->getSession()->getFlashBag()->set('warning', $this->translator->trans('Warning ! Cannot create ticket, given email is blocked by admin.'));
                     return $this->redirect($this->generateUrl('helpdesk_customer_create_ticket'));
                 }
@@ -171,7 +195,7 @@ class Ticket extends AbstractController
                         'entity' => $thread->getTicket(),
                     ]);
 
-                    $this->get('event_dispatcher')->dispatch('uvdesk.automation.workflow.execute', $event);
+                    $this->eventDispatcher->dispatch('uvdesk.automation.workflow.execute', $event);
 
                     return $this->redirect($this->generateUrl('helpdesk_customer_create_ticket'));
                 } else {
@@ -270,7 +294,7 @@ class Ticket extends AbstractController
                     'entity' =>  $ticket,
                 ]);
 
-                $this->get('event_dispatcher')->dispatch('uvdesk.automation.workflow.execute', $event);
+                $this->eventDispatcher->dispatch('uvdesk.automation.workflow.execute', $event);
 
                 $this->addFlash('success', $this->translator->trans('Success ! Reply added successfully.'));
             } else {

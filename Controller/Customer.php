@@ -12,9 +12,23 @@ use Webkul\UVDesk\CoreFrameworkBundle\Utils\TokenGenerator;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website as CoreWebsite;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
+use Symfony\Component\Translation\TranslatorInterface;
 
 Class Customer extends AbstractController
 {
+    private $translator;
+    private $fileSystem;
+    private $passwordEncoder;
+
+    public function __construct(TranslatorInterface $translator, UserPasswordEncoderInterface $passwordEncoder, FileSystem $fileSystem)
+    {
+        $this->translator = $translator;
+        $this->fileSystem = $fileSystem;
+        $this->passwordEncoder = $passwordEncoder;
+    }
+
     protected function redirectUserToLogin()
     {
         $authChecker = $this->container->get('security.authorization_checker');
@@ -136,7 +150,7 @@ Class Customer extends AbstractController
 
                 if ($form->isValid()) {
                     if ($data != null && (!empty($data['password']['first']))) {
-                        $encodedPassword = $this->container->get('security.password_encoder')->encodePassword($user, $data['password']['first']);
+                        $encodedPassword = $this->passwordEncoder->encodePassword($user, $data['password']['first']);
 
                         if (!empty($encodedPassword) ) {
                             $user->setPassword($encodedPassword);
@@ -156,7 +170,7 @@ Class Customer extends AbstractController
                     $userInstance = $em->getRepository('UVDeskCoreFrameworkBundle:UserInstance')->findOneBy(array('user' => $user->getId()));
 
                     if (isset($dataFiles['profileImage'])) {
-                        $assetDetails = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($dataFiles['profileImage'], 'profile');
+                        $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($dataFiles['profileImage'], 'profile');
                         $userInstance->setProfileImagePath($assetDetails['path']);
                     }
 

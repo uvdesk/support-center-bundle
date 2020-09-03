@@ -10,10 +10,21 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
 use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping;
 use Webkul\UVDesk\SupportCenterBundle\Form\Category as CategoryForm;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class Category extends AbstractController
 {
     const LIMIT = 10;
+
+    private $userService;
+    private $translator;
+
+    public function __construct(UserService $userService, TranslatorInterface $translator)
+    {
+        $this->userService = $userService;
+        $this->translator = $translator;
+    }
 
     public function categoryList(Request $request)
     {
@@ -203,7 +214,7 @@ class Category extends AbstractController
                             ->removeSolutionsByCategory($data['ids'][0], [$data['solutionId']]);
 
                     }elseif($data['action'] == 'add'){
-                        $company = $this->container->get('user.service')->getCurrentCompany();
+                        $company = $this->userService->getCurrentCompany();
 
                         $solutionCategoryMapping = new SolutionCategoryMapping();
                         $solutionCategoryMapping->setSolutionId($data['solutionId']);

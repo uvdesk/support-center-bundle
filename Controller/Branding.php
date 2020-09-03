@@ -6,9 +6,23 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Website;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
+use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class Branding extends AbstractController
 {
+    private $userService;
+    private $translator;
+    private $fileSystem;
+
+    public function __construct(UserService $userService, TranslatorInterface $translator, FileSystem $fileSystem)
+    {
+        $this->userService = $userService;
+        $this->translator = $translator;
+        $this->fileSystem = $fileSystem;
+    }
+
     public function theme(Request $request)
     {
         if (!$this->userService->isAccessAuthorized('ROLE_ADMIN')) {
@@ -18,7 +32,7 @@ class Branding extends AbstractController
         $errors = [];
         $entityManager = $this->getDoctrine()->getManager();
         $settingType = $request->attributes->get('type');
-        $userService = $this->container->get('user.service');
+        $userService = $this->userService;
         $website = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneBy(['code'=>"knowledgebase"]);
         $configuration = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite')->findOneBy(['website' => $website->getId(),'isActive' => 1]);
 
@@ -33,7 +47,7 @@ class Branding extends AbstractController
                     $status = array_key_exists("status",$params['website']) ? 1 : 0;
 
                     if (isset($parmsFile['logo'])) {
-                        $assetDetails = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($parmsFile['logo'], 'website');
+                        $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($parmsFile['logo'], 'website');
                         $website->setLogo($assetDetails['path']);
                     }
 
