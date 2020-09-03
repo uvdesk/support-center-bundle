@@ -16,6 +16,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website as CoreWebsite;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
+use Symfony\Component\Translation\TranslatorInterface;
 
 
 class Website extends AbstractController
@@ -23,6 +25,15 @@ class Website extends AbstractController
     private $visibility = ['public'];
     private $limit = 5;
     private $company;
+
+    private $userService;
+    private $translator;
+
+    public function __construct(UserService $userService, UVDeskService $uvdeskService, TranslatorInterface $translator)
+    {
+        $this->userService = $userService;
+        $this->translator = $translator;
+    }
 
     private function isKnowledgebaseActive()
     {
@@ -362,7 +373,7 @@ class Website extends AbstractController
         // }
 
         // $company = $this->getCompany();
-        // $user = $this->container->get('user.service')->getCurrentUser();
+        // $user = $this->userService->getCurrentUser();
         $response = ['code' => 404, 'content' => ['alertClass' => 'danger', 'alertMessage' => 'An unexpected error occurred. Please try again later.']];
 
         // if (!empty($user) && $user != 'anon.') {

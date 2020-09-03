@@ -8,9 +8,23 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
+use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class Folder extends AbstractController
 {
+    private $userService;
+    private $translator;
+    private $fileSystem;
+
+    public function __construct(UserService $userService, TranslatorInterface $translator, FileSystem $fileSystem)
+    {
+        $this->userService = $userService;
+        $this->translator = $translator;
+        $this->fileSystem = $fileSystem;
+    }
+
     public function listFolders(Request $request)
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
@@ -57,7 +71,7 @@ class Folder extends AbstractController
             $folder->setDescription($data['description']);
             $folder->setvisibility($data['visibility']);
             if(isset($solutionImage)){
-                $assetDetails = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($solutionImage, 'knowledgebase');
+                $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($solutionImage, 'knowledgebase');
                 $folder->setSolutionImage($assetDetails['path']);
             }
             $folder->setDateAdded( new \DateTime());
@@ -108,7 +122,7 @@ class Folder extends AbstractController
             }
             $formData = $request->request->all();
             if (isset($solutionImage)) {
-                $assetDetails = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($solutionImage, 'knowledgebase');
+                $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($solutionImage, 'knowledgebase');
                 $knowledgebaseFolder->setSolutionImage($assetDetails['path']);
             }
 

@@ -17,9 +17,26 @@ use Webkul\UVDesk\CoreFrameworkBundle\Entity\Tag;
 use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleTags;
 use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
 use Webkul\UVDesk\SupportCenterBundle\Form;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class Article extends AbstractController
 {
+    private $userService;
+    private $eventDispatcher;
+    private $translator;
+    private $uvdeskService;
+
+    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcher $eventDispatcher, TranslatorInterface $translator)
+    {
+        $this->userService = $userService;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->translator = $translator;
+        $this->uvdeskService = $uvdeskService;
+    }
+
     public function articleList(Request $request)
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
@@ -121,8 +138,8 @@ class Article extends AbstractController
         if ($json) {
             foreach($json as $key => $js) {
                 $json[$key]['dateAdded'] = [
-                    'format' => $this->container->get('user.service')->convertToTimezone($js['dateAdded']),
-                    'timestamp' => $this->container->get('user.service')->convertToDatetimeTimezoneTimestamp($js['dateAdded']),
+                    'format' => $this->userService->convertToTimezone($js['dateAdded']),
+                    'timestamp' => $this->userService->convertToDatetimeTimezoneTimestamp($js['dateAdded']),
                 ];
             }
         }
