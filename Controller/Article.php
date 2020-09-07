@@ -17,7 +17,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\Entity\Tag;
 use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleTags;
 use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
 use Webkul\UVDesk\SupportCenterBundle\Form;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -29,7 +29,7 @@ class Article extends AbstractController
     private $translator;
     private $uvdeskService;
 
-    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcher $eventDispatcher, TranslatorInterface $translator)
+    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcherInterface $eventDispatcher, TranslatorInterface $translator)
     {
         $this->userService = $userService;
         $this->eventDispatcher = $eventDispatcher;
