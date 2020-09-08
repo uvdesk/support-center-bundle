@@ -29,7 +29,7 @@ class Website extends AbstractController
     private $userService;
     private $translator;
 
-    public function __construct(UserService $userService, UVDeskService $uvdeskService, TranslatorInterface $translator)
+    public function __construct(UserService $userService, TranslatorInterface $translator)
     {
         $this->userService = $userService;
         $this->translator = $translator;
