@@ -182,7 +182,7 @@ class Ticket extends AbstractController
                         }
                     }
 
-                    $thread = $this->get('ticket.service')->createTicketBase($data);
+                    $thread = $this->ticketService->createTicketBase($data);
                     
                     if ($thread) {
                         $request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
@@ -274,7 +274,7 @@ class Ticket extends AbstractController
                 $data['source'] = 'website';
                 $data['createdBy'] = 'customer';
                 $data['attachments'] = $request->files->get('attachments');
-                $thread = $this->get('ticket.service')->createThread($ticket, $data);
+                $thread = $this->ticketService->createThread($ticket, $data);
 
                 $em = $this->getDoctrine()->getManager();
                 $status = $em->getRepository('UVDeskCoreFrameworkBundle:TicketStatus')->findOneByCode($data['status']);
@@ -387,7 +387,7 @@ class Ticket extends AbstractController
         $twigResponse = [
             'ticket' => $ticket,
             'searchDisable' => true,
-            'initialThread' => $this->get('ticket.service')->getTicketInitialThreadDetails($ticket),
+            'initialThread' => $this->ticketService->getTicketInitialThreadDetails($ticket),
             'localizedCreateAtTime' => $this->userService->getLocalizedFormattedTime($user, $ticket->getCreatedAt()),
         ];
 
