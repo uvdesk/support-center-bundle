@@ -51,18 +51,3 @@
 		</script>
 	{% endif %}			
 {% endif %}
-
-{% if websiteConfiguration.customCSS %}
-	<style>
-		{{ websiteConfiguration.customCSS|raw }}
-	</style>
-{% endif %}
-{% if websiteConfiguration.script %}
-	{% if '<script' in websiteConfiguration.script and '</script>' in websiteConfiguration.script %}
-		{{ websiteConfiguration.script|raw }}
-	{% else %}
-		<script type="text/javascript">
-			{{ websiteConfiguration.script|raw }}
-		</script>
-	{% endif %}			
-{% endif %}
