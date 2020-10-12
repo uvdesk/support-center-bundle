@@ -163,6 +163,7 @@ Class Customer extends AbstractController
                     $user->setLastName($data['lastName']);
                     $user->setEmail($data['email']);
                     $user->setTimeZone($data['timezone']);
+                    $user->setTimeFormat($data['timeformat']);
                     
                     $em->persist($user);
                     $em->flush();
