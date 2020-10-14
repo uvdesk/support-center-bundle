@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Article;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleViewLog;
 use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -20,7 +20,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Symfony\Component\Translation\TranslatorInterface;
 
 
-class Website extends AbstractController
+class Website extends Controller
 {
     private $visibility = ['public'];
     private $limit = 5;

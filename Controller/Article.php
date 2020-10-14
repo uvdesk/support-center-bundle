@@ -4,7 +4,7 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,7 +22,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Symfony\Component\Translation\TranslatorInterface;
 
-class Article extends AbstractController
+class Article extends Controller
 {
     private $userService;
     private $eventDispatcher;
