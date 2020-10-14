@@ -39,7 +39,7 @@ class Ticket extends AbstractController
         $this->eventDispatcher = $eventDispatcher;
         $this->translator = $translator;
         $this->uvdeskService = $uvdeskService;
-        $this->ticketService = $ticketServices;
+        $this->ticketService = $ticketService;
         $this->fileSystem = $fileSystem;
     }
 
