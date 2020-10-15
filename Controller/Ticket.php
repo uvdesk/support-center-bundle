@@ -9,7 +9,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\Entity\Thread;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\TicketRating;
 use Webkul\UVDesk\SupportCenterBundle\Form\Ticket as TicketForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -24,7 +24,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Component\Translation\TranslatorInterface;
 
 
-class Ticket extends AbstractController
+class Ticket extends Controller
 {
     private $userService;
     private $eventDispatcher;
