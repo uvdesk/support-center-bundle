@@ -18,37 +18,7 @@
             theme: 'modern',
             menubar: false,
             height: 150,
-            toolbar: '| undo redo | bold italic forecolor | bullist numlist | link imageupload| styleselect | alignleft aligncenter alignright alignjustify | outdent indent | code |',                                         
-            spellchecker_languages: 'English=en',
-            spellchecker_callback: function(method, text, success, failure) {
-                var words = text.match(this.getWordCharPattern());
-                var data = {};
-                if(words) {
-                    data['words'] = Object.assign({}, words);
-                    data['lang'] = this.getLanguage();
-                    var suggestions = {};
-                    {# if (method == "spellcheck") {
-                        return $.ajax({
-                            data: data,
-                            type: "POST",
-                            url: '{{ path("app_translate_action", { "action": "spellcheck" }) }}',
-                            success: function(response) {
-                                for (var i = 0; i < words.length; i++) {
-                                    if('undefined' != typeof(response[words[i]]) ) {
-                                        suggestions[words[i]] = response[words[i]];
-                                    }
-                                }
-                                success(suggestions);
-                            },
-                            error: function(error) {
-                                success(suggestions);
-                            },
-                        });
-                    } #}
-                } else {
-                    success({});
-                }
-            },
+            toolbar: '| undo redo | bold italic forecolor | bullist numlist | link imageupload| styleselect | alignleft aligncenter alignright alignjustify | outdent indent | code | spellchecker',                                         
             plugins: [
                 'spellchecker  autolink lists link charmap print preview hr anchor pagebreak',
                 'searchreplace wordcount visualblocks visualchars code fullscreen',
