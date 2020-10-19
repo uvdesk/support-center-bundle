@@ -2110,7 +2110,7 @@ p {
   margin-top: -4px;
 }
 .uv-paper-article .uv-paper-section ul {
-  font-size: 17px;
+  font-size: 15px;
   color: #2750C4;
   padding: 0px 0px 0px 20px;
 }
@@ -2122,7 +2122,7 @@ p {
 .uv-paper-article .uv-paper-section a:active,
 .uv-paper-article .uv-paper-section a:visited {
   color: #2750C4;
-  font-size: 17px;
+  font-size: 15px;
 }
 .uv-paper-article .uv-paper-section a:hover {
   text-decoration: underline;
