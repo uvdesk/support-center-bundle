@@ -197,7 +197,12 @@ class Ticket extends Controller
 
                     $this->eventDispatcher->dispatch('uvdesk.automation.workflow.execute', $event);
 
-                    return $this->redirect($this->generateUrl('helpdesk_customer_create_ticket'));
+                    if(null != $this->getUser()) {
+                        return $this->redirect($this->generateUrl('helpdesk_customer_ticket_collection'));
+                    } else {
+                        return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
+                    }
+                    
                 } else {
                     $errors = $this->getFormErrors($form);
                     $errors = array_merge($errors, $formErrors);
