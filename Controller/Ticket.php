@@ -379,7 +379,9 @@ class Ticket extends Controller
         $ticket = $entityManager->getRepository(TicketEntity::class)->findOneBy(['id' => $id]);
         
         if (empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
-            throw new NotFoundHttpException('Page Not Found!');
+            if(!$this->isCollaborator($ticket, $user)) {
+                throw new NotFoundHttpException('Page Not Found!');
+            }
         }
 
         if (!empty($user) && $user->getId() == $ticket->getCustomer()->getId()) {
@@ -398,6 +400,20 @@ class Ticket extends Controller
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketView.html.twig', $twigResponse);
     }
+
+    // Check if user is collaborator for the ticket
+    public function isCollaborator($ticket, $user) {
+        $isCollaborator = false;
+        if(!empty($ticket->getCollaborators()->toArray())) {
+            foreach($ticket->getCollaborators()->toArray() as $collaborator) {
+                if($collaborator->getId() == $user->getId()) {
+                    $isCollaborator = true;
+                }
+            }
+        }
+        return $isCollaborator;
+    }
+
     // Ticket rating
     public function rateTicket(Request $request) {
 
