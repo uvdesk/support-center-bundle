@@ -84,138 +84,143 @@ class Ticket extends Controller
         $post = $request->request->all();
 
         if($request->getMethod() == "POST") {
-            if($_POST) {
-                $error = false;
-                $message = '';
-                $ticketType = $em->getRepository('UVDeskCoreFrameworkBundle:TicketType')->find($request->request->get('type'));
-                
-                if($request->files->get('customFields') && !$this->fileSystem->validateAttachmentsSize($request->files->get('customFields'))) {
-                    $error = true;
-                    $this->addFlash(
-                            'warning',
-                            $this->translator->trans("Warning ! Files size can not exceed %size% MB", [
-                                '%size%' => $this->getParameter('max_upload_size')
-                            ])
-                        );
-                }
-
-                $ticket = new TicketEntity();
-                $loggedUser = $this->get('security.token_storage')->getToken()->getUser();
-                
-                if(!empty($loggedUser) && $loggedUser != 'anon.') {
-                    
-                    $form = $this->createForm(TicketForm::class, $ticket, [
-                        'container' => $this->container,
-                        'entity_manager' => $em,
-                    ]);
-                    $email = $loggedUser->getEmail();
-                    try {
-                        $name = $loggedUser->getFirstName() . ' ' . $loggedUser->getLastName();
-                    } catch(\Exception $e) {
-                        $name = explode(' ', strstr($email, '@', true));
-                    }
-                } else {
-                    $form = $this->createForm(TicketForm::class, $ticket, [
-                        'container' => $this->container,
-                        'entity_manager' => $em,
-                    ]);
-                    $email = $request->request->get('from');
-                    $name = explode(' ', $request->request->get('name'));
-                }
-
-                $website = $em->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
-                if(!empty($email) && $this->ticketService->isEmailBlocked($email, $website)) {
-                    $request->getSession()->getFlashBag()->set('warning', $this->translator->trans('Warning ! Cannot create ticket, given email is blocked by admin.'));
-                    return $this->redirect($this->generateUrl('helpdesk_customer_create_ticket'));
-                }
-
-                if($request->request->all())
-                    $form->submit($request->request->all());
-
-                if ($form->isValid() && !count($formErrors) && !$error) {
-                    $data = array(
-                        'from' => $email, //email$request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
-                        'subject' => $request->request->get('subject'),
-                        // @TODO: We need to filter js (XSS) instead of html
-                        'reply' => strip_tags($request->request->get('reply')),
-                        'firstName' => $name[0],
-                        'lastName' => isset($name[1]) ? $name[1] : '',
-                        'role' => 4,
-                        'active' => true
-                    );
-
-                    $em = $this->getDoctrine()->getManager();
-                    $data['type'] = $em->getRepository('UVDeskCoreFrameworkBundle:TicketType')->find($request->request->get('type'));
-
-                    if(!is_object($data['customer'] = $this->container->get('security.token_storage')->getToken()->getUser()) == "anon.") {
-                        $supportRole = $em->getRepository('UVDeskCoreFrameworkBundle:SupportRole')->findOneByCode("ROLE_CUSTOMER");
-
-                        $customerEmail = $params['email'] = $request->request->get('from');
-                        $customer = $em->getRepository('UVDeskCoreFrameworkBundle:User')->findOneBy(array('email' => $customerEmail));
-                        $params['flag'] = (!$customer) ? 1 : 0;$request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
-
-                        $data['firstName'] = current($nameDetails = explode(' ', $request->request->get('name')));
-                        $data['fullname'] = $request->request->get('name');
-                        $data['lastName'] = ($data['firstName'] != end($nameDetails)) ? end($nameDetails) : " ";
-                        $data['from'] = $customerEmail;
-                        $data['role'] = 4;
-                        $data['customer'] = $this->userService->createUserInstance($customerEmail, $data['fullname'], $supportRole, $extras = ["active" => true]);
-                    } else {
-                        $userDetail = $em->getRepository('UVDeskCoreFrameworkBundle:User')->find($data['customer']->getId());
-                        $data['email'] = $customerEmail = $data['customer']->getEmail();
-                        $nameCollection = [$userDetail->getFirstName(), $userDetail->getLastName()];
-                        $name = implode(' ', $nameCollection);
-                        $data['fullname'] = $name;
-                    }
-                    $data['user'] = $data['customer'];
-                    $data['subject'] = $request->request->get('subject');
-                    $data['source'] = 'website';
-                    $data['threadType'] = 'create';
-                    $data['message'] = htmlentities($data['reply']);
-                    $data['createdBy'] = 'customer';
-                    $data['attachments'] = $request->files->get('attachments');
-
-                    if(!empty($request->server->get("HTTP_CF_CONNECTING_IP") )) {
-                        $data['ipAddress'] = $request->server->get("HTTP_CF_CONNECTING_IP");
-                        if(!empty($request->server->get("HTTP_CF_IPCOUNTRY"))) {
-                            $data['ipAddress'] .= '(' . $request->server->get("HTTP_CF_IPCOUNTRY") . ')';
-                        }
-                    }
-
-                    $thread = $this->ticketService->createTicketBase($data);
-                    
-                    if ($thread) {
-                        $request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
-                    } else {
-                        $request->getSession()->getFlashBag()->set('warning', $this->translator->trans('Warning ! Can not create ticket, invalid details.'));
-                    }
-
-                    // Trigger ticket created event
-                    $event = new GenericEvent(CoreWorkflowEvents\Ticket\Create::getId(), [
-                        'entity' => $thread->getTicket(),
-                    ]);
-
-                    $this->eventDispatcher->dispatch('uvdesk.automation.workflow.execute', $event);
-
-                    if(null != $this->getUser()) {
-                        return $this->redirect($this->generateUrl('helpdesk_customer_ticket_collection'));
-                    } else {
-                        return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
-                    }
-                    
-                } else {
-                    $errors = $this->getFormErrors($form);
-                    $errors = array_merge($errors, $formErrors);
-                }
+            if ($this->container->getParameter('is_google_captcha_enabled') && $this->get('recaptcha.service')->getReCaptchaResponse($request->request->get('g-recaptcha-response'))
+            ) {
+                $this->addFlash('warning', $this->get('translator')->trans("Warning ! Please select correct CAPTCHA !"));
             } else {
-                $this->addFlash(
-                    'warning',
-                    $this->translator->trans("Warning ! Post size can not exceed 25MB")
-                );
-            }
-
-            if(isset($errors) && count($errors)) {
-                $this->addFlash('warning', key($errors) . ': ' . reset($errors));
+                if($_POST) {
+                    $error = false;
+                    $message = '';
+                    $ticketType = $em->getRepository('UVDeskCoreFrameworkBundle:TicketType')->find($request->request->get('type'));
+                    
+                    if($request->files->get('customFields') && !$this->fileSystem->validateAttachmentsSize($request->files->get('customFields'))) {
+                        $error = true;
+                        $this->addFlash(
+                                'warning',
+                                $this->translator->trans("Warning ! Files size can not exceed %size% MB", [
+                                    '%size%' => $this->getParameter('max_upload_size')
+                                ])
+                            );
+                    }
+    
+                    $ticket = new TicketEntity();
+                    $loggedUser = $this->get('security.token_storage')->getToken()->getUser();
+                    
+                    if(!empty($loggedUser) && $loggedUser != 'anon.') {
+                        
+                        $form = $this->createForm(TicketForm::class, $ticket, [
+                            'container' => $this->container,
+                            'entity_manager' => $em,
+                        ]);
+                        $email = $loggedUser->getEmail();
+                        try {
+                            $name = $loggedUser->getFirstName() . ' ' . $loggedUser->getLastName();
+                        } catch(\Exception $e) {
+                            $name = explode(' ', strstr($email, '@', true));
+                        }
+                    } else {
+                        $form = $this->createForm(TicketForm::class, $ticket, [
+                            'container' => $this->container,
+                            'entity_manager' => $em,
+                        ]);
+                        $email = $request->request->get('from');
+                        $name = explode(' ', $request->request->get('name'));
+                    }
+    
+                    $website = $em->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
+                    if(!empty($email) && $this->ticketService->isEmailBlocked($email, $website)) {
+                        $request->getSession()->getFlashBag()->set('warning', $this->translator->trans('Warning ! Cannot create ticket, given email is blocked by admin.'));
+                        return $this->redirect($this->generateUrl('helpdesk_customer_create_ticket'));
+                    }
+    
+                    if($request->request->all())
+                        $form->submit($request->request->all());
+    
+                    if ($form->isValid() && !count($formErrors) && !$error) {
+                        $data = array(
+                            'from' => $email, //email$request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
+                            'subject' => $request->request->get('subject'),
+                            // @TODO: We need to filter js (XSS) instead of html
+                            'reply' => strip_tags($request->request->get('reply')),
+                            'firstName' => $name[0],
+                            'lastName' => isset($name[1]) ? $name[1] : '',
+                            'role' => 4,
+                            'active' => true
+                        );
+    
+                        $em = $this->getDoctrine()->getManager();
+                        $data['type'] = $em->getRepository('UVDeskCoreFrameworkBundle:TicketType')->find($request->request->get('type'));
+    
+                        if(!is_object($data['customer'] = $this->container->get('security.token_storage')->getToken()->getUser()) == "anon.") {
+                            $supportRole = $em->getRepository('UVDeskCoreFrameworkBundle:SupportRole')->findOneByCode("ROLE_CUSTOMER");
+    
+                            $customerEmail = $params['email'] = $request->request->get('from');
+                            $customer = $em->getRepository('UVDeskCoreFrameworkBundle:User')->findOneBy(array('email' => $customerEmail));
+                            $params['flag'] = (!$customer) ? 1 : 0;$request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
+    
+                            $data['firstName'] = current($nameDetails = explode(' ', $request->request->get('name')));
+                            $data['fullname'] = $request->request->get('name');
+                            $data['lastName'] = ($data['firstName'] != end($nameDetails)) ? end($nameDetails) : " ";
+                            $data['from'] = $customerEmail;
+                            $data['role'] = 4;
+                            $data['customer'] = $this->userService->createUserInstance($customerEmail, $data['fullname'], $supportRole, $extras = ["active" => true]);
+                        } else {
+                            $userDetail = $em->getRepository('UVDeskCoreFrameworkBundle:User')->find($data['customer']->getId());
+                            $data['email'] = $customerEmail = $data['customer']->getEmail();
+                            $nameCollection = [$userDetail->getFirstName(), $userDetail->getLastName()];
+                            $name = implode(' ', $nameCollection);
+                            $data['fullname'] = $name;
+                        }
+                        $data['user'] = $data['customer'];
+                        $data['subject'] = $request->request->get('subject');
+                        $data['source'] = 'website';
+                        $data['threadType'] = 'create';
+                        $data['message'] = htmlentities($data['reply']);
+                        $data['createdBy'] = 'customer';
+                        $data['attachments'] = $request->files->get('attachments');
+    
+                        if(!empty($request->server->get("HTTP_CF_CONNECTING_IP") )) {
+                            $data['ipAddress'] = $request->server->get("HTTP_CF_CONNECTING_IP");
+                            if(!empty($request->server->get("HTTP_CF_IPCOUNTRY"))) {
+                                $data['ipAddress'] .= '(' . $request->server->get("HTTP_CF_IPCOUNTRY") . ')';
+                            }
+                        }
+    
+                        $thread = $this->ticketService->createTicketBase($data);
+                        
+                        if ($thread) {
+                            $request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
+                        } else {
+                            $request->getSession()->getFlashBag()->set('warning', $this->translator->trans('Warning ! Can not create ticket, invalid details.'));
+                        }
+    
+                        // Trigger ticket created event
+                        $event = new GenericEvent(CoreWorkflowEvents\Ticket\Create::getId(), [
+                            'entity' => $thread->getTicket(),
+                        ]);
+    
+                        $this->eventDispatcher->dispatch('uvdesk.automation.workflow.execute', $event);
+    
+                        if(null != $this->getUser()) {
+                            return $this->redirect($this->generateUrl('helpdesk_customer_ticket_collection'));
+                        } else {
+                            return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
+                        }
+                        
+                    } else {
+                        $errors = $this->getFormErrors($form);
+                        $errors = array_merge($errors, $formErrors);
+                    }
+                } else {
+                    $this->addFlash(
+                        'warning',
+                        $this->translator->trans("Warning ! Post size can not exceed 25MB")
+                    );
+                }
+    
+                if(isset($errors) && count($errors)) {
+                    $this->addFlash('warning', key($errors) . ': ' . reset($errors));
+                }
             }
         }
 

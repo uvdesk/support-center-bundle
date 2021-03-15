@@ -94,6 +94,14 @@
 						</div>
 						<!-- //Field -->
 
+						{% if is_google_captcha_enabled == true %}
+							<div class="clearfix"></div>
+							<div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+							<div class="clearfix"></div>
+						{% else %}
+							<!-- Recaptcha will not support -->
+						{% endif %}
+
 						<div class="uv-element-block">
 							<button type="submit" id="create-ticket-btn" class="uv-btn">{{ 'Create Ticket'|trans }}</button>
 						</div>
@@ -107,6 +115,10 @@
 {% block footer %}
 	{% set isTicketViewPage = (app.user.id is defined ? true : false) %}
 	{{ parent() }}
+	{% if is_google_captcha_enabled == true %}
+        <script src='https://www.google.com/recaptcha/api.js'></script>
+    {% endif %}
+
 	{{ include('@UVDeskCoreFramework/Templates/attachment.html.twig') }}
 
 	<script src='https://www.google.com/recaptcha/api.js'></script>
@@ -151,6 +163,17 @@
 						required : true,
 						msg : '{{ "This field is mandatory"|trans }}'
 					},
+					{% if is_google_captcha_enabled == true %}
+                        'g-recaptcha-response' : {
+                            fn: function(value) {
+                                if(grecaptcha.getResponse().length > 0)
+                                    return false;
+                                else
+                                    return true;
+                            },
+                            msg : '{{ "Please select CAPTCHA"|trans }}'
+                        }
+				    {% endif %}
 				},
 				urlRoot : "{{ path('helpdesk_customer_create_ticket') }}"
 			});
