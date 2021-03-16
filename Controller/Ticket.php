@@ -22,6 +22,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\TicketService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Component\Translation\TranslatorInterface;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\ReCaptchaService;
 
 
 class Ticket extends Controller
@@ -32,8 +33,9 @@ class Ticket extends Controller
     private $uvdeskService;
     private $ticketService;
     private $fileSystem;
+    private $recaptchaService;
 
-    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcherInterface $eventDispatcher, TranslatorInterface $translator, TicketService $ticketService, FileSystem $fileSystem)
+    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcherInterface $eventDispatcher, TranslatorInterface $translator, TicketService $ticketService, FileSystem $fileSystem, ReCaptchaService $recaptchaService)
     {
         $this->userService = $userService;
         $this->eventDispatcher = $eventDispatcher;
@@ -41,6 +43,7 @@ class Ticket extends Controller
         $this->uvdeskService = $uvdeskService;
         $this->ticketService = $ticketService;
         $this->fileSystem = $fileSystem;
+        $this->recaptchaService = $recaptchaService;
     }
 
     protected function isWebsiteActive()
@@ -84,9 +87,10 @@ class Ticket extends Controller
         $post = $request->request->all();
 
         if($request->getMethod() == "POST") {
-            if ($this->container->getParameter('is_google_captcha_enabled') && $this->get('recaptcha.service')->getReCaptchaResponse($request->request->get('g-recaptcha-response'))
+            if ($this->getParameter('is_google_captcha_enabled') 
+            && $this->recaptchaService->getReCaptchaResponse($request->request->get('g-recaptcha-response'))
             ) {
-                $this->addFlash('warning', $this->get('translator')->trans("Warning ! Please select correct CAPTCHA !"));
+                $this->addFlash('warning', $this->translator->trans("Warning ! Please select correct CAPTCHA !"));
             } else {
                 if($_POST) {
                     $error = false;
