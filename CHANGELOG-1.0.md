@@ -3,6 +3,24 @@ CHANGELOG for 1.0.x
 
 This changelog references any relevant changes introduced in 1.0 minor versions.
 
+* 1.0.9 (2021-04-02)
+    * **Bug. Fixes:**
+        * **Issue #103:** Doctrine Entities Mapping error on KnowledgebaseWebsite#website.
+        * **Issue #107:** Getting exception while viewing categories/folder/articles at backend.
+        * **Issue #108:** contact us form is not working.
+        * **Issue #117:** [Feature request] Support HTML in Knowledgebase.
+        * **Issue #110:** customer panel showing error.
+        * **Issue #111:** add image upload icon in tinymc editor for articles.
+        * **Issue #112:** video attachment in article is not working.
+        * **Issue #119:** back date should be disabled while creating broadcast message.
+        * **Issue #120:** getting exception when sort category,article based on created date.
+        * **Issue #121:** duplicate editor options are visible in knowledgebase article editor.
+        * **Issue #122:** ticket list pagination is missing at customer panel.
+        * **Issue #122:** getting error while creating ticket from the front end.
+
+    * **Misc. Updates:**
+        * Added multiple option for Article Editor.
+
 * 1.0.8 (2020-07-21)
     * **Issue #102:** Footer cookie link issue on mobile.
     * **Issue #101:** Missed mobile menu to login, Missed operator three dots menù in a ticket.
