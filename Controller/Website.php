@@ -16,6 +16,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website as CoreWebsite;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
+use Symfony\Component\Translation\TranslatorInterface;
 
 
 class Website extends Controller
@@ -23,6 +25,15 @@ class Website extends Controller
     private $visibility = ['public'];
     private $limit = 5;
     private $company;
+
+    private $userService;
+    private $translator;
+
+    public function __construct(UserService $userService, TranslatorInterface $translator)
+    {
+        $this->userService = $userService;
+        $this->translator = $translator;
+    }
 
     private function isKnowledgebaseActive()
     {
@@ -128,7 +139,7 @@ class Website extends Controller
 
         $breadcrumbs = [
             [
-                'label' => $this->get('translator')->trans('Support Center'),
+                'label' => $this->translator->trans('Support Center'),
                 'url' => $this->generateUrl('helpdesk_knowledgebase')
             ],
             [
@@ -176,7 +187,7 @@ class Website extends Controller
 
         $breadcrumbs = [
             [
-                'label' => $this->get('translator')->trans('Support Center'),
+                'label' => $this->translator->trans('Support Center'),
                 'url' => $this->generateUrl('helpdesk_knowledgebase')
             ],
             [
@@ -225,7 +236,7 @@ class Website extends Controller
             $this->noResultFound();
 
         $breadcrumbs = [
-            [ 'label' => $this->get('translator')->trans('Support Center'),'url' => $this->generateUrl('helpdesk_knowledgebase') ],
+            [ 'label' => $this->translator->trans('Support Center'),'url' => $this->generateUrl('helpdesk_knowledgebase') ],
             [ 'label' => $category->getName(),'url' => '#' ],
         ];
         
@@ -259,7 +270,7 @@ class Website extends Controller
         }
 
         $entityManager = $this->getDoctrine()->getManager();
-        $user = $this->get('user.service')->getCurrentUser();
+        $user = $this->userService->getCurrentUser();
         $articleRepository = $entityManager->getRepository('UVDeskSupportCenterBundle:Article');
 
         if ($request->attributes->get('article')) {
@@ -299,10 +310,10 @@ class Website extends Controller
         $article_details = [
             'article' => $article,
             'breadcrumbs' => [
-                ['label' => $this->get('translator')->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
+                ['label' => $this->translator->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
                 ['label' => $article->getName(), 'url' => '#']
             ],
-            'dateAdded' => $this->get('user.service')->convertToTimezone($article->getDateAdded()),
+            'dateAdded' => $this->userService->convertToTimezone($article->getDateAdded()),
             'articleTags' => $articleRepository->getTagsByArticle($article->getId()),
             'articleAuthor' => $articleRepository->getArticleAuthorDetails($article->getId()),
             'relatedArticles' => $articleRepository->getAllRelatedyByArticle(['locale' => $request->getLocale(), 'articleId' => $article->getId()], [1]),
@@ -345,7 +356,7 @@ class Website extends Controller
             'articles' => $articleCollection,
             'search' => $tagLabel,
             'breadcrumbs' => [
-                ['label' => $this->get('translator')->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
+                ['label' => $this->translator->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
                 ['label' => $tagLabel, 'url' => '#'],
             ],
         ]);
@@ -362,7 +373,7 @@ class Website extends Controller
         // }
 
         // $company = $this->getCompany();
-        // $user = $this->container->get('user.service')->getCurrentUser();
+        // $user = $this->userService->getCurrentUser();
         $response = ['code' => 404, 'content' => ['alertClass' => 'danger', 'alertMessage' => 'An unexpected error occurred. Please try again later.']];
 
         // if (!empty($user) && $user != 'anon.') {

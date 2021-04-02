@@ -46,6 +46,7 @@
             z-index:1 ;
         }
     </style>
+
 	<div class="uv-inner-section">		
 		{# Append Panel Aside #}
 		{% set asideTemplate = 'Webkul\\UVDesk\\CoreFrameworkBundle\\Dashboard\\AsideTemplate' %}
@@ -532,6 +533,7 @@
 		</div>
 	</div>
 {% endblock %}
+
 {% block footer %}
 	{{ parent() }}
  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/css/bootstrap-colorpicker.min.css">
@@ -539,9 +541,11 @@
 
     <script>
   		$('.datetime').datetimepicker({
-			format: 'YYYY-MM-DD H:mm:ss'
+			format: 'YYYY-MM-DD H:mm:ss',
+            minDate: new Date()
 		});
     </script>
+    
     <!-- Header Link template -->
 	<script id="header_link_tmp" type="text/template">
         <div class="uv-element-block">
@@ -643,7 +647,6 @@
 			    	'click .general-btn': 'generalBrandingFormSubmit',
 			        'click .pending-response-btn': 'pendingResponseSettingFormSubmit',
 					'click .uv-btn': 'disableButton',
-			        'blur input:not[type="file"]': 'formChanegd',
                     'change input[type="file"]': 'formChanegd',
                     'change .convertToSlug': 'convertToSlug',
                     'click .uv-btn-tag.btn-add': 'addMoreLink',
@@ -737,8 +740,8 @@
                     $("label[for='" + currentElement.attr('id') + "']").addClass('uv-layout-icon-active');
                 }
 			});
-
-		    var brandingForm = new BrandingForm({
+            
+            var brandingForm = new BrandingForm({
 		        el: 'form',
 		        model: new BrandingModel()
 		    });
@@ -820,6 +823,7 @@
 			    },
                 timezoneFormSubmit: function(e) {
 					var form = Backbone.$(e.currentTarget).closest('form')
+                    
                     if (form.attr('id') == 'timeSettingForm') {
                         data = form.serializeObject();
                         form.submit()

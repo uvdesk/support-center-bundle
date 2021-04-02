@@ -144,6 +144,24 @@
                 display: none !important;
             }
         }
+        blockquote {
+            background: #f9f9f9;
+            border-left: 4px solid #ccc;
+            margin: 1.5em 10px;
+            padding: 0.5em 10px;
+            quotes: "\201C""\201D""\2018""\2019";
+        }
+        blockquote:before {
+            color: #ccc;
+            content: open-quote;
+            font-size: 3em;
+            line-height: 0.1em;
+            margin-right: 0.05em;
+            vertical-align: -0.4em;
+        }
+        blockquote p {
+            display: inline;
+        }
     </style>
 
     {% set ticketAgent = ticket.agent ? user_service.getAgentDetailById(ticket.agent.id) : null %}
@@ -182,7 +200,7 @@
                 {% endif %}
                 <div class="uv-aside-brick">
                     <h6>{{ 'Status'|trans }}</h6>
-                    <span>{{ ticket.status.code|trans }}</span>
+                    <span>{{ ticket.status.description|trans }}</span>
                 </div>
                 {% if ticket.type %}
                     <div class="uv-aside-brick">

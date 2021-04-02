@@ -30,6 +30,11 @@ SVG;
         return 'helpdesk_member_knowledgebase_article_collection';
     }
 
+    public static function getRoles() : array
+    {
+        return ['ROLE_ADMIN','ROLE_AGENT_MANAGE_KNOWLEDGEBASE'];
+    }
+
     public function getChildrenRoutes() : array
     {
         return [];

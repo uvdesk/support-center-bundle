@@ -5,6 +5,8 @@
 {% block metaDescription %}{% trans %}create.ticket.metaDescription{% endtrans %}{% endblock %}
 {% block metaKeywords %}{% trans %}create.ticket.metaKeywords{% endtrans %}{% endblock %}
 
+{% set recaptchaDetail = recaptcha_service.getRecaptchaDetails() %}
+
 {% block body %}
 	<style>
 		.uv-field{
@@ -22,6 +24,8 @@
 	</style>
 
 	{% set isTicketViewPage = (app.user.id is defined ? true : false) %}
+	
+
 	<div class="uv-paper-article uv-paper-form">
 		<div class="uv-paper-section">
 			<section>
@@ -93,6 +97,13 @@
 							</label>
 						</div>
 						<!-- //Field -->
+						{% if recaptchaDetail and recaptchaDetail.isActive == true %}
+							<div class="clearfix"></div>
+							<div class="g-recaptcha" data-sitekey="{{ recaptchaDetail.siteKey }}"></div>
+							<div class="clearfix"></div>
+                        {% else %}
+                            <!-- Recaptcha will not support -->
+                        {% endif %}
 
 						<div class="uv-element-block">
 							<button type="submit" id="create-ticket-btn" class="uv-btn">{{ 'Create Ticket'|trans }}</button>
@@ -107,9 +118,12 @@
 {% block footer %}
 	{% set isTicketViewPage = (app.user.id is defined ? true : false) %}
 	{{ parent() }}
-	{{ include('@UVDeskCoreFramework/Templates/attachment.html.twig') }}
 
-	<script src='https://www.google.com/recaptcha/api.js'></script>
+	{% if recaptchaDetail and recaptchaDetail.isActive == true %}
+        <script src='https://www.google.com/recaptcha/api.js'></script>
+    {% endif %}
+
+	{{ include('@UVDeskCoreFramework/Templates/attachment.html.twig') }}
 
 	<script type="text/javascript">
 		$(function () {
@@ -151,6 +165,17 @@
 						required : true,
 						msg : '{{ "This field is mandatory"|trans }}'
 					},
+					{% if recaptchaDetail and recaptchaDetail.isActive == true %}
+                        'g-recaptcha-response' : {
+                            fn: function(value) {
+                                if(grecaptcha.getResponse().length > 0)
+                                    return false;
+                                else
+                                    return true;
+                            },
+                            msg : '{{ "Please select CAPTCHA"|trans }}'
+                        }
+				    {% endif %}
 				},
 				urlRoot : "{{ path('helpdesk_customer_create_ticket') }}"
 			});

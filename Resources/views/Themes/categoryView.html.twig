@@ -23,7 +23,7 @@
 			{% endfor %}
 
 			<div style="text-align: center; margin-top: 30px;">
-				<a href="{{ path('helpdesk_knowledgebase_category_collection') }}" class="uv-btn">View all Categories</a>
+				<a href="{{ path('helpdesk_knowledgebase_category_collection') }}" class="uv-btn">{{ "View all categories"|trans }}</a>
 			</div>
 		{% else %}
 			<p>{{ "No Categories Found!"|trans }}</p>

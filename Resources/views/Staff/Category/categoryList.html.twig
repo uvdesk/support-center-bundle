@@ -169,10 +169,10 @@
 
 	<!-- Sorting Template -->
 	<script id="category_list_sorting_tmp" type="text/template">
-        <li class="<% if(sort == 'a.createdAt') { %>uv-drop-list-active<% } %>">
-            <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.createdAt/<% if(sort == 'a.createdAt') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.createdAt">
+        <li class="<% if(sort == 'a.dateAdded') { %>uv-drop-list-active<% } %>">
+            <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.dateAdded/<% if(sort == 'a.dateAdded') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.dateAdded">
 				{% trans %}Created At{% endtrans %}
-				<% if(sort == 'a.createdAt') { %>
+				<% if(sort == 'a.dateAdded') { %>
 					<span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 				<% } %>
 			</a>
@@ -474,7 +474,7 @@
             var bulkAction = new BulkActionView();
 
 			var Filter = app.Filter.extend({
-				defaultSortIndex: 'a.createdAt',
+				defaultSortIndex: 'a.dateAdded',
 				sortText: "{% trans %}Sort By:{% endtrans %} ",
 				defaultSortText: "{% trans %}Sort By:{% endtrans %} {% trans %}Created At{% endtrans %}",
 				template : _.template($("#category_list_sorting_tmp").html())

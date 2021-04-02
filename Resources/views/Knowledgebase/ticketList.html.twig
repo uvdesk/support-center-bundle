@@ -73,7 +73,7 @@
 				<!--//Filter By Status-->
 			</div>
 			<div class="uv-action-view-rt">
-				<input type="text" class="uv-search-inline uv-search-inline-full" placeholder="Search Tickets">
+				<input type="text" class="uv-search-inline uv-search-inline-full" placeholder="{{ 'Search Tickets'|trans }}">
 			</div>
 		</div>
 	</div>
@@ -136,7 +136,7 @@
         </td>
         <td data-value="{{ 'Status'|trans }}">
 	       	<a class="not-shiny" href="<%- path %>">
-	       		<%- status.code %>
+	       		<%- status.description %>
 	    	</a>
         </td>
         <td data-value="{{ 'Timestamp'|trans }}">

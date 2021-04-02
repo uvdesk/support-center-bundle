@@ -401,8 +401,8 @@ class KnowledgebaseWebsite
         return $this->broadcastMessage;
     }
     /**
-     * @var \Webkul\UVDesk\SupportCenterBundle\Entity\website
-     * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\CoreFrameworkBundle\Entity\Website", inversedBy="website")
+     * @var \Webkul\UVDesk\SupportCenterBundle\Entity\Website
+     * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\CoreFrameworkBundle\Entity\Website")
      * @ORM\JoinColumn(name="website", referencedColumnName="id")
      */
     private $website;
@@ -453,7 +453,7 @@ class KnowledgebaseWebsite
     /**
      * Set website.
      *
-     * @param \Webkul\UVDesk\CoreFrameworkBundle\Entity\website|null $website
+     * @param \Webkul\UVDesk\CoreFrameworkBundle\Entity\Website|null $website
      *
      * @return KnowledgebaseWebsite
      */
