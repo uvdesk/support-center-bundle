@@ -280,13 +280,22 @@ class Ticket extends Controller
                 $data['ticket'] = $ticket;
                 $data['user'] = $this->userService->getCurrentUser();
 
+                // Checking if reply is from collaborator end
+                $isTicketCollaborator = $ticket->getCollaborators() ? $ticket->getCollaborators()->toArray() : [];
+                $isCollaborator = false;
+                foreach ($isTicketCollaborator as $value) {
+                    if($value->getId() == $data['user']->getId()){
+                        $isCollaborator = true;
+                    }
+                }
+
                 // @TODO: Refactor -> Why are we filtering only these two characters?
                 $data['message'] = str_replace(['&lt;script&gt;', '&lt;/script&gt;'], '', $data['message']);
 
                 $userDetail = $this->userService->getCustomerPartialDetailById($data['user']->getId());
                 $data['fullname'] = $userDetail['name'];
                 $data['source'] = 'website';
-                $data['createdBy'] = 'customer';
+                $data['createdBy'] = $isCollaborator ? 'collaborator' : 'customer';
                 $data['attachments'] = $request->files->get('attachments');
                 $thread = $this->ticketService->createThread($ticket, $data);
 
@@ -303,10 +312,15 @@ class Ticket extends Controller
                     $em->flush();
                 }
 
-                // Trigger customer reply event
-                $event = new GenericEvent(CoreWorkflowEvents\Ticket\CustomerReply::getId(), [
-                    'entity' =>  $ticket,
-                ]);
+                if ($thread->getcreatedBy() == 'customer') {
+                    $event = new GenericEvent(CoreWorkflowEvents\Ticket\CustomerReply::getId(), [
+                        'entity' =>  $ticket,
+                    ]);
+                } else {
+                    $event = new GenericEvent(CoreWorkflowEvents\Ticket\CollaboratorReply::getId(), [
+                        'entity' =>  $ticket,
+                    ]);
+                }
 
                 $this->eventDispatcher->dispatch('uvdesk.automation.workflow.execute', $event);
 
