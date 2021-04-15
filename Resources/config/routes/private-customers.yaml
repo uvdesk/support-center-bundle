@@ -81,3 +81,21 @@ helpdesk_customer_front_article_search:
     path: /search/article/{s}
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Customer::searchArticle
     defaults: { s: 0 }
+
+# Marketing Announcement section resources
+helpdesk_member_knowledgebase_marketing_announcement:
+    path:     /announcement/list
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::listAnnouncement
+
+helpdesk_member_knowledgebase_marketing_announcement_xhr:
+    path:     /announcement/xhr
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::listAnnouncementXHR
+
+helpdesk_member_knowledgebase_create_marketing_announcement:
+    path:     /knowledgebase/announcement/new
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::updateAnnouncement
+
+helpdesk_member_knowledgebase_update_marketing_announcement:
+    path:     /knowledgebase/announcement/update/{announcementId}
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::updateAnnouncement
+    defaults: { announcementId: 0 }
