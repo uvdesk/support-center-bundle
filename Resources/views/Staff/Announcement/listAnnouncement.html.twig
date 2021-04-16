@@ -55,7 +55,7 @@
 				<div class="uv-action-bar-col-rt">
 					<input type="text" class="uv-search-inline uv-vertical-align uv-margin-right-15" placeholder="{{ 'Search'|trans }}">
 					<!-- Add Button -->
-					<a href="{{ path('webkul_member_knowledgebase_add_announcement') }}" type="button" class="uv-btn-action">
+					<a href="{{ path('helpdesk_member_knowledgebase_create_marketing_announcement') }}" type="button" class="uv-btn-action">
 						<span class="uv-icon-add"></span>
 						{{ "New Announcement"|trans }}
 					</a>
@@ -137,7 +137,7 @@
 	<!-- //Team list item template -->
 
 	<script type="text/javascript">
-		var path = "{{ path('webkul_member_knowledgebase_edit_announcement', {'id': 'replaceId' }) }}";
+		var path = "{{ path('helpdesk_member_knowledgebase_update_marketing_announcement', {'announcementId': 'replaceId' }) }}";
 
 		$(function () {
 			var globalMessageResponse = "";
@@ -148,7 +148,7 @@
 
 			var AnnouncementCollection = AppCollection.extend({
 				model : TeamModel,
-				url : "{{ path('webkul_member_knowledgebase_announcement_list_xhr') }}",
+				url : "{{ path('helpdesk_member_knowledgebase_marketing_announcement_xhr') }}",
 				filterParameters : {
 					"isActive" : "",
 					"search" : ""
@@ -208,7 +208,7 @@
 					app.appView.showLoader();
 					self = this;
 					this.model.destroy({
-						url : "{{ path('webkul_member_knowledgebase_remove_announcement_xhr') }}/"+this.model.get('id'),
+						url : "{{ path('helpdesk_member_knowledgebase_remove_marketing_announcement_xhr') }}/"+this.model.get('announcementId'),
 						success : function (model, response, options) {
 							app.appView.hideLoader();
 							globalMessageResponse = response;

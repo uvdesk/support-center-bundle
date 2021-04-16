@@ -103,7 +103,7 @@
 					<label class="uv-field-label">Groups</label>
 					<div class="uv-field-block">
 						<select name="announcement_form[group]" class="uv-select">
-							{% for group in user_service.getGroups() %}
+							{% for group in user_service.getSupportGroups() %}
 								{% if announcement.id is not null %}
 									<option value="{{group.id}}" 
 									{% if (announcement.group.id == group.id) %}selected{% endif %}
