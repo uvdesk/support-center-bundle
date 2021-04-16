@@ -5,12 +5,13 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Website;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Webkul\UVDesk\SupportCenterBundle\Entity\Announcement as MarketingAnnouncement;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Component\Translation\TranslatorInterface;
 
-Class Announcement extends AbstractController
+Class Announcement extends Controller
 {
     private $translator;
     private $userService;
@@ -35,7 +36,6 @@ Class Announcement extends AbstractController
         $json = array();
         $repository = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Announcement');
         $json =  $repository->getAllAnnouncements($request->query, $this->container);
-        
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
@@ -49,19 +49,19 @@ Class Announcement extends AbstractController
         
         $em = $this->getDoctrine()->getManager();
         
-        if($request->attributes->get('id')){
+        if($request->attributes->get('announcementId')){
             $announcement = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Announcement')
                         ->findOneBy([
-                                'id' => $request->attributes->get('id')
+                                'id' => $request->attributes->get('announcementId')
                             ]);
             $announcement->setCreatedAt(new \DateTime('now'));          
             if(!$announcement)
                 $this->noResultFound();
         } else {
-            $announcement = new Announcement;
+            $announcement = new MarketingAnnouncement;
             $announcement->setCreatedAt(new \DateTime('now'));
         }
-            
+        
         if($request->getMethod() == "POST") {
             $request = $request->request->get('announcement_form');
             $group = $em->getRepository('UVDeskCoreFrameworkBundle:SupportGroup')->find($request['group']);
