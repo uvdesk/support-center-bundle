@@ -341,9 +341,23 @@ class Ticket extends Controller
     {
         $this->isWebsiteActive();
 
+        // List Announcement if any
+        $announcements =  $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Announcement')->findBy(['isActive' => 1]);
+
+        $groupAnnouncement = [];
+        foreach($announcements as $announcement) {
+            $announcementGroupId = $announcement->getGroup();
+            $isTicketExist =  $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:Ticket')->findBy(['supportGroup' => $announcementGroupId, 'customer' => $this->userService->getCurrentUser()]);
+
+            if (!empty($isTicketExist)) {
+                $groupAnnouncement[] = $announcement;
+            }
+        }
+
         return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketList.html.twig',
             array(
-                'searchDisable' => true
+                'searchDisable' => true,
+                'groupAnnouncement' => $groupAnnouncement
             )
         );
     }
