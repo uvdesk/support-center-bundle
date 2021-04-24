@@ -3,6 +3,13 @@
 {% block title %}{{ 'Marketing Announcement'|trans }}{% endblock %}
 
 {% block pageContent %}
+	<style>
+		.uv-color-field {
+			color: #fff;
+			width: 100px;
+			text-transform: uppercase;
+		}
+	</style>
 	<div class="uv-inner-section">
         {# Append Panel Aside #}
 		{% set asideTemplate = 'Webkul\\UVDesk\\CoreFrameworkBundle\\Dashboard\\AsideTemplate' %}
@@ -59,7 +66,7 @@
 				<div class="uv-element-block">
 					<label class="uv-field-label">Tag-Color</label>
 					<div class="uv-field-block">
-						<input type="text" name="announcement_form[tagColor]" class="uv-field" value="{{ announcement.tagColor }}" />
+						<input type="text" name="announcement_form[tagColor]" class="uv-field uv-color-field" value="{{ announcement.tagColor }}" />
 					</div>
 					<span class="uv-field-info">Tag background color</span>
 				</div>
@@ -130,8 +137,17 @@
 
 {% block footer %}
 	{{ parent() }}
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/css/bootstrap-colorpicker.min.css">
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/js/bootstrap-colorpicker.min.js"></script>
+
 	<script type="text/javascript">
 		$(function () {
+			$('.uv-color-field').colorpicker({format: "hex"}).on('changeColor', function(ev) {
+                $(this).css('background', $(this).val())
+                textColor = app.appView.getTextColorBasedBackground($(this).val());
+                $(this).css('color', textColor)
+            });
+
 			var AnnouncementModel = Backbone.Model.extend({
 				validation: {
 					'announcement_form[title]':[{
@@ -179,6 +195,11 @@
 					'click .uv-btn': "savePromotion"
 				},
 				initialize : function() {
+					$('.uv-color-field').each(function() {
+                        textColor = app.appView.getTextColorBasedBackground($(this).val());
+                        $(this).css('color', textColor)
+                    });
+
 					Backbone.Validation.bind(this);
 					var jsonContext = '';
 		    		for (var field in jsonContext) {
