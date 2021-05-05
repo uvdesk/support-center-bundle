@@ -23,6 +23,11 @@ SVG;
         return "Marketing Announcement";
     }
 
+    public static function getRoles() : array
+    {
+        return ['ROLE_AGENT_MANAGE_MARKETING_ANNOUNCEMENT'];
+    }
+
     public static function getRouteName() : string
     {
         return 'helpdesk_member_knowledgebase_marketing_announcement';
