@@ -32,7 +32,7 @@ SVG;
 
     public static function getRoles() : array
     {
-        return ['ROLE_ADMIN','ROLE_AGENT_MANAGE_KNOWLEDGEBASE'];
+        return ['ROLE_AGENT_MANAGE_MARKETING_ANNOUNCEMENT'];
     }
 
     public function getChildrenRoutes() : array
