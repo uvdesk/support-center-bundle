@@ -7,14 +7,28 @@ use Symfony\Component\Security\Core\Security;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\User;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Webkul\UVDesk\CoreFrameworkBundle\Form\UserProfile;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Utils\TokenGenerator;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website as CoreWebsite;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
+use Symfony\Component\Translation\TranslatorInterface;
 
-Class Customer extends Controller
+Class Customer extends AbstractController
 {
+    private $translator;
+    private $fileSystem;
+    private $passwordEncoder;
+
+    public function __construct(TranslatorInterface $translator, UserPasswordEncoderInterface $passwordEncoder, FileSystem $fileSystem)
+    {
+        $this->translator = $translator;
+        $this->fileSystem = $fileSystem;
+        $this->passwordEncoder = $passwordEncoder;
+    }
+
     protected function redirectUserToLogin()
     {
         $authChecker = $this->container->get('security.authorization_checker');
@@ -72,7 +86,7 @@ Class Customer extends Controller
 
         /** check disabled customer login **/
         if($this->isLoginDisabled()) {
-            $this->addFlash('warning', $this->get('translator')->trans('Warning ! Customer Login disabled by admin.') );
+            $this->addFlash('warning', $this->translator->trans('Warning ! Customer Login disabled by admin.') );
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
         }
 
@@ -87,10 +101,10 @@ Class Customer extends Controller
             'error'         => $error,
             'breadcrumbs' => [
                 [
-                    'label' => $this->get('translator')->trans('Support Center'),
+                    'label' => $this->translator->trans('Support Center'),
                     'url' => $this->generateUrl('helpdesk_knowledgebase')
                 ], [
-                    'label' => $this->get('translator')->trans('Sign In'),
+                    'label' => $this->translator->trans('Sign In'),
                     'url' => '#'
                 ]
             ]
@@ -114,7 +128,7 @@ Class Customer extends Controller
             $validMimeType = ['image/jpeg', 'image/png', 'image/jpg'];
             if (isset($dataFiles['profileImage'])) {
                 if (!in_array($dataFiles['profileImage']->getMimeType(), $validMimeType)) {
-                    $this->addFlash('warning', $this->get('translator')->trans('Error ! Profile image is not valid, please upload a valid format'));
+                    $this->addFlash('warning', $this->translator->trans('Error ! Profile image is not valid, please upload a valid format'));
                     return $this->redirect($this->generateUrl('helpdesk_customer_account'));
                 }
             }
@@ -136,7 +150,7 @@ Class Customer extends Controller
 
                 if ($form->isValid()) {
                     if ($data != null && (!empty($data['password']['first']))) {
-                        $encodedPassword = $this->container->get('security.password_encoder')->encodePassword($user, $data['password']['first']);
+                        $encodedPassword = $this->passwordEncoder->encodePassword($user, $data['password']['first']);
 
                         if (!empty($encodedPassword) ) {
                             $user->setPassword($encodedPassword);
@@ -149,6 +163,7 @@ Class Customer extends Controller
                     $user->setLastName($data['lastName']);
                     $user->setEmail($data['email']);
                     $user->setTimeZone($data['timezone']);
+                    $user->setTimeFormat($data['timeformat']);
                     
                     $em->persist($user);
                     $em->flush();
@@ -156,7 +171,7 @@ Class Customer extends Controller
                     $userInstance = $em->getRepository('UVDeskCoreFrameworkBundle:UserInstance')->findOneBy(array('user' => $user->getId()));
 
                     if (isset($dataFiles['profileImage'])) {
-                        $assetDetails = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($dataFiles['profileImage'], 'profile');
+                        $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($dataFiles['profileImage'], 'profile');
                         $userInstance->setProfileImagePath($assetDetails['path']);
                     }
 
@@ -164,7 +179,7 @@ Class Customer extends Controller
                     $em->persist($userInstance);
                     $em->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Profile updated successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Profile updated successfully.'));
                     return $this->redirect($this->generateUrl('helpdesk_customer_account'));
                 } else {
                     $errors = $form->getErrors();
@@ -173,7 +188,7 @@ Class Customer extends Controller
                     $errors = $this->getFormErrors($form);
                 }
             } else {
-                $this->addFlash('warning', $this->get('translator')->trans('Error ! User with same email is already exist.'));
+                $this->addFlash('warning', $this->translator->trans('Error ! User with same email is already exist.'));
                 return $this->redirect($this->generateUrl('helpdesk_customer_account'));
             }
         }
@@ -198,7 +213,7 @@ Class Customer extends Controller
             'search' => $searchQuery,
             'articles' => $articleCollection,
             'breadcrumbs' => [
-                ['label' => $this->get('translator')->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
+                ['label' => $this->translator->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
                 ['label' => $searchQuery, 'url' => '#'],
             ],
         ]);

@@ -5,20 +5,34 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Website;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
+use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
+use Symfony\Component\Translation\TranslatorInterface;
 
-class Branding extends Controller
+class Branding extends AbstractController
 {
+    private $userService;
+    private $translator;
+    private $fileSystem;
+
+    public function __construct(UserService $userService, TranslatorInterface $translator, FileSystem $fileSystem)
+    {
+        $this->userService = $userService;
+        $this->translator = $translator;
+        $this->fileSystem = $fileSystem;
+    }
+
     public function theme(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_ADMIN')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_ADMIN')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $errors = [];
         $entityManager = $this->getDoctrine()->getManager();
         $settingType = $request->attributes->get('type');
-        $userService = $this->container->get('user.service');
+        $userService = $this->userService;
         $website = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneBy(['code'=>"knowledgebase"]);
         $configuration = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite')->findOneBy(['website' => $website->getId(),'isActive' => 1]);
 
@@ -33,7 +47,7 @@ class Branding extends Controller
                     $status = array_key_exists("status",$params['website']) ? 1 : 0;
 
                     if (isset($parmsFile['logo'])) {
-                        $assetDetails = $this->container->get('uvdesk.core.file_system.service')->getUploadManager()->uploadFile($parmsFile['logo'], 'website');
+                        $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($parmsFile['logo'], 'website');
                         $website->setLogo($assetDetails['path']);
                     }
 
@@ -44,7 +58,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
 
                     break;
                 case "knowledgebase":
@@ -76,7 +90,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
                 case "seo":
                     $configuration->setMetaDescription($params['metaDescription']);
@@ -85,7 +99,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
                 case "links":
                     $footerLinks=[];
@@ -115,7 +129,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
                 case "broadcasting":
                     $params['broadcasting']['isActive'] = array_key_exists('isActive', $params['broadcasting']) ? true  : false;
@@ -125,7 +139,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
                 case 'advanced':
                     $configuration->setCustomCSS($request->request->get('customCSS'));
@@ -133,7 +147,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Branding details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
                 case 'time':
                     $configuration->getWebsite()->setTimezone($params['form']['timezone']);
@@ -142,7 +156,7 @@ class Branding extends Controller
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    $this->addFlash('success', $this->get('translator')->trans('Success ! Time details saved successfully.'));
+                    $this->addFlash('success', $this->translator->trans('Success ! Time details saved successfully.'));
                     break;
                 default:
                     break;
@@ -159,7 +173,7 @@ class Branding extends Controller
 
     public function spam(Request $request)
     {
-        if (!$this->get('user.service')->isAccessAuthorized('ROLE_ADMIN')) {
+        if (!$this->userService->isAccessAuthorized('ROLE_ADMIN')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -178,7 +192,7 @@ class Branding extends Controller
             $entityManager->persist($configuration);
             $entityManager->flush();
 
-            $this->addFlash('success', $this->get('translator')->trans('Spam setting saved successfully.'));
+            $this->addFlash('success', $this->translator->trans('Spam setting saved successfully.'));
 
             return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_spam'));
         }

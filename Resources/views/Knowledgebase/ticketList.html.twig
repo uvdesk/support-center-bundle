@@ -31,6 +31,50 @@
 		.uv-table td a {
 			color: #333;
 		}
+		.announcement {
+			background-color:green;
+			margin-bottom:10px; 
+			border-radius:3px;
+			height: 48px; 
+			padding: 10px;
+		}
+		.announcement_para {
+			color: #fff;
+			float: left;
+			font-style: normal;
+			font-weight: 500;
+			font-size: 16px;
+			line-height: 17px;
+		}
+		.announcement_remove {
+			border-radius:50%; 
+			float:right; 
+			cursor:pointer;
+			border: 2px solid #fff; 
+			width: 26px; 
+			padding-left: 7px; 
+			padding-bottom: 3px;
+		}
+		.announcement_btn_rgt {
+			float: right;
+			font-weight:bold;
+			background: #FFFFFF;
+			cursor: pointer;
+			color: #2B6BE3;
+			padding: 4px;
+			border-radius: 3px; 
+			margin-right: 36px;
+		}
+		.announcement_btn_left {
+			float: left;
+			background: #EFC556;
+			font-weight:bold;
+			cursor: pointer;
+			font: Source Sans Pro;
+			padding: 4px;
+			border-radius: 4px;
+			margin-right: 10px;
+		}
 	</style>
 	
 	<div class="uv-nav-tab-view">
@@ -73,11 +117,23 @@
 				<!--//Filter By Status-->
 			</div>
 			<div class="uv-action-view-rt">
-				<input type="text" class="uv-search-inline uv-search-inline-full" placeholder="Search Tickets">
+				<input type="text" class="uv-search-inline uv-search-inline-full" placeholder="{{ 'Search Tickets'|trans }}">
 			</div>
 		</div>
 	</div>
 	<!--//Action Bar-->
+
+	<!-- Announcement Section-->
+	{% for announcement in groupAnnouncement %}
+		<div class="announcement" id= "uv-kb-info-announcement_{{ announcement.id }}">
+			<a class="announcement_btn_left" style="background:{{ announcement.tagColor }} !important; color:#333333 !important" href="#">{{ announcement.title }}</a>
+			<p class="announcement_para">{{ announcement.promoText }}</p>
+			<a class ="announcement_remove" style="color: #fff !important;" onclick="document.getElementById('uv-kb-info-announcement_{{ announcement.id }}').remove()">x</a>
+			<a class="announcement_btn_rgt" target="_blank" href="{{ announcement.linkUrl }}">{{ announcement.linkText }}</a>
+		</div>
+    {% endfor %}
+	<div class="uv-hl-ring"></div>
+	<!-- Announcement Section-->
 
 	<div class="uv-table uv-list-view">
 		<table>
@@ -136,7 +192,7 @@
         </td>
         <td data-value="{{ 'Status'|trans }}">
 	       	<a class="not-shiny" href="<%- path %>">
-	       		<%- status.code %>
+	       		<%- status.description %>
 	    	</a>
         </td>
         <td data-value="{{ 'Timestamp'|trans }}">

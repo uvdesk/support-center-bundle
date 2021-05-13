@@ -7,11 +7,11 @@ use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
 use Symfony\Component\HttpFoundation\Request;
 
-class SpamSettings implements SearchItemInterface
+class Announcement implements SearchItemInterface
 {
     CONST SVG = <<<SVG
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30px" height="30px" viewBox="0 0 60 60">
-    <path fill-rule="evenodd" d="M29.994,5.98A24.007,24.007,0,1,0,53.974,29.987,24,24,0,0,0,29.994,5.98ZM12,29.365A17.359,17.359,0,0,1,29.36,12a17.148,17.148,0,0,1,10.634,3.668L15.666,40A17.156,17.156,0,0,1,12,29.365ZM30.629,48a14.544,14.544,0,0,1-9.634-3.537L44.455,21a14.549,14.549,0,0,1,3.536,9.636A17.358,17.358,0,0,1,30.629,48Z"></path>
+    <path fill-rule="evenodd" d="M42.935,14.247A4.683,4.683,0,0,0,39,12H11a5.182,5.182,0,0,0-5.015,5.313V43.74A5.164,5.164,0,0,0,11.036,49l27.782,0.026a4.972,4.972,0,0,0,4.117-2.22L53.972,30.526Z"></path>
 </svg>
 SVG;
 
@@ -22,17 +22,17 @@ SVG;
 
     public static function getTitle() : string
     {
-        return "Spam Settings";
+        return "Marketing Announcement";
     }
 
     public static function getRouteName() : string
     {
-        return 'helpdesk_member_knowledgebase_spam';
+        return 'helpdesk_member_knowledgebase_marketing_announcement';
     }
 
     public static function getRoles() : array
     {
-        return ['ROLE_ADMIN'];
+        return ['ROLE_AGENT_MANAGE_MARKETING_ANNOUNCEMENT'];
     }
 
     public function getChildrenRoutes() : array

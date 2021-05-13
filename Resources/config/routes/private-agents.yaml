@@ -132,3 +132,26 @@ helpdesk_member_knowledgebase_spam:
 helpdesk_member_knowledgebase_update_theme_xhr:
     path:     /branding/ajax
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Branding::BrandingXhr
+
+# Marketing Announcement section resources
+helpdesk_member_knowledgebase_marketing_announcement:
+    path:     /announcement/list
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::listAnnouncement
+
+helpdesk_member_knowledgebase_marketing_announcement_xhr:
+    path:     /announcement/xhr
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::listAnnouncementXHR
+
+helpdesk_member_knowledgebase_create_marketing_announcement:
+    path:     /knowledgebase/announcement/new
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::updateAnnouncement
+
+helpdesk_member_knowledgebase_update_marketing_announcement:
+    path:     /knowledgebase/announcement/update/{announcementId}
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::updateAnnouncement
+    defaults: { announcementId: 0 }
+
+helpdesk_member_knowledgebase_remove_marketing_announcement_xhr:
+    path:     /knowledgebase/announcement/remove/{announcementId}
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::removeAnnouncement
+    defaults: { announcementId: 0 }
