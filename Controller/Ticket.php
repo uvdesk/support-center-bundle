@@ -191,7 +191,19 @@ class Ticket extends Controller
                         }
     
                         $thread = $this->ticketService->createTicketBase($data);
-                        
+                        if (!empty($thread)) {
+                            $ticket = $thread->getTicket();
+                            if($request->request->get('customFields') || $request->files->get('customFields')) {
+                                $this->get('ticket.service')->addTicketCustomFields($ticket, $request->request->get('customFields'), $request->files->get('customFields'));                        
+                            }
+                            $request->getSession()->getFlashBag()->set('success', sprintf('Success! Ticket #%s has been created successfully.', $ticket->getId()));
+                
+                            if ($this->userService->isAccessAuthorized('ROLE_ADMIN')) {
+                                return $this->redirect($this->generateUrl('helpdesk_member_ticket', ['ticketId' => $ticket->getId()]));
+                            }
+                        } else {
+                            $this->addFlash('warning', $this->translator->trans('Could not create ticket, invalid details.'));
+                        }
                         if ($thread) {
                             $request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
                         } else {
