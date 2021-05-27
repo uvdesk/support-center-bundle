@@ -223,21 +223,7 @@
                     </div>
                 {% endif %}
             </aside>
-            {% if customFieldCollection is defined %}
-                <aside id="uv-customfield-view" class="uv-customfield-view" style="margin-top: 20px;">
-                    <div style="position: relative;">
-                        <h6>{{ 'Custom Field'|trans }}</h6>
-                        <span class="uv-customize cfield-manage-pta" style="width: 15px; height: 15px; position: absolute; background-image: url('../../../../../bundles/webkuldefault/images/uvdesk-sprite.svg'); background-position: -44px -46px; top: 4px; cursor: pointer;" title="{{ 'Manage Ticket Custom Fields'|trans }}" data-toggle="tooltip" data-placement="bottom"></span>
-                    </div>
-                    <p style="padding-right: 20px; color: #6F6F6F; font-style: italic;">{{ 'Manage Custom Fields to provide additional details with the ticket.'|trans }}</p>
-
-                    <div class="uv-hr"></div>
-                    <form name="customFieldForm" enctype="multipart/form-data">
-                        <div id="customFieldCollection">
-                        </div>
-                    </form>
-                </aside>
-            {% endif %}
+            {{ uvdesk_extensibles.getRegisteredComponent("Webkul\\UVDesk\\CoreFrameworkBundle\\Tickets\\WidgetCollection").embedSideFilterContent()|raw }}
         </div>
         <div class="uv-thread-rt">
             <section>
