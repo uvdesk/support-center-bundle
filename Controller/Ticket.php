@@ -192,12 +192,15 @@ class Ticket extends Controller
     
                         $thread = $this->ticketService->createTicketBase($data);
                         
-                        if ($thread) {
-                            $request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
+                        if (!empty($thread)) {
+                            $ticket = $thread->getTicket();
+                            if($request->request->get('customFields') || $request->files->get('customFields')) {
+                                $this->get('ticket.service')->addTicketCustomFields($ticket, $request->request->get('customFields'), $request->files->get('customFields'));                        
+                            }
+                            $request->getSession()->getFlashBag()->set('success', sprintf('Success ! Ticket #%s has been created successfully.', $ticket->getId()));
                         } else {
-                            $request->getSession()->getFlashBag()->set('warning', $this->translator->trans('Warning ! Can not create ticket, invalid details.'));
+                            $this->addFlash('warning', $this->translator->trans('Warning ! Can not create ticket, invalid details.'));
                         }
-    
                         // Trigger ticket created event
                         $event = new GenericEvent(CoreWorkflowEvents\Ticket\Create::getId(), [
                             'entity' => $thread->getTicket(),
