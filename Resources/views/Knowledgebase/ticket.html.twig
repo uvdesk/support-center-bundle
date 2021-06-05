@@ -200,6 +200,10 @@
 			</section>
 		</div>
 	</div>
+
+	    {% if user_service.isfileExists('apps/uvdesk/form-component') %}
+            {{ include('@_uvdesk_extension_uvdesk_form_component/CustomFields/customFieldValidation.html.twig') }} 
+        {% endif %}
 {% endblock %}
 
 {% block footer %}
@@ -219,13 +223,12 @@
 					$('label[for="' + value + '"]').parent().hide();
 				});
 			{% endif %}
-
 			var CreateTicketModel = Backbone.Model.extend({
 				idAttribute : "id",
 				defaults : {
 					path : "",
 				},
-				validation: {
+				validation: _.extend(customFieldValidation, {
 					{% if not isTicketViewPage %}
 						'name' : {
 							required : true,
@@ -263,10 +266,9 @@
                             msg : '{{ "Please select CAPTCHA"|trans }}'
                         }
 				    {% endif %}
-				},
+				}),
 				urlRoot : "{{ path('helpdesk_customer_create_ticket') }}"
 			});
-
 			var CreateTicketForm = Backbone.View.extend({
 				initialize : function() {
 					Backbone.Validation.bind(this);
@@ -290,7 +292,6 @@
 					var currentElement = Backbone.$(e.currentTarget);
 					var data = currentElement.closest('form').serializeObject();
 					this.model.set(data);
-
 					if(this.model.isValid(true)) {
 						$('#create-ticket-form').submit();
 						$('form').find('#create-ticket-btn').attr('disabled', 'disabled');
@@ -302,7 +303,6 @@
 					this.$('.dependency' + dependentFields).show();
 				}
 			});
-
 			var createticketForm = new CreateTicketForm({
 				el : $("#create-ticket-form"),
 				model : new CreateTicketModel()
