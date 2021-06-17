@@ -223,6 +223,9 @@
                     </div>
                 {% endif %}
             </aside>
+            {% if user_service.isfileExists('apps/uvdesk/form-component') %}
+                {{ user_service.getCustomFieldTemplateCustomer() | raw }}
+            {% endif %}
         </div>
         <div class="uv-thread-rt">
             <section>
