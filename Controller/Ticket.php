@@ -192,12 +192,15 @@ class Ticket extends Controller
     
                         $thread = $this->ticketService->createTicketBase($data);
                         
-                        if ($thread) {
-                            $request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
+                        if (!empty($thread)) {
+                            $ticket = $thread->getTicket();
+                            if($request->request->get('customFields') || $request->files->get('customFields')) {
+                                $this->get('ticket.service')->addTicketCustomFields($ticket, $request->request->get('customFields'), $request->files->get('customFields'));                        
+                            }
+                            $request->getSession()->getFlashBag()->set('success', sprintf('Success ! Ticket #%s has been created successfully.', $ticket->getId()));
                         } else {
-                            $request->getSession()->getFlashBag()->set('warning', $this->translator->trans('Warning ! Can not create ticket, invalid details.'));
+                            $this->addFlash('warning', $this->translator->trans('Warning ! Can not create ticket, invalid details.'));
                         }
-    
                         // Trigger ticket created event
                         $event = new GenericEvent(CoreWorkflowEvents\Ticket\Create::getId(), [
                             'entity' => $thread->getTicket(),
@@ -280,13 +283,22 @@ class Ticket extends Controller
                 $data['ticket'] = $ticket;
                 $data['user'] = $this->userService->getCurrentUser();
 
+                // Checking if reply is from collaborator end
+                $isTicketCollaborator = $ticket->getCollaborators() ? $ticket->getCollaborators()->toArray() : [];
+                $isCollaborator = false;
+                foreach ($isTicketCollaborator as $value) {
+                    if($value->getId() == $data['user']->getId()){
+                        $isCollaborator = true;
+                    }
+                }
+
                 // @TODO: Refactor -> Why are we filtering only these two characters?
                 $data['message'] = str_replace(['&lt;script&gt;', '&lt;/script&gt;'], '', $data['message']);
 
                 $userDetail = $this->userService->getCustomerPartialDetailById($data['user']->getId());
                 $data['fullname'] = $userDetail['name'];
                 $data['source'] = 'website';
-                $data['createdBy'] = 'customer';
+                $data['createdBy'] = $isCollaborator ? 'collaborator' : 'customer';
                 $data['attachments'] = $request->files->get('attachments');
                 $thread = $this->ticketService->createThread($ticket, $data);
 
@@ -303,10 +315,15 @@ class Ticket extends Controller
                     $em->flush();
                 }
 
-                // Trigger customer reply event
-                $event = new GenericEvent(CoreWorkflowEvents\Ticket\CustomerReply::getId(), [
-                    'entity' =>  $ticket,
-                ]);
+                if ($thread->getcreatedBy() == 'customer') {
+                    $event = new GenericEvent(CoreWorkflowEvents\Ticket\CustomerReply::getId(), [
+                        'entity' =>  $ticket,
+                    ]);
+                } else {
+                    $event = new GenericEvent(CoreWorkflowEvents\Ticket\CollaboratorReply::getId(), [
+                        'entity' =>  $ticket,
+                    ]);
+                }
 
                 $this->eventDispatcher->dispatch('uvdesk.automation.workflow.execute', $event);
 
@@ -327,9 +344,23 @@ class Ticket extends Controller
     {
         $this->isWebsiteActive();
 
+        // List Announcement if any
+        $announcements =  $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Announcement')->findBy(['isActive' => 1]);
+
+        $groupAnnouncement = [];
+        foreach($announcements as $announcement) {
+            $announcementGroupId = $announcement->getGroup();
+            $isTicketExist =  $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:Ticket')->findBy(['supportGroup' => $announcementGroupId, 'customer' => $this->userService->getCurrentUser()]);
+
+            if (!empty($isTicketExist)) {
+                $groupAnnouncement[] = $announcement;
+            }
+        }
+
         return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketList.html.twig',
             array(
-                'searchDisable' => true
+                'searchDisable' => true,
+                'groupAnnouncement' => $groupAnnouncement
             )
         );
     }
@@ -511,6 +542,7 @@ class Ticket extends Controller
         
         $response->headers->set('Content-type', $attachment->getContentType());
         $response->headers->set('Content-Disposition', 'attachment; filename='. $attachment->getName());
+        $response->headers->set('Content-Length', $attachment->getSize());
         $response->sendHeaders();
         $response->setContent(readfile($path));
         

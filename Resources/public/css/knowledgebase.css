@@ -426,6 +426,12 @@ input[type="radio"][disabled="disabled"] + .uv-radio-view {
   background-position: 0px -21px;
 }
 .uv-checkbox-label,
+.uv-split-field {
+  display: inline-block;
+  clear: both;
+  width: 100%;
+  margin-top: 10px;
+}
 .uv-radio-label {
   vertical-align: middle;
   display: inline-block;

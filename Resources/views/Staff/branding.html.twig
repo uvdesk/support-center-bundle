@@ -748,10 +748,14 @@
             
             var BroadcastModel = Backbone.Model.extend({
 			    validation: {
-			    	'broadcasting[message]': {
+			    	'broadcasting[message]': [{
 				      	required: true,
 				       	msg: '{{ "This field is mandatory"|trans }}'
 				    },
+                    {
+						maxLength: 300,
+						msg: '{{ "This field should contains maximum 300 characters."|trans }}'
+					}],
 			    }
 			});
 
