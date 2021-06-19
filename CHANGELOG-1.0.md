@@ -3,6 +3,17 @@ CHANGELOG for 1.0.x
 
 This changelog references any relevant changes introduced in 1.0 minor versions.
 
+* 1.0.10 (2021-06-19)
+    * **Bug. Fixes:**
+        * **Issue #130:** getting exception on marketing announcement when sort by Created At
+        * **Issue #132:** When an agent logs in on the customer endpoint, redirect them.
+        * **Issue #131:** email login is case sensitive
+
+    * **Misc. Updates:**
+        * Added Marketing Announcement feature.
+        * Broadcast message field type changed to text and added validation for 300 characters for the same.
+        * Colors issue fixed for knowledgebase which is set from branding section.
+
 * 1.0.9 (2021-04-02)
     * **Bug. Fixes:**
         * **Issue #103:** Doctrine Entities Mapping error on KnowledgebaseWebsite#website.
