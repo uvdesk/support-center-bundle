@@ -160,7 +160,7 @@ class Ticket extends Controller
     
                             $customerEmail = $params['email'] = $request->request->get('from');
                             $customer = $em->getRepository('UVDeskCoreFrameworkBundle:User')->findOneBy(array('email' => $customerEmail));
-                            $params['flag'] = (!$customer) ? 1 : 0;$request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
+                            $params['flag'] = (!$customer) ? 1 : 0;
     
                             $data['firstName'] = current($nameDetails = explode(' ', $request->request->get('name')));
                             $data['fullname'] = $request->request->get('name');
