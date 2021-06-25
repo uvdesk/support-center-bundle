@@ -217,6 +217,9 @@
 	{{ include('@UVDeskCoreFramework/Templates/attachment.html.twig') }}
 
 	<script type="text/javascript">
+	{% if user_service.isfileExists('apps/uvdesk/form-component') == false %}
+	customFieldValidation = {};
+	{% endif %}
 		$(function () {
 			{% if(removeMe is defined) %}
 				$.each({{ removeMe | json_encode |raw }}, function(key, value){
