@@ -15,18 +15,21 @@ use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website as CoreWebsite;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Component\Translation\TranslatorInterface;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\FileUploadService;
 
 Class Customer extends AbstractController
 {
     private $translator;
     private $fileSystem;
     private $passwordEncoder;
+    private $fileUploadService;
 
-    public function __construct(TranslatorInterface $translator, UserPasswordEncoderInterface $passwordEncoder, FileSystem $fileSystem)
+    public function __construct(TranslatorInterface $translator, UserPasswordEncoderInterface $passwordEncoder, FileSystem $fileSystem, FileUploadService $fileUploadService)
     {
         $this->translator = $translator;
         $this->fileSystem = $fileSystem;
         $this->passwordEncoder = $passwordEncoder;
+        $this->fileUploadService = $fileUploadService;
     }
 
     protected function redirectUserToLogin()
@@ -171,6 +174,11 @@ Class Customer extends AbstractController
                     $userInstance = $em->getRepository('UVDeskCoreFrameworkBundle:UserInstance')->findOneBy(array('user' => $user->getId()));
 
                     if (isset($dataFiles['profileImage'])) {
+                        $previousImage = $userInstance->getProfileImagePath();
+                        if($previousImage != null){
+                            $image = str_replace("\\","/",$this->getParameter('kernel.project_dir').'/public'.$previousImage);
+                            $check = $this->fileUploadService->fileRemoveFromFolder($image); 
+                        }
                         $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($dataFiles['profileImage'], 'profile');
                         $userInstance->setProfileImagePath($assetDetails['path']);
                     }
