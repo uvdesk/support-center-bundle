@@ -293,7 +293,7 @@ class Ticket extends Controller
                 }
 
                 // @TODO: Refactor -> Why are we filtering only these two characters?
-                $data['message'] = str_replace(['&lt;script&gt;', '&lt;/script&gt;'], '', $data['message']);
+                $data['message'] = str_replace(['&lt;script&gt;', '&lt;/script&gt;'], '', htmlspecialchars($data['message']));
 
                 $userDetail = $this->userService->getCustomerPartialDetailById($data['user']->getId());
                 $data['fullname'] = $userDetail['name'];
