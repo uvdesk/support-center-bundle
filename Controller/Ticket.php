@@ -276,6 +276,11 @@ class Ticket extends Controller
         $data = $request->request->all();
         $ticket = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($id);
 
+        // Proceed only if user has access to the resource
+        if (false == $this->ticketService->isTicketAccessGranted($ticket)) {
+	       throw new \Exception('Access Denied', 403);
+	    }
+
         if($_POST) {
             if(str_replace(' ','',str_replace('&nbsp;','',trim(strip_tags($data['message'], '<img>')))) != "") {
                 if(!$ticket)
