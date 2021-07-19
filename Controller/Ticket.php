@@ -560,6 +560,10 @@ class Ticket extends Controller
         $content = json_decode($request->getContent(), true);
         $em = $this->getDoctrine()->getManager();
         $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($content['ticketId']);
+
+        if (false == $this->ticketService->isTicketAccessGranted($ticket)) {
+            throw new \Exception('Access Denied', 403);
+        }    
         
         if ($request->getMethod() == "POST") {
             if ($content['email'] == $ticket->getCustomer()->getEmail()) {
