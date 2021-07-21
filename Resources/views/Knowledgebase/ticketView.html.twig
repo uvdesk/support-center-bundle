@@ -415,6 +415,44 @@
         </div>
     </div>
 
+        <div class="uv-kudo">
+        <div class="uv-kudo-button">
+            <!--uv-kudo-button-active-->
+            <div class="uv-kudo-icon"></div>
+            <span>{{ 'Rate Support'|trans }}</span>
+        </div>
+
+        <div class="uv-kudo-plank">
+            {% set count = 0 %}
+            {% for rating in ticket.ratings %}
+                {% if rating.getCustomer.id == app.user.id %}
+                    {% set count = rating.getStars %}
+                {% endif %}
+            {% endfor %}
+            <div class="uv-kudo-response-wrapper">
+                <span class="uv-kudo-response uv-kudo-very-sad {% if count == 1 %}uv-kudo-done{% endif %}" data-id="1"></span>
+                <span class="uv-kudo-response uv-kudo-sad {% if count == 2 %}uv-kudo-done{% endif %}" data-id="2"></span>
+                <span class="uv-kudo-response uv-kudo-neutral {% if count == 3 %}uv-kudo-done{% endif %}" data-id="3"></span>
+                <span class="uv-kudo-response uv-kudo-happy {% if count == 4 %}uv-kudo-done{% endif %}" data-id="4"></span>
+                <span class="uv-kudo-response uv-kudo-very-happy  {% if count == 5 %}uv-kudo-done{% endif %}" data-id="5"></span>
+            </div>
+
+            <span class="uv-kudo-message">
+                {% if count == 1 %}
+                    {{ 'I am very Sad'|trans }}
+                {% elseif count == 2 %}
+                    {{ 'I am Sad'|trans }}
+                {% elseif count == 3 %}
+                    {{ 'I am Neutral'|trans }}
+                {% elseif count == 4 %}
+                    {{ 'I am Happy'|trans }}
+                {% elseif count == 5 %}
+                    {{ 'I am Very Happy'|trans }}
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
     <div class="uv-pop-up-overlay" id="confirm-ticket-close-modal" style="display: none;">
         <div class="uv-pop-up-box uv-pop-up-slim">
             <span class="uv-pop-up-close"></span>
@@ -519,6 +557,7 @@
                 el: $('.uv-body'),
                 stopDraftSaveFlag: 0,
                 events: {
+                    'click .uv-kudo-response-wrapper .uv-kudo-response': 'rateTicket',
                     'click .collaborator-list .uv-btn-tag': 'removeCcCollaborator',
                     'change .uv-element-block.cc-bcc .cc-bcc-toggle': 'showCcBccBlock',
                     'keypress .uv-element-block.cc-bcc .uv-group-field': 'addCcBccInput',
@@ -535,7 +574,40 @@
                     $('#confirm-ticket-close-modal').hide();
                     this.validateForm(e);
                 },
+                ratingText: {
+                    '1' : "{{ 'I am very Sad'|trans }}",
+                    '2' : "{{ 'I am Sad'|trans }}",
+                    '3' : "{{ 'I am Neutral'|trans }}",
+                    '4' : "{{ 'I am Happy'|trans }}",
+                    '5' : "{{ 'I am Very Happy'|trans }}",
+                },
                 loaderTemplate : _.template($("#loader-tmp").html()),
+                rateTicket : function(e) {
+                    var element = Backbone.$(e.currentTarget);
+                    var count = element.attr('data-id');
+                    this.model.set('rating', count);
+
+                    var self = this;
+                    app.appView.showLoader()
+                    this.model.save({}, {
+                        url : "{{ path('helpdesk_customer_rate_ticket', {'id': ticket.id}) }}",
+                        success: function (model, response, options) {
+                            app.appView.hideLoader()
+                            if(response.alertClass == 'success') {
+                                $('.uv-kudo-response').removeClass('uv-kudo-done');
+                                element.addClass('uv-kudo-done');
+                                $('.uv-kudo-message').text(self.ratingText[count])
+                                $('.uv-kudo-button').trigger('click')
+                            } else {
+                                app.appView.renderResponseAlert(response);
+                            }
+                        },
+                        error: function (model, xhr, options) {
+                            if(url = xhr.getResponseHeader('Location'))
+                                window.location = url;
+                        }
+                    });
+                },
                 addCCCollaborators: function() {
                     if(collaboratorCollection.length) {
                         var collaboratorContainer = $('.uv-element-block.collaborators');
@@ -876,4 +948,19 @@
             }
 		});
 	</script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+            var uvKudoButton = document.querySelector(".uv-kudo-button");
+            var uvKudoIcon = document.querySelector(".uv-kudo-icon");
+            var uvKudoPlank = document.querySelector(".uv-kudo-plank");
+            var uvKudoMessage = document.querySelector(".uv-kudo-message");
+            var uvKudoResponse = document.querySelector(".uv-kudo-response");
+
+            uvKudoButton.addEventListener("click", function(){
+                uvKudoButton.classList.toggle("uv-kudo-button-active");
+                uvKudoPlank.classList.toggle("uv-kudo-plank-active");
+            });
+        });
+    </script>
 {% endblock %}
