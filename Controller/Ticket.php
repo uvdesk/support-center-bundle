@@ -275,11 +275,14 @@ class Ticket extends Controller
         $this->isWebsiteActive();
         $data = $request->request->all();
         $ticket = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($id);
+        $user = $this->userService->getSessionUser();
 
-        // Proceed only if user has access to the resource
-        if (false == $this->ticketService->isTicketAccessGranted($ticket)) {
-	       throw new \Exception('Access Denied', 403);
-	    }
+        // process only if access for the resource.
+        if (empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
+            if(!$this->isCollaborator($ticket, $user)) {
+                throw new \Exception('Access Denied', 403);
+            }
+        }
 
         if($_POST) {
             if(str_replace(' ','',str_replace('&nbsp;','',trim(strip_tags($data['message'], '<img>')))) != "") {
@@ -510,9 +513,13 @@ class Ticket extends Controller
         }
 
         $ticket = $attachment->getThread()->getTicket();
-        // Proceed only if user has access to the resource
-        if (false == $this->ticketService->isTicketAccessGranted($ticket)) {
-            throw new \Exception('Access Denied', 403);
+        $user = $this->userService->getSessionUser();
+        
+        // process only if access for the resource.
+        if (empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
+            if(!$this->isCollaborator($ticket, $user)) {
+                throw new \Exception('Access Denied', 403);
+            }
         }
 
         $zipname = 'attachments/' .$threadId.'.zip';
@@ -572,10 +579,14 @@ class Ticket extends Controller
         $content = json_decode($request->getContent(), true);
         $em = $this->getDoctrine()->getManager();
         $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($content['ticketId']);
-
-        if (false == $this->ticketService->isTicketAccessGranted($ticket)) {
-            throw new \Exception('Access Denied', 403);
-        }    
+        $user = $this->userService->getSessionUser();
+        
+        // process only if access for the resource.
+        if (empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
+            if(!$this->isCollaborator($ticket, $user)) {
+                throw new \Exception('Access Denied', 403);
+            }
+        }
         
         if ($request->getMethod() == "POST") {
             if ($content['email'] == $ticket->getCustomer()->getEmail()) {
@@ -601,7 +612,6 @@ class Ticket extends Controller
                     $ticket->lastCollaborator = $collaborator;
                     $collaborator = $em->getRepository('UVDeskCoreFrameworkBundle:User')->find($collaborator->getId());
                    
-
                     $json['collaborator'] =  $this->userService->getCustomerPartialDetailById($collaborator->getId());
                     $json['alertClass'] = 'success';
                     $json['alertMessage'] = $this->translator->trans('Success ! Collaborator added successfully.');
