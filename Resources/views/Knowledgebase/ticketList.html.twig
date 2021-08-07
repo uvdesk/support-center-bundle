@@ -192,7 +192,21 @@
         </td>
         <td data-value="{{ 'Status'|trans }}">
 	       	<a class="not-shiny" href="<%- path %>">
-	       		<%- status.description %>
+	       		<% if (status.description == 'Open') { %>
+				   		{{ 'Open'|trans }}
+				<% } else if (status.description == 'Closed') { %>
+						{{ 'Closed'|trans }}
+				<% } else if (status.description == 'Pending') { %>
+						{{ 'Pending'|trans }}
+				<% } else if (status.description == 'Answered') { %>
+						{{ 'Answered'|trans }}
+				<% } else if(status.description == 'Resolved') { %>
+						{{ 'Resolved'|trans }}
+				<% } else if(status.description == 'UnAnswered') { %>
+						{{ 'UnAnswered'|trans }}
+				<% } else if(status.description == 'UnAssigned') { %>
+						{{ 'UnAssigned'|trans }}
+				<% } %>
 	    	</a>
         </td>
         <td data-value="{{ 'Timestamp'|trans }}">
