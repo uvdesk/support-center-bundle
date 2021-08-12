@@ -187,7 +187,18 @@
                     </div>
                 </div>
                 <!-- //Profile image -->
-
+               
+                {% if isHaveImage %} 
+                    <div class="uv-element-block"> 
+                        <label>
+                            <div class="uv-checkbox">
+                                <input name="removeImage" id="removeImage" type="checkbox">
+                                <span class="uv-checkbox-view"></span>
+                            </div><span class="uv-checkbox-label">{{ 'Remove profile picture'|trans }}</span>
+                        </label>
+                    </div>
+                {% endif %}
+                
                 <!-- Field -->
                 <div class="uv-element-block">
                     <label class="uv-field-label">{{ 'First Name'|trans }}</label>
