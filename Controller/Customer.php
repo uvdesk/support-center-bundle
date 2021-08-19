@@ -184,7 +184,7 @@ Class Customer extends AbstractController
                     }
 
                     if ($request->get('removeImage') == 'on') {
-                       $userInstance->setProfileImagePath('');
+                       $userInstance->setProfileImagePath(null);
                     } 
 
                     $userInstance  = $userInstance->setContactNumber($data['contactNumber']);
