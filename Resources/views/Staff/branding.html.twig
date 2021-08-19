@@ -457,11 +457,11 @@
                     <div class="uv-element-block">
                         <label>{{ 'From'|trans }}</label>
                         <div class="uv-field-block date">
-                            <input type="text" name="broadcasting[from]" class="uv-field datetime date-from" value="{{ broadcast.from is defined ? broadcast.from : '' }}">
+                            <input type="text" name="broadcasting[from]" class="uv-field datetime date-from uv-cal-icon" value="{{ broadcast.from is defined ? broadcast.from : '' }}">
                         </div>
                         <label>{{ 'To'|trans }}</label>
                         <div class="uv-field-block date">
-                            <input type="text" name="broadcasting[to]" class="uv-field datetime date-to" value="{{ broadcast.to is defined ? broadcast.to : '' }}">
+                            <input type="text" name="broadcasting[to]" class="uv-field datetime date-to uv-cal-icon" value="{{ broadcast.to is defined ? broadcast.to : '' }}">
                         </div>
                         <span class="uv-field-info">{{ 'Time duration between which message will be displayed(if applicable)'|trans }}</span>
                     </div>
