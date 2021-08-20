@@ -326,10 +326,12 @@ class Ticket extends Controller
                 if ($thread->getcreatedBy() == 'customer') {
                     $event = new GenericEvent(CoreWorkflowEvents\Ticket\CustomerReply::getId(), [
                         'entity' =>  $ticket,
+                        'thread' =>  $thread
                     ]);
                 } else {
                     $event = new GenericEvent(CoreWorkflowEvents\Ticket\CollaboratorReply::getId(), [
                         'entity' =>  $ticket,
+                        'thread' =>  $thread
                     ]);
                 }
 
