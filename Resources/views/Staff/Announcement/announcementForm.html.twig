@@ -50,31 +50,31 @@
 
 				<!-- Field -->
 				<div class="uv-element-block">
-					<label class="uv-field-label">Promo Tag</label>
+					<label class="uv-field-label">{{ 'Promo Tag'|trans }}</label>
 					<div class="uv-field-block">
 						<select name="announcement_form[promotag]" class="uv-select">
-							<option value="new" {% if announcement.promotag == "new" %}selected{% endif %}>New</option>
-							<option value="update" {% if announcement.promotag == "update" %}selected{% endif %}>Update</option>
-							<option value="offer" {% if announcement.promotag == "offer" %}selected{% endif %}>Offer</option>
+							<option value="new" {% if announcement.promotag == "new" %}selected{% endif %}>{{ 'New'|trans }}</option>
+							<option value="update" {% if announcement.promotag == "update" %}selected{% endif %}>{{ 'Update'|trans }}</option>
+							<option value="offer" {% if announcement.promotag == "offer" %}selected{% endif %}>{{ 'Offer'|trans }}</option>
 						</select>
 					</div>
-					<span class="uv-field-info">Choose a promo tag</span>
+					<span class="uv-field-info">{{ 'Choose a promo tag'|trans }}</span>
 				</div>
 				<!-- //Field -->
 
 				<!-- Field -->
 				<div class="uv-element-block">
-					<label class="uv-field-label">Tag-Color</label>
+					<label class="uv-field-label">{{ 'Tag-Color'|trans }}</label>
 					<div class="uv-field-block">
 						<input type="text" name="announcement_form[tagColor]" class="uv-field uv-color-field" value="{{ announcement.tagColor }}" />
 					</div>
-					<span class="uv-field-info">Tag background color</span>
+					<span class="uv-field-info">{{ 'Tag background color'|trans }}</span>
 				</div>
 				<!-- //Field -->
 
 				<!-- Field -->
 				<div class="uv-element-block">
-					<label class="uv-field-label">Link Text</label>
+					<label class="uv-field-label">{{ 'Link Text'|trans }}</label>
 					<div class="uv-field-block">
 						<input type="text" name="announcement_form[linkText]" class="uv-field" value="{{ announcement.linkText }}" />
 					</div>
@@ -84,7 +84,7 @@
 
 				<!-- Field -->
 				<div class="uv-element-block">
-					<label class="uv-field-label">Link URL</label>
+					<label class="uv-field-label">{{ 'Link URL'|trans }}</label>
 					<div class="uv-field-block">
 						<input type="text" name="announcement_form[linkURL]" class="uv-field" value="{{ announcement.linkURL }}" placeholder="https://example.com/" />
 					</div>
@@ -94,20 +94,20 @@
 
 				<!-- Field -->
 				<div class="uv-element-block">
-					<label class="uv-field-label">Status</label>
+					<label class="uv-field-label">{{ 'Status'|trans }}</label>
 					<div class="uv-field-block">
 						<select name="announcement_form[status]" class="uv-select">
-							<option value="1" {% if announcement.isActive == "1" %}selected{% endif %}>Publish</option>
-							<option value="0" {% if announcement.isActive == "0" %}selected{% endif %}>Draft</option>
+							<option value="1" {% if announcement.isActive == "1" %}selected{% endif %}>{{ 'Publish'|trans }}</option>
+							<option value="0" {% if announcement.isActive == "0" %}selected{% endif %}>{{ 'Draft'|trans }}</option>
 						</select>
 					</div>
-					<span class="uv-field-info">Choose a status</span>
+					<span class="uv-field-info">{{ 'Choose a status'|trans }}</span>
 				</div>
 				<!-- //Field -->
 
 				<!-- Field -->
 				<div class="uv-element-block">
-					<label class="uv-field-label">Groups</label>
+					<label class="uv-field-label">{{ 'Groups'|trans }}</label>
 					<div class="uv-field-block">
 						<select name="announcement_form[group]" class="uv-select">
 							{% for group in user_service.getSupportGroups() %}
@@ -122,7 +122,7 @@
 							{% endfor %}
 						</select>
 					</div>
-					<span class="uv-field-info">Choose a group</span>
+					<span class="uv-field-info">{{ 'Choose a group'|trans }}</span>
 				</div>
 				<!-- //Field -->
 
@@ -147,7 +147,6 @@
                 textColor = app.appView.getTextColorBasedBackground($(this).val());
                 $(this).css('color', textColor)
             });
-
 			var AnnouncementModel = Backbone.Model.extend({
 				validation: {
 					'announcement_form[title]':[{
@@ -189,7 +188,6 @@
 					}
 				}
 			});
-
 			var AnnouncementForm = Backbone.View.extend({
 				events : {
 					'click .uv-btn': "savePromotion"
@@ -199,7 +197,6 @@
                         textColor = app.appView.getTextColorBasedBackground($(this).val());
                         $(this).css('color', textColor)
                     });
-
 					Backbone.Validation.bind(this);
 					var jsonContext = '';
 		    		for (var field in jsonContext) {
@@ -207,11 +204,9 @@
 					}
 				},
 				formChanegd: function(e) {
-			    	// this.model.set(Backbone.$(e.currentTarget).attr('title'), Backbone.$(e.currentTarget).val())
-			    	// this.model.isValid([Backbone.$(e.currentTarget).attr('name')])
+			    	
 			    },
 				savePromotion : function (e) {
-					debugger
 					e.preventDefault();
 			        this.model.set(this.$el.serializeObject());
 					if(this.model.isValid(true)) {
@@ -224,9 +219,7 @@
                     $(selector).find('.uv-filtered-tags .uv-btn-small').each(function() {
                         ids.push($(this).attr('data-id'))
                     });
-
                     $(selector).find("input[type='hidden']").val(ids.join(','))
-
 					return ids;
                 },
                 addEntity: function(e) {
