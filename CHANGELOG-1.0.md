@@ -3,6 +3,18 @@ CHANGELOG for 1.0.x
 
 This changelog references any relevant changes introduced in 1.0 minor versions.
 
+* 1.0.11 (2021-08-21)
+    * **Bug. Fixes:**
+        * **Issue #118:** date icon should be appear in broadcast message.
+        * **Issue #135:** customer is not able to add reply on ticket.
+
+    * **Misc. Updates:**
+        * Reply rosolved from customer end if added CC and BCC in reply.
+        * Date icon added for broadcast message.
+        * Profile picture remove option added.
+        * Default image show in Tickets thread when removed profile picture.
+        * Added kudos feature.
+
 * 1.0.10 (2021-06-19)
     * **Bug. Fixes:**
         * **Issue #130:** getting exception on marketing announcement when sort by Created At
