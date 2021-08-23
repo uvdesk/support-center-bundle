@@ -87,8 +87,6 @@ class Article extends Controller
 
     public function ArticleListBySolution(Request $request)
     {
-
-
         $solution = $this->getDoctrine()
             ->getRepository('UVDeskSupportCenterBundle:Solutions')
             ->findSolutionById(['id' => $request->attributes->get('solution')]);
@@ -212,6 +210,12 @@ class Article extends Controller
     }
     public function articleXhr(Request $request)
     {
+        // Proceed only if user has access to the resource        
+        if( (!$this->userService->getSessionUser()) || (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) )
+        {
+            throw new \Exception('Access Denied', 403); 
+        }
+
         $json = array();
 
         if ($request->getMethod() == "POST") {

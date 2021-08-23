@@ -160,7 +160,7 @@ class Ticket extends Controller
     
                             $customerEmail = $params['email'] = $request->request->get('from');
                             $customer = $em->getRepository('UVDeskCoreFrameworkBundle:User')->findOneBy(array('email' => $customerEmail));
-                            $params['flag'] = (!$customer) ? 1 : 0;$request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
+                            $params['flag'] = (!$customer) ? 1 : 0;
     
                             $data['firstName'] = current($nameDetails = explode(' ', $request->request->get('name')));
                             $data['fullname'] = $request->request->get('name');
@@ -197,7 +197,7 @@ class Ticket extends Controller
                             if($request->request->get('customFields') || $request->files->get('customFields')) {
                                 $this->get('ticket.service')->addTicketCustomFields($ticket, $request->request->get('customFields'), $request->files->get('customFields'));                        
                             }
-                            $request->getSession()->getFlashBag()->set('success', sprintf('Success ! Ticket #%s has been created successfully.', $ticket->getId()));
+                            $this->addFlash('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
                         } else {
                             $this->addFlash('warning', $this->translator->trans('Warning ! Can not create ticket, invalid details.'));
                         }
@@ -275,6 +275,14 @@ class Ticket extends Controller
         $this->isWebsiteActive();
         $data = $request->request->all();
         $ticket = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($id);
+        $user = $this->userService->getSessionUser();
+
+        // process only if access for the resource.
+        if (empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
+            if(!$this->isCollaborator($ticket, $user)) {
+                throw new \Exception('Access Denied', 403);
+            }
+        }
 
         if($_POST) {
             if(str_replace(' ','',str_replace('&nbsp;','',trim(strip_tags($data['message'], '<img>')))) != "") {
@@ -293,7 +301,7 @@ class Ticket extends Controller
                 }
 
                 // @TODO: Refactor -> Why are we filtering only these two characters?
-                $data['message'] = str_replace(['&lt;script&gt;', '&lt;/script&gt;'], '', $data['message']);
+                $data['message'] = str_replace(['&lt;script&gt;', '&lt;/script&gt;'], '', htmlspecialchars($data['message']));
 
                 $userDetail = $this->userService->getCustomerPartialDetailById($data['user']->getId());
                 $data['fullname'] = $userDetail['name'];
@@ -318,10 +326,12 @@ class Ticket extends Controller
                 if ($thread->getcreatedBy() == 'customer') {
                     $event = new GenericEvent(CoreWorkflowEvents\Ticket\CustomerReply::getId(), [
                         'entity' =>  $ticket,
+                        'thread' =>  $thread
                     ]);
                 } else {
                     $event = new GenericEvent(CoreWorkflowEvents\Ticket\CollaboratorReply::getId(), [
                         'entity' =>  $ticket,
+                        'thread' =>  $thread
                     ]);
                 }
 
@@ -504,6 +514,16 @@ class Ticket extends Controller
             $this->noResultFound();
         }
 
+        $ticket = $attachment->getThread()->getTicket();
+        $user = $this->userService->getSessionUser();
+        
+        // process only if access for the resource.
+        if (empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
+            if(!$this->isCollaborator($ticket, $user)) {
+                throw new \Exception('Access Denied', 403);
+            }
+        }
+
         $zipname = 'attachments/' .$threadId.'.zip';
         $zip = new \ZipArchive;
 
@@ -535,6 +555,12 @@ class Ticket extends Controller
             $this->noResultFound();
         }
 
+        $ticket = $attachment->getThread()->getTicket();
+        // Proceed only if user has access to the resource
+        if (false == $this->ticketService->isTicketAccessGranted($ticket, $user)) {
+            throw new \Exception('Access Denied', 403);
+        }
+
         $path = $this->get('kernel')->getProjectDir() . "/public/". $attachment->getPath();
 
         $response = new Response();
@@ -555,6 +581,14 @@ class Ticket extends Controller
         $content = json_decode($request->getContent(), true);
         $em = $this->getDoctrine()->getManager();
         $ticket = $em->getRepository('UVDeskCoreFrameworkBundle:Ticket')->find($content['ticketId']);
+        $user = $this->userService->getSessionUser();
+        
+        // process only if access for the resource.
+        if (empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
+            if(!$this->isCollaborator($ticket, $user)) {
+                throw new \Exception('Access Denied', 403);
+            }
+        }
         
         if ($request->getMethod() == "POST") {
             if ($content['email'] == $ticket->getCustomer()->getEmail()) {
@@ -580,7 +614,6 @@ class Ticket extends Controller
                     $ticket->lastCollaborator = $collaborator;
                     $collaborator = $em->getRepository('UVDeskCoreFrameworkBundle:User')->find($collaborator->getId());
                    
-
                     $json['collaborator'] =  $this->userService->getCustomerPartialDetailById($collaborator->getId());
                     $json['alertClass'] = 'success';
                     $json['alertMessage'] = $this->translator->trans('Success ! Collaborator added successfully.');
