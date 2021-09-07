@@ -34,7 +34,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
         
         if (empty($website)) {
             ($website = new CoreEntities\Website())
-                ->setName('Knowledgebase')
+                ->setName('Helpdesk Knowledgebase')
                 ->setCode('knowledgebase')
                 ->setThemeColor('#7E91F0')
                 ->setCreatedAt(new \DateTime())
