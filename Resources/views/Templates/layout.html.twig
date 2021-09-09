@@ -27,7 +27,7 @@
         {% endif %}
 
         {% if websiteDetails %}
-            <title>{{ websiteDetails.name ? websiteDetails.name : 'Knowledge Base'|trans }} {% endblock %}</title>
+            <title>{% block title %}{{ websiteDetails.name ? websiteDetails.name : 'Knowledge Base'|trans }} {% endblock %}</title>
             {% if websiteConfiguration.metaDescription %}
                 <meta name="description" content="{% block metaDescription %}{{ websiteConfiguration.metaDescription }}{% endblock %}"/>
             {% endif %}
