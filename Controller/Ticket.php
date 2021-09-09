@@ -611,8 +611,16 @@ class Ticket extends Controller
                     $ticket->addCollaborator($collaborator);
                     $em->persist($ticket);
                     $em->flush();
+
                     $ticket->lastCollaborator = $collaborator;
+
                     $collaborator = $em->getRepository('UVDeskCoreFrameworkBundle:User')->find($collaborator->getId());
+                    
+                    $event = new GenericEvent(CoreWorkflowEvents\Ticket\Collaborator::getId(), [
+                        'entity' => $ticket,
+                    ]);
+
+                    $this->eventDispatcher->dispatch('uvdesk.automation.workflow.execute', $event);
                    
                     $json['collaborator'] =  $this->userService->getCustomerPartialDetailById($collaborator->getId());
                     $json['alertClass'] = 'success';
