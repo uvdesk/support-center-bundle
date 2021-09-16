@@ -20,6 +20,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\TicketService;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\CustomFieldsService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Component\Translation\TranslatorInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\ReCaptchaService;
@@ -32,17 +33,17 @@ class Ticket extends Controller
     private $translator;
     private $uvdeskService;
     private $ticketService;
-    private $fileSystem;
+    private $CustomFieldsService;
     private $recaptchaService;
 
-    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcherInterface $eventDispatcher, TranslatorInterface $translator, TicketService $ticketService, FileSystem $fileSystem, ReCaptchaService $recaptchaService)
+    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcherInterface $eventDispatcher, TranslatorInterface $translator, TicketService $ticketService, CustomFieldsService $CustomFieldsService, ReCaptchaService $recaptchaService)
     {
         $this->userService = $userService;
         $this->eventDispatcher = $eventDispatcher;
         $this->translator = $translator;
         $this->uvdeskService = $uvdeskService;
         $this->ticketService = $ticketService;
-        $this->fileSystem = $fileSystem;
+        $this->CustomFieldsService = $CustomFieldsService;
         $this->recaptchaService = $recaptchaService;
     }
 
@@ -97,7 +98,7 @@ class Ticket extends Controller
                     $message = '';
                     $ticketType = $em->getRepository('UVDeskCoreFrameworkBundle:TicketType')->find($request->request->get('type'));
                     
-                    if($request->files->get('customFields') && !$this->fileSystem->validateAttachmentsSize($request->files->get('customFields'))) {
+                    if($request->files->get('customFields') && !$this->CustomFieldsService->validateAttachmentsSize($request->files->get('customFields'))) {
                         $error = true;
                         $this->addFlash(
                                 'warning',
@@ -195,7 +196,7 @@ class Ticket extends Controller
                         if (!empty($thread)) {
                             $ticket = $thread->getTicket();
                             if($request->request->get('customFields') || $request->files->get('customFields')) {
-                                $this->get('ticket.service')->addTicketCustomFields($ticket, $request->request->get('customFields'), $request->files->get('customFields'));                        
+                                $this->get('ticket.service')->addTicketCustomFields($thread, $request->request->get('customFields'), $request->files->get('customFields'));                        
                             }
                             $this->addFlash('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
                         } else {
