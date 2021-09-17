@@ -508,6 +508,9 @@ class Ticket extends Controller
     {
         $threadId = $request->attributes->get('threadId');
         $attachmentRepository = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreFrameworkBundle:Attachment');
+        $threadRepository = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreFrameworkBundle:Thread');
+
+        $thread = $threadRepository->findOneById($threadId);
 
         $attachment = $attachmentRepository->findByThread($threadId);
 
@@ -515,7 +518,7 @@ class Ticket extends Controller
             $this->noResultFound();
         }
 
-        $ticket = $attachment->getThread()->getTicket();
+        $ticket = $thread->getTicket();
         $user = $this->userService->getSessionUser();
         
         // process only if access for the resource.
@@ -557,9 +560,13 @@ class Ticket extends Controller
         }
 
         $ticket = $attachment->getThread()->getTicket();
-        // Proceed only if user has access to the resource
-        if (false == $this->ticketService->isTicketAccessGranted($ticket, $user)) {
-            throw new \Exception('Access Denied', 403);
+        $user = $this->userService->getSessionUser();
+        
+        // process only if access for the resource.
+        if (empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
+            if(!$this->isCollaborator($ticket, $user)) {
+                throw new \Exception('Access Denied', 403);
+            }
         }
 
         $path = $this->get('kernel')->getProjectDir() . "/public/". $attachment->getPath();
