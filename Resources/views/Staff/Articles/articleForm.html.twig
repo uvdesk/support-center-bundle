@@ -571,7 +571,7 @@
 					$(".uv-tabs li").removeClass('uv-tab-error')
                     currentElement = Backbone.$(e.currentTarget);
                     this.model.clear();
-					let formData = this.$el.find('form#article-form').serializeFormObject();
+					let formData = this.$el.find('form#article-form').serializeObject();
 			        this.model.set(formData);
                     self = this;
 					var contentNotHasError = this.validateForm(e);
