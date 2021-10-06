@@ -1,9 +1,9 @@
 {% extends "@UVDeskSupportCenter/Templates/layout.html.twig" %}
 
-{% if article.slug %}
-	{% block canonical %}{{ url('helpdesk_knowledgebase_read_slug_article', {'slug':article.slug }) }}{% endblock %}
-	{% block ogcanonical %}{{ url('helpdesk_knowledgebase_read_slug_article', {'slug':article.slug }) }}{% endblock %}
-{% endif %}
+
+{% block canonical %} {% if article.slug %} {{ url('helpdesk_knowledgebase_read_slug_article', {'slug':article.slug }) }} {% endif %} {% endblock %}
+{% block ogcanonical %} {% if article.slug %} {{ url('helpdesk_knowledgebase_read_slug_article', {'slug':article.slug }) }} {% endif %} {% endblock %}
+
 
 {% block title %}{{ article.metaTitle ? article.metaTitle : article.name }}{% endblock %}
 {% block ogtitle %}{{ article.metaTitle ? article.metaTitle : article.name }}{% endblock %}
