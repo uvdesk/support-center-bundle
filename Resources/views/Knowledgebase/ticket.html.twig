@@ -225,6 +225,15 @@
 				$.each({{ removeMe | json_encode |raw }}, function(key, value){
 					$('label[for="' + value + '"]').parent().hide();
 				});
+			$('.uv-header-date').datetimepicker({
+            	format: 'YYYY-MM-DD',
+        	});
+        	$('.uv-header-time').datetimepicker({
+            	format: 'LT',
+        	});
+        	$('.uv-header-datetime').datetimepicker({
+            	format: 'YYYY-MM-DD H:m:s'
+        	});
 			{% endif %}
 			var CreateTicketModel = Backbone.Model.extend({
 				idAttribute : "id",
