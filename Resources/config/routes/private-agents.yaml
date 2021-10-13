@@ -153,5 +153,5 @@ helpdesk_member_knowledgebase_update_marketing_announcement:
 
 helpdesk_member_knowledgebase_remove_marketing_announcement_xhr:
     path:     /knowledgebase/announcement/remove/{announcementId}
-    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::removeAnnouncement
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::removeAnnouncementXHR
     defaults: { announcementId: 0 }
