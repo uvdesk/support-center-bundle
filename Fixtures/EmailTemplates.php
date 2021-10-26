@@ -2,7 +2,7 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Fixtures;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use Webkul\UVDesk\CoreEntities\Entity as CoreEntities;
 use Doctrine\Bundle\FixturesBundle\Fixture as DoctrineFixture;
 use Webkul\UVDesk\SupportCenterBundle\Templates\Email\Resources as SupportCenterEmailTemplates;
