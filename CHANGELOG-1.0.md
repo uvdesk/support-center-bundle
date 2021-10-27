@@ -3,7 +3,18 @@ CHANGELOG for 1.0.x
 
 This changelog references any relevant changes introduced in 1.0 minor versions.
 
-* 1.0.11 (2021-08-21)
+* 1.0.13 (2021-10-27)
+
+    * **Misc. Updates:**
+      * Compatibility with PHP 8.
+      * Filter option on customer side with ticket listing.
+
+    * **Bug. Fixes:**
+        * Removed CC/BCC option for collaborator reply.
+        * Preview option fixed for Article. 
+        * login issue on customer login is timestamp not set on branding.
+
+* 1.0.12 (2021-08-21)
     * **Bug. Fixes:**
         * **Issue #118:** date icon should be appear in broadcast message.
         * **Issue #135:** customer is not able to add reply on ticket.
