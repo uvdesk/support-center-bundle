@@ -69,12 +69,12 @@ class KnowledgebaseWebsite
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=255, name="meta_description", nullable=true)
+     * @ORM\Column(type="text", length=2000, name="meta_description", nullable=true)
      */
     private $metaDescription;
     /**
      * @var string
-     * @ORM\Column(type="string", length=255, name="meta_keywords", nullable=true)
+     * @ORM\Column(type="text", length=2000, name="meta_keywords", nullable=true)
      */
     private $metaKeywords;
     /**
