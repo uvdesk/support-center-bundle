@@ -441,12 +441,15 @@ class Ticket extends Controller
             $entityManager->persist($ticket);
             $entityManager->flush();
         }
+
+        $checkTicket = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Ticket')->isTicketCollaborator($ticket, $user->getEmail());
         
         $twigResponse = [
             'ticket' => $ticket,
             'searchDisable' => true,
             'initialThread' => $this->ticketService->getTicketInitialThreadDetails($ticket),
             'localizedCreateAtTime' => $this->userService->getLocalizedFormattedTime($user, $ticket->getCreatedAt()),
+            'isCollaborator' => $checkTicket,
         ];
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketView.html.twig', $twigResponse);
