@@ -351,6 +351,7 @@
                                     </div>
 
                                     <div class="uv-element-block cc-bcc">
+                                    {% if isCollaborator != true %}
                                         <label>
                                             <div class="uv-checkbox">
                                                 <input type="checkbox" class="cc-bcc-toggle">
@@ -358,6 +359,7 @@
                                             </div>
                                             <span class="uv-checkbox-label">{{ 'CC/BCC'|trans }}</span>
                                         </label>
+                                    {% endif %}
                                         <div class="uv-field-block" style="display: none">
                                             <div class="uv-group">
                                                 <input class="uv-group-field" type="text">
