@@ -226,6 +226,15 @@
 					$('label[for="' + value + '"]').parent().hide();
 				});
 			{% endif %}
+			$('.uv-header-date').datetimepicker({
+            	format: 'YYYY-MM-DD',
+        	});
+        	$('.uv-header-time').datetimepicker({
+            	format: 'LT',
+        	});
+        	$('.uv-header-datetime').datetimepicker({
+            	format: 'YYYY-MM-DD H:m:s'
+        	});
 			var CreateTicketModel = Backbone.Model.extend({
 				idAttribute : "id",
 				defaults : {

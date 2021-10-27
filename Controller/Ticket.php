@@ -20,6 +20,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\TicketService;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\CustomFieldsService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Component\Translation\TranslatorInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\ReCaptchaService;
@@ -32,17 +33,17 @@ class Ticket extends Controller
     private $translator;
     private $uvdeskService;
     private $ticketService;
-    private $fileSystem;
+    private $CustomFieldsService;
     private $recaptchaService;
 
-    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcherInterface $eventDispatcher, TranslatorInterface $translator, TicketService $ticketService, FileSystem $fileSystem, ReCaptchaService $recaptchaService)
+    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcherInterface $eventDispatcher, TranslatorInterface $translator, TicketService $ticketService, CustomFieldsService $CustomFieldsService, ReCaptchaService $recaptchaService)
     {
         $this->userService = $userService;
         $this->eventDispatcher = $eventDispatcher;
         $this->translator = $translator;
         $this->uvdeskService = $uvdeskService;
         $this->ticketService = $ticketService;
-        $this->fileSystem = $fileSystem;
+        $this->CustomFieldsService = $CustomFieldsService;
         $this->recaptchaService = $recaptchaService;
     }
 
@@ -97,7 +98,7 @@ class Ticket extends Controller
                     $message = '';
                     $ticketType = $em->getRepository('UVDeskCoreFrameworkBundle:TicketType')->find($request->request->get('type'));
                     
-                    if($request->files->get('customFields') && !$this->fileSystem->validateAttachmentsSize($request->files->get('customFields'))) {
+                    if($request->files->get('customFields') && !$this->CustomFieldsService->validateAttachmentsSize($request->files->get('customFields'))) {
                         $error = true;
                         $this->addFlash(
                                 'warning',
@@ -195,7 +196,7 @@ class Ticket extends Controller
                         if (!empty($thread)) {
                             $ticket = $thread->getTicket();
                             if($request->request->get('customFields') || $request->files->get('customFields')) {
-                                $this->get('ticket.service')->addTicketCustomFields($ticket, $request->request->get('customFields'), $request->files->get('customFields'));                        
+                                $this->get('ticket.service')->addTicketCustomFields($thread, $request->request->get('customFields'), $request->files->get('customFields'));                        
                             }
                             $this->addFlash('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
                         } else {
@@ -440,12 +441,15 @@ class Ticket extends Controller
             $entityManager->persist($ticket);
             $entityManager->flush();
         }
+
+        $checkTicket = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Ticket')->isTicketCollaborator($ticket, $user->getEmail());
         
         $twigResponse = [
             'ticket' => $ticket,
             'searchDisable' => true,
             'initialThread' => $this->ticketService->getTicketInitialThreadDetails($ticket),
             'localizedCreateAtTime' => $this->userService->getLocalizedFormattedTime($user, $ticket->getCreatedAt()),
+            'isCollaborator' => $checkTicket,
         ];
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketView.html.twig', $twigResponse);
@@ -507,6 +511,9 @@ class Ticket extends Controller
     {
         $threadId = $request->attributes->get('threadId');
         $attachmentRepository = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreFrameworkBundle:Attachment');
+        $threadRepository = $this->getDoctrine()->getManager()->getRepository('UVDeskCoreFrameworkBundle:Thread');
+
+        $thread = $threadRepository->findOneById($threadId);
 
         $attachment = $attachmentRepository->findByThread($threadId);
 
@@ -514,7 +521,7 @@ class Ticket extends Controller
             $this->noResultFound();
         }
 
-        $ticket = $attachment->getThread()->getTicket();
+        $ticket = $thread->getTicket();
         $user = $this->userService->getSessionUser();
         
         // process only if access for the resource.
@@ -556,9 +563,13 @@ class Ticket extends Controller
         }
 
         $ticket = $attachment->getThread()->getTicket();
-        // Proceed only if user has access to the resource
-        if (false == $this->ticketService->isTicketAccessGranted($ticket, $user)) {
-            throw new \Exception('Access Denied', 403);
+        $user = $this->userService->getSessionUser();
+        
+        // process only if access for the resource.
+        if (empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
+            if(!$this->isCollaborator($ticket, $user)) {
+                throw new \Exception('Access Denied', 403);
+            }
         }
 
         $path = $this->get('kernel')->getProjectDir() . "/public/". $attachment->getPath();
@@ -611,8 +622,16 @@ class Ticket extends Controller
                     $ticket->addCollaborator($collaborator);
                     $em->persist($ticket);
                     $em->flush();
+
                     $ticket->lastCollaborator = $collaborator;
+
                     $collaborator = $em->getRepository('UVDeskCoreFrameworkBundle:User')->find($collaborator->getId());
+                    
+                    $event = new GenericEvent(CoreWorkflowEvents\Ticket\Collaborator::getId(), [
+                        'entity' => $ticket,
+                    ]);
+
+                    $this->eventDispatcher->dispatch('uvdesk.automation.workflow.execute', $event);
                    
                     $json['collaborator'] =  $this->userService->getCustomerPartialDetailById($collaborator->getId());
                     $json['alertClass'] = 'success';

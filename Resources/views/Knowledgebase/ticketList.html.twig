@@ -176,6 +176,15 @@
 
             <% } %>
         </li>
+		<li class="<% if(sort == 't.updatedAt') { %>uv-drop-list-active<% } %>">
+            <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/t.updatedAt/<% if(sort == 't.updatedAt') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/asc<% } %><% } else { %>direction/desc<% } %>" data-field="t.updatedAt">
+                {{ 'Last Updated'|trans }}
+            </a>
+            <% if(sort == 't.updatedAt') { %>
+                <span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
+
+            <% } %>
+        </li>
 	</script>
 	<!-- //Sorting Template -->
 

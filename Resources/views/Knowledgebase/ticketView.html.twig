@@ -351,6 +351,7 @@
                                     </div>
 
                                     <div class="uv-element-block cc-bcc">
+                                    {% if isCollaborator != true %}
                                         <label>
                                             <div class="uv-checkbox">
                                                 <input type="checkbox" class="cc-bcc-toggle">
@@ -358,6 +359,7 @@
                                             </div>
                                             <span class="uv-checkbox-label">{{ 'CC/BCC'|trans }}</span>
                                         </label>
+                                    {% endif %}
                                         <div class="uv-field-block" style="display: none">
                                             <div class="uv-group">
                                                 <input class="uv-group-field" type="text">
@@ -494,7 +496,7 @@
         </div>
         <div class="uv-ticket-main-lt">
             <% if(user && smallThumbnail != null) { %>
-                <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}<%= smallThumbnail %>" />
+                <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}<%= smallThumbnail.slice(1) %>" />
             <% } else { %>
                 <img src="<% if(userType == 'agent') { %> {{ asset(default_agent_image_path) }} <% } else { %> {{ asset(default_customer_image_path) }} <% } %>" />
             <% } %>
@@ -515,7 +517,7 @@
                     <h4>{{ 'Uploaded Files'|trans }}</h4>
                     <div class="uv-ticket-uploads-strip uv-viewer-images">
                         <% _.each(attachments, function(file) { %>
-                            <a href="<%-file.downloadURL %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
+                            <a href="<%-file.downloadURL.replace("member","customer") %>" target ="_blank" class="uv-ticket-uploads-brick uv-no-pointer-events" data-toggle="tooltip" title="<%- file.name %>">
                                 <img src="<%-file.iconURL %>" class="uv-auto-pointer-events">
                             </a>
                         <% }) %>

@@ -4,7 +4,7 @@ namespace Webkul\UVDesk\SupportCenterBundle\Repository;
 
 use Webkul\UVDesk\SupportCenterBundle\Entity\Announcement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections;
 use Doctrine\ORM\Tools\Pagination\Paginator;

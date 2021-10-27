@@ -95,11 +95,12 @@ Class Announcement extends Controller
         }
 
         $entityManager = $this->getDoctrine()->getManager();
-        $knowledgebaseAnnouncementId = $request->attributes->get('id');
+        $knowledgebaseAnnouncementId = $request->attributes->get('announcementId');
 
-        $knowledgebaseAnnouncement = $entityManager->getRepository(Announcement::class)->findOneBy([
-            'id' => $knowledgebaseAnnouncementId
-        ]);
+        $knowledgebaseAnnouncement = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Announcement')
+            ->findOneBy([
+                'id' => $request->attributes->get('announcementId')
+            ]);
 
         if ($knowledgebaseAnnouncement) {
             $entityManager->remove($knowledgebaseAnnouncement);

@@ -2,7 +2,7 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Fixtures;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 use Doctrine\Bundle\FixturesBundle\Fixture as DoctrineFixture;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportCenterEntities;
@@ -34,7 +34,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
         
         if (empty($website)) {
             ($website = new CoreEntities\Website())
-                ->setName('Knowledgebase')
+                ->setName('Helpdesk Knowledgebase')
                 ->setCode('knowledgebase')
                 ->setThemeColor('#7E91F0')
                 ->setCreatedAt(new \DateTime())

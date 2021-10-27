@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": "^7.2",
+        "php": "^7.3 || ^8.0",
         "uvdesk/composer-plugin": "^1.0",
         "uvdesk/core-framework": "^1.0.4"
     },
