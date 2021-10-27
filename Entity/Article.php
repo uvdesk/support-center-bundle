@@ -46,7 +46,7 @@ class Article
     
     /**
      * @var string
-     * @ORM\Column(type="string", length=255, nullable=true, name="meta_description")
+     * @ORM\Column(type="text", length=2000, nullable=true, name="meta_description")
      */
     private $metaDescription;
 
