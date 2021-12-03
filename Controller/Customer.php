@@ -16,6 +16,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Component\Translation\TranslatorInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\FileUploadService;
+use Symfony\Component\Filesystem\Filesystem as Fileservice;
 
 Class Customer extends AbstractController
 {
@@ -183,9 +184,14 @@ Class Customer extends AbstractController
                         $userInstance->setProfileImagePath($assetDetails['path']);
                     }
 
+                    // Removed profile image from database and path
+                    $fileService = new Fileservice;
                     if ($request->get('removeImage') == 'on') {
-                       $userInstance->setProfileImagePath(null);
-                    } 
+                        if ($userInstance->getProfileImagePath()) {
+                            $fileService->remove($this->getParameter('kernel.project_dir').'/public'.$userInstance->getProfileImagePath());
+                        }
+                        $userInstance = $userInstance->setProfileImagePath(null);
+                    }
 
                     $userInstance  = $userInstance->setContactNumber($data['contactNumber']);
                     $em->persist($userInstance);
