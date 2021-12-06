@@ -282,6 +282,10 @@ class Website extends Controller
         if (empty($article)) {
             $this->noResultFound();
         }
+        $stringReplace = str_replace("<ol>","<ul>",$article->getContent());
+        $stringReplace = str_replace("</ol>","</ul>",$stringReplace);
+
+        $article->setContent($stringReplace);
         $article->setViewed((int) $article->getViewed() + 1);
         
         // Log article view
