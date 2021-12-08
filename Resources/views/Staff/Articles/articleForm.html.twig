@@ -647,7 +647,9 @@
 				renderArticlePreview: function(e){
 					e.preventDefault();
 					var article_content = tinyMCE.get('content').getContent();
-
+ 					article_content = article_content.replace("<ol>", "<ul>");
+					article_content = article_content.replace("</ol>", "</ul>");
+					
 					$('body').append(this.previewTemplate());
 					$('body').find('#preview-modal .uv-html-preview').html('<h1 style="margin-bottom: 30px;">' + articlemodel.attributes.name + '</h1>' + article_content);
 					

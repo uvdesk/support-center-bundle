@@ -21,6 +21,9 @@
 		.uv-field-success-icon {
 			display: none !important;
 		}
+		.mce-path {
+      		display: none !important;
+		}
 		
 	</style>
 
@@ -232,7 +235,6 @@
 			plugins: [
             ],
 			toolbar: '| undo redo | bold italic forecolor ',
-			statusbar: false,
 		});
 			{% if(removeMe is defined) %}
 				$.each({{ removeMe | json_encode |raw }}, function(key, value){
