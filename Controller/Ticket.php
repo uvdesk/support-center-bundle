@@ -146,7 +146,7 @@ class Ticket extends Controller
                             'from' => $email, //email$request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
                             'subject' => $request->request->get('subject'),
                             // @TODO: We need to filter js (XSS) instead of html
-                            'reply' => strip_tags($request->request->get('reply')),
+                            'reply' => str_replace(['&lt;script&gt;', '&lt;/script&gt;'], '', htmlspecialchars($request->request->get('reply'))),
                             'firstName' => $name[0],
                             'lastName' => isset($name[1]) ? $name[1] : '',
                             'role' => 4,
@@ -180,7 +180,7 @@ class Ticket extends Controller
                         $data['subject'] = $request->request->get('subject');
                         $data['source'] = 'website';
                         $data['threadType'] = 'create';
-                        $data['message'] = htmlentities($data['reply']);
+                        $data['message'] = $data['reply'];
                         $data['createdBy'] = 'customer';
                         $data['attachments'] = $request->files->get('attachments');
     
