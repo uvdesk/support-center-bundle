@@ -180,7 +180,7 @@ class Ticket extends Controller
                         $data['subject'] = $request->request->get('subject');
                         $data['source'] = 'website';
                         $data['threadType'] = 'create';
-                        $data['message'] = htmlentities($data['reply']);
+                        $data['message'] = $data['reply'];
                         $data['createdBy'] = 'customer';
                         $data['attachments'] = $request->files->get('attachments');
     
