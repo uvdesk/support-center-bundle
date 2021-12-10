@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Filesystem\Filesystem as Fileservice;
 
 class KnowledgebaseXHR extends Controller
 {
@@ -89,6 +90,12 @@ class KnowledgebaseXHR extends Controller
             case "DELETE":
                 $solutionId = $request->attributes->get('folderId');
                 $solutionBase = $entityManager->getRepository('UVDeskSupportCenterBundle:Solutions')->find($solutionId);
+
+                $fileService = new Fileservice();
+
+                if ($solutionBase->getSolutionImage()) {
+                    $fileService->remove($this->container->getParameter('kernel.project_dir')."/public/".$solutionBase->getSolutionImage());
+                }
 
                 if($solutionBase){
                     $entityManager->getRepository('UVDeskSupportCenterBundle:Solutions')->removeEntryBySolution($solutionId);
