@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Filesystem\Filesystem as SymfonyFileservice;
 
 class Branding extends AbstractController
 {
@@ -45,6 +46,12 @@ class Branding extends AbstractController
                 case "general":
                     $website->setName($params['website']['name']);
                     $status = array_key_exists("status",$params['website']) ? 1 : 0;
+                    $logo = $website->getLogo();
+
+                    if ($logo != null && isset($parmsFile['logo'])) {
+                        $fileService = new SymfonyFileservice;
+                        $fileService->remove($this->getParameter('kernel.project_dir').'/public'.$logo);
+                    }
 
                     if (isset($parmsFile['logo'])) {
                         $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($parmsFile['logo'], 'website');
