@@ -82,10 +82,14 @@
 						maxLength:18,
 						msg: "{{ 'This field contain maximum 18 charectures.'|trans }}"
 					}],
-					'description': {
+					'description': [{
 						required: true,
 						msg: "{{ 'This field is mandatory'|trans }}"
-					}
+					},
+					{
+						maxLength:200,
+						msg: '{{ "This field contain maximum 250 charecters only"|trans }}'
+					}]
 				}
 			});
 
