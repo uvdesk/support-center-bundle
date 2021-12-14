@@ -246,6 +246,12 @@ class Article extends Controller
                                 $json['errors']['name'] = $this->translator->trans('Name length must not be greater than 200 !!');
                             }
 
+                            $slug = $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->findOneBy(['slug' => $data['slug']]);
+                            
+                            if (!empty($slug)) {
+                                $json['errors']['slug'] = $this->translator->trans('Warning! Article slug is not available.');
+                            }
+
                             if (!$json['errors']) {
                                 unset($json['errors']);
                                 $article->setName($data['name']);
