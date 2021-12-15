@@ -429,10 +429,14 @@ class Ticket extends Controller
         $user = $this->userService->getSessionUser();
         $ticket = $entityManager->getRepository(TicketEntity::class)->findOneBy(['id' => $id]);
         
-        if (empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
+        if (!empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
             if(!$this->isCollaborator($ticket, $user)) {
                 throw new NotFoundHttpException('Page Not Found!');
             }
+        }
+
+        if (empty($ticket)) {
+            throw new NotFoundHttpException('Page Not Found!');
         }
 
         if (!empty($user) && $user->getId() == $ticket->getCustomer()->getId()) {
