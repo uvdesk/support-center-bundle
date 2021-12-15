@@ -225,6 +225,61 @@ class Article extends Controller
             if (isset($data['actionType'])) {
                 switch ($data['actionType']) {
                     case 'articleUpdate':
+                        if ('articleSave' == $data['actionType']  && !empty($resources['articles']['showAlert']) ) {
+                            $json['alertClass'] = 'danger';
+
+                            return new JsonResponse($json);
+                        }
+
+                        if ($data['ids'][0]) {
+                            $article = $this->getArticle(['id' => $data['ids'][0]]);
+                        } else {
+                            $article = new ArticleEntity;
+                        }
+
+                        $json['errors'] = [];
+
+                        if ($article) {
+
+                            if (strlen($data['name']) > 200) {
+                                $json['errors']['name'] = $this->translator->trans('Name length must not be greater than 200 !!');
+                            }
+
+                            if (!$json['errors']) {
+                                unset($json['errors']);
+                                $article->setName($data['name']);
+                                $article->setSlug($data['slug']);
+                                $article->setMetaTitle($data['metaTitle']);
+                                $article->setKeywords($data['keywords']);
+                                $article->setMetaDescription($data['metaDescription']);
+
+                                $updateRevisionHistory = false;
+
+                                if ($article->getContent() == null || trim($article->getContent()) != trim($data['content'])) {
+
+                                    $updateRevisionHistory = true;
+                                    $article->setContent($data['content']);
+                                }
+
+                                $entityManager->persist($article);
+                                $entityManager->flush();
+
+                                $json['alertClass'] = 'success';
+                                $json['alertMessage'] = $this->translator->trans('Success! Article updated successfully');
+
+                                if (!$data['ids'][0]) {
+                                    $json['redirect'] = $this->generateUrl('helpdesk_member_knowledgebase_update_article', array('id' => $article->getId()));
+                                }
+
+                            } else {
+                                $json['alertClass'] = 'danger';
+                                $json['alertMessage'] = $this->translator->trans('Warning! Correct all field values first!');
+                            }
+                        } else {
+                            $json['alertClass'] = 'danger';
+                            $json['alertMessage'] = $this->translator->trans('Warning ! This is not a valid request');
+                        }
+                        break;
                     case 'articleSave':
                         if ('articleSave' == $data['actionType']  && !empty($resources['articles']['showAlert']) ) {
                             $json['alertClass'] = 'danger';
