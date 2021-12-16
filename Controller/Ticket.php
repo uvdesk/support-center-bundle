@@ -428,15 +428,19 @@ class Ticket extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         $user = $this->userService->getSessionUser();
         $ticket = $entityManager->getRepository(TicketEntity::class)->findOneBy(['id' => $id]);
-        
-        if (!empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
-            if(!$this->isCollaborator($ticket, $user)) {
-                throw new NotFoundHttpException('Page Not Found!');
-            }
+        $isConfirmColl = false;
+
+        if ($ticket == null && empty($ticket)) {
+            throw new NotFoundHttpException('Page Not Found!');
         }
 
-        if (empty($ticket)) {
-            throw new NotFoundHttpException('Page Not Found!');
+        if (!empty($ticket) && ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
+            if($this->isCollaborator($ticket, $user)) {
+                $isConfirmColl = true;
+            }
+            if ($isConfirmColl != true) {
+                throw new \Exception('Access Denied', 403);
+            } 
         }
 
         if (!empty($user) && $user->getId() == $ticket->getCustomer()->getId()) {
