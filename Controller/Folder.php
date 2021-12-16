@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\FileUploadService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -17,12 +18,14 @@ class Folder extends AbstractController
     private $userService;
     private $translator;
     private $fileSystem;
+    private $fileUploadService;
 
-    public function __construct(UserService $userService, TranslatorInterface $translator, FileSystem $fileSystem)
+    public function __construct(UserService $userService, TranslatorInterface $translator, FileSystem $fileSystem, FileUploadService $fileUploadService)
     {
         $this->userService = $userService;
         $this->translator = $translator;
         $this->fileSystem = $fileSystem;
+        $this->fileUploadService = $fileUploadService;
     }
 
     public function listFolders(Request $request)
@@ -56,7 +59,16 @@ class Folder extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $solutionImage = $request->files->get('solutionImage');
 
-            if ($imageFile = $request->files->get('solutionImage')) {
+            if ($imageFile = $request->files->get('solutionImage')) { 
+                if ($imageFile->getMimeType() == "image/svg+xml" || $imageFile->getMimeType() == "image/svg") {
+                    if (!$this->fileUploadService->svgFileCheck($imageFile)){
+                        $message = $this->translator->trans('Warning! Not a vaild svg. (Recommened: PNG, JPG or GIF Format).');
+                        $this->addFlash('warning', $message);
+    
+                        return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
+                    }
+                }
+
                 if (!preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
 
                     $message = $this->translator->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
@@ -111,6 +123,16 @@ class Folder extends AbstractController
             $solutionImage = $request->files->get('solutionImage');
 
             if ($imageFile = $request->files->get('solutionImage')) {
+
+                if ($imageFile->getMimeType() == "image/svg+xml" || $imageFile->getMimeType() == "image/svg") {
+                    if (!$this->fileUploadService->svgFileCheck($imageFile)){
+                        $message = $this->translator->trans('Warning! Not a vaild svg. (Recommened: PNG, JPG or GIF Format).');
+                        $this->addFlash('warning', $message);
+    
+                        return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
+                    }
+                }
+                
                 if (!preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
                     $message = $this->translator->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
                     $this->addFlash('warning', $message);
