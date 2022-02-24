@@ -2,7 +2,7 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\Common\Collections\Criteria;
@@ -11,9 +11,9 @@ use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
 use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping;
 use Webkul\UVDesk\SupportCenterBundle\Form\Category as CategoryForm;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-class Category extends Controller
+class Category extends AbstractController
 {
     const LIMIT = 10;
 

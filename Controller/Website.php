@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Article;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleViewLog;
 use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -17,10 +17,10 @@ use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website as CoreWebsite;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 
-class Website extends Controller
+class Website extends AbstractController
 {
     private $visibility = ['public'];
     private $limit = 5;
