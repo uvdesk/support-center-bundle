@@ -18,7 +18,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website as CoreWebsite;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Symfony\Contracts\Translation\TranslatorInterface;
-
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Website extends AbstractController
 {
@@ -51,7 +51,7 @@ class Website extends AbstractController
         throw new NotFoundHttpException('Page Not Found');
     }
 
-    public function home(Request $request)
+    public function home(Request $request, ContainerInterface $container)
     {
         $this->isKnowledgebaseActive();
 
@@ -67,7 +67,7 @@ class Website extends AbstractController
         $twigResponse = [
             'searchDisable' => false,
             'popArticles' => $articleRepository->getPopularTranslatedArticles($request->getLocale()),
-            'solutions' => $solutionRepository->getAllSolutions(new ParameterBag($parameterBag), $this->container, 'a', [1]),
+            'solutions' => $solutionRepository->getAllSolutions(new ParameterBag($parameterBag), $container, 'a', [1]),
         ];
 
         $newResult = [];
@@ -95,7 +95,7 @@ class Website extends AbstractController
                 'direction' => 'desc'
             ];
 
-            $article =  $articleRepository->getAllArticles(new ParameterBag($parameterBag), $this->container, 'a.id, a.name, a.slug, a.stared');
+            $article =  $articleRepository->getAllArticles(new ParameterBag($parameterBag), $container, 'a.id, a.name, a.slug, a.stared');
              
             return [
                 'id' => $category['id'],
@@ -169,7 +169,7 @@ class Website extends AbstractController
         ]);
     }
 
-    public function viewFolderArticle(Request $request)
+    public function viewFolderArticle(Request $request, ContainerInterface $container)
     {
         $this->isKnowledgebaseActive();
 
@@ -209,14 +209,14 @@ class Website extends AbstractController
                 ->getArticlesCountBySolution($solution->getId(), [1]),
             'articles' => $this->getDoctrine()
                 ->getRepository('UVDeskSupportCenterBundle:Article')
-                ->getAllArticles(new ParameterBag($parameterBag), $this->container, 'a.id, a.name, a.slug, a.stared'),
+                ->getAllArticles(new ParameterBag($parameterBag), $container, 'a.id, a.name, a.slug, a.stared'),
             'breadcrumbs' => $breadcrumbs,
         ];
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/folderArticle.html.twig', $article_data);
     }
 
-    public function viewCategory(Request $request)
+    public function viewCategory(Request $request, ContainerInterface $container)
     {
         $this->isKnowledgebaseActive();
 
@@ -254,7 +254,7 @@ class Website extends AbstractController
                             ->getArticlesCountByCategory($category->getId(), [1]),
             'articles' => $this->getDoctrine()
                         ->getRepository('UVDeskSupportCenterBundle:Article')
-                        ->getAllArticles(new ParameterBag($parameterBag), $this->container, 'a.id, a.name, a.slug, a.stared'),
+                        ->getAllArticles(new ParameterBag($parameterBag), $container, 'a.id, a.name, a.slug, a.stared'),
             'breadcrumbs' => $breadcrumbs
         );
 

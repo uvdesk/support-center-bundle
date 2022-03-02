@@ -24,7 +24,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\Services\CustomFieldsService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\ReCaptchaService;
-
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Ticket extends AbstractController
 {
@@ -72,7 +72,7 @@ class Ticket extends AbstractController
         throw new NotFoundHttpException('Not found !');
     }
 
-    public function ticketadd(Request $request)
+    public function ticketadd(Request $request, ContainerInterface $container)
     {
         $this->isWebsiteActive();
         
@@ -114,7 +114,7 @@ class Ticket extends AbstractController
                     if(!empty($loggedUser) && $loggedUser != 'anon.') {
                         
                         $form = $this->createForm(TicketForm::class, $ticket, [
-                            'container' => $this->container,
+                            'container' => $container,
                             'entity_manager' => $em,
                         ]);
                         $email = $loggedUser->getEmail();
@@ -125,7 +125,7 @@ class Ticket extends AbstractController
                         }
                     } else {
                         $form = $this->createForm(TicketForm::class, $ticket, [
-                            'container' => $this->container,
+                            'container' => $container,
                             'entity_manager' => $em,
                         ]);
                         $email = $request->request->get('from');
@@ -207,7 +207,7 @@ class Ticket extends AbstractController
                             'entity' => $thread->getTicket(),
                         ]);
     
-                        $this->eventDispatcher->dispatch('uvdesk.automation.workflow.execute', $event);
+                        $this->eventDispatcher->dispatch($event, 'uvdesk.automation.workflow.execute');
     
                         if(null != $this->getUser()) {
                             return $this->redirect($this->generateUrl('helpdesk_customer_ticket_collection'));
@@ -336,7 +336,7 @@ class Ticket extends AbstractController
                     ]);
                 }
 
-                $this->eventDispatcher->dispatch('uvdesk.automation.workflow.execute', $event);
+                $this->eventDispatcher->dispatch($event, 'uvdesk.automation.workflow.execute');
 
                 $this->addFlash('success', $this->translator->trans('Success ! Reply added successfully.'));
             } else {
@@ -381,7 +381,7 @@ class Ticket extends AbstractController
      * @param Object $request "HTTP Request object"
      * @return JSON "JSON response"
      */
-    public function ticketListXhr(Request $request)
+    public function ticketListXhr(Request $request, ContainerInterface $container)
     {
         $this->isWebsiteActive();
 
@@ -389,7 +389,7 @@ class Ticket extends AbstractController
         if($request->isXmlHttpRequest()) {
             $repository = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:Ticket');
     
-            $json = $repository->getAllCustomerTickets($request->query, $this->container);
+            $json = $repository->getAllCustomerTickets($request->query, $container);
         }
 
         $response = new Response(json_encode($json));
@@ -403,7 +403,7 @@ class Ticket extends AbstractController
      * @param Object $request "HTTP Request object"
      * @return JSON "JSON response"
      */
-    public function threadListXhr(Request $request)
+    public function threadListXhr(Request $request, ContainerInterface $container)
     {
         $this->isWebsiteActive();
 
@@ -413,7 +413,7 @@ class Ticket extends AbstractController
             // $this->denyAccessUnlessGranted('FRONT_VIEW', $ticket);
 
             $repository = $this->getDoctrine()->getRepository('UVDeskCoreFrameworkBundle:Thread');
-            $json = $repository->getAllCustomerThreads($request->attributes->get('id'),$request->query, $this->container);
+            $json = $repository->getAllCustomerThreads($request->attributes->get('id'),$request->query, $container);
         }
 
         $response = new Response(json_encode($json));
@@ -639,7 +639,7 @@ class Ticket extends AbstractController
                         'entity' => $ticket,
                     ]);
 
-                    $this->eventDispatcher->dispatch('uvdesk.automation.workflow.execute', $event);
+                    $this->eventDispatcher->dispatch($event, 'uvdesk.automation.workflow.execute');
                    
                     $json['collaborator'] =  $this->userService->getCustomerPartialDetailById($collaborator->getId());
                     $json['alertClass'] = 'success';

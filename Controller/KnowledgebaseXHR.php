@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Filesystem\Filesystem as Fileservice;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class KnowledgebaseXHR extends AbstractController
 {
@@ -20,14 +21,14 @@ class KnowledgebaseXHR extends AbstractController
         $this->translator = $translator;
     }
 
-    public function listFoldersXHR(Request $request)
+    public function listFoldersXHR(Request $request, ContainerInterface $container)
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $response = new Response();
-        $folderCollection = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Solutions')->getAllSolutions($request->query, $this->container);
+        $folderCollection = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Solutions')->getAllSolutions($request->query, $container);
 
         $response->setContent(json_encode($folderCollection));
         $response->headers->set('Content-Type', 'application/json');
