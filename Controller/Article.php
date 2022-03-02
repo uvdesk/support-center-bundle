@@ -21,6 +21,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Article extends AbstractController
 {
@@ -37,7 +38,7 @@ class Article extends AbstractController
         $this->uvdeskService = $uvdeskService;
     }
 
-    public function articleList(Request $request)
+    public function articleList(Request $request, ContainerInterface $container)
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
@@ -45,7 +46,7 @@ class Article extends AbstractController
 
         $solutions = $this->getDoctrine()
             ->getRepository('UVDeskSupportCenterBundle:Solutions')
-            ->getAllSolutions(null, $this->container, 'a.id, a.name');
+            ->getAllSolutions(null, $container, 'a.id, a.name');
         if ($solutions) {
             foreach($solutions as $key => $solution) {
                 $solutions[$key]['categories'] = $this->getDoctrine()
@@ -59,7 +60,7 @@ class Article extends AbstractController
         ]);
     }
 
-    public function articleListByCategory(Request $request)
+    public function articleListByCategory(Request $request, ContainerInterface $container)
     {
         $category = $this->getDoctrine()
             ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
@@ -78,7 +79,7 @@ class Article extends AbstractController
 
                 'solutions'         => $this->getDoctrine()
                     ->getRepository('UVDeskSupportCenterBundle:Solutions')
-                    ->getAllSolutions(null, $this->container, 'a.id, a.name')
+                    ->getAllSolutions(null, $container, 'a.id, a.name')
             ]);
         } else {
             $this->noResultFound();
@@ -107,7 +108,7 @@ class Article extends AbstractController
         }
     }
 
-    public function articleListXhr(Request $request)
+    public function articleListXhr(Request $request, ContainerInterface $container)
     {
         $json = array();
         $repository = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Article');
@@ -118,7 +119,7 @@ class Article extends AbstractController
         if($request->attributes->get('solution'))
             $request->query->set('solutionId', $request->attributes->get('solution'));
 
-        $json = $repository->getAllArticles($request->query, $this->container);
+        $json = $repository->getAllArticles($request->query, $container);
 
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
@@ -171,7 +172,7 @@ class Article extends AbstractController
         return false;
     }
 
-    public function article(Request $request)
+    public function article(Request $request, ContainerInterface $container)
     {
         if ($request->attributes->get('id')) {
             $article = $this->getArticle(['id' => $request->attributes->get('id')]);
@@ -195,7 +196,7 @@ class Article extends AbstractController
 
         $categories = $this->getDoctrine()
             ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
-            ->getAllCategories(null, $this->container, 'a.id, a.name');
+            ->getAllCategories(null, $container, 'a.id, a.name');
 
         if ($request->attributes->get('id')) {
             return  $this->render('@UVDeskSupportCenter/Staff/Articles/articleForm.html.twig', [
