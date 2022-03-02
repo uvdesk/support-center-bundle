@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 Class Announcement extends AbstractController
 {
@@ -31,11 +32,11 @@ Class Announcement extends AbstractController
         return $this->render('@UVDeskSupportCenter/Staff/Announcement/listAnnouncement.html.twig');
     }
 
-    public function listAnnouncementXHR(Request $request)    
+    public function listAnnouncementXHR(Request $request, ContainerInterface $container)    
     {
         $json = array();
         $repository = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Announcement');
-        $json =  $repository->getAllAnnouncements($request->query, $this->container);
+        $json =  $repository->getAllAnnouncements($request->query, $container);
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
