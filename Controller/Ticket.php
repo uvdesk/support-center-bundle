@@ -47,7 +47,7 @@ class Ticket extends AbstractController
         $this->ticketService = $ticketService;
         $this->CustomFieldsService = $CustomFieldsService;
         $this->recaptchaService = $recaptchaService;
-        $this->kernel = $kernel
+        $this->kernel = $kernel;
     }
 
     protected function isWebsiteActive()
