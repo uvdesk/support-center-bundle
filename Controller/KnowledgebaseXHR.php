@@ -95,7 +95,7 @@ class KnowledgebaseXHR extends AbstractController
                 $fileService = new Fileservice();
 
                 if ($solutionBase->getSolutionImage()) {
-                    $fileService->remove($this->container->getParameter('kernel.project_dir')."/public/".$solutionBase->getSolutionImage());
+                    $fileService->remove($this->getParameter('kernel.project_dir')."/public/".$solutionBase->getSolutionImage());
                 }
 
                 if($solutionBase){

@@ -38,7 +38,7 @@ class Article extends AbstractController
         $this->uvdeskService = $uvdeskService;
     }
 
-    public function articleList(Request $request, ContainerInterface $container)
+    public function ArticleList(Request $request, ContainerInterface $container)
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
@@ -60,7 +60,7 @@ class Article extends AbstractController
         ]);
     }
 
-    public function articleListByCategory(Request $request, ContainerInterface $container)
+    public function ArticleListByCategory(Request $request, ContainerInterface $container)
     {
         $category = $this->getDoctrine()
             ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
@@ -108,7 +108,7 @@ class Article extends AbstractController
         }
     }
 
-    public function articleListXhr(Request $request, ContainerInterface $container)
+    public function ArticleListXhr(Request $request, ContainerInterface $container)
     {
         $json = array();
         $repository = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Article');

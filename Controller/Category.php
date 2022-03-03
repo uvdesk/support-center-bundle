@@ -12,6 +12,7 @@ use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping;
 use Webkul\UVDesk\SupportCenterBundle\Form\Category as CategoryForm;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Category extends AbstractController
 {
@@ -26,7 +27,7 @@ class Category extends AbstractController
         $this->translator = $translator;
     }
 
-    public function categoryList(Request $request)
+    public function CategoryList(Request $request, ContainerInterface $container)
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
@@ -34,7 +35,7 @@ class Category extends AbstractController
 
         $solutions = $this->getDoctrine()
             ->getRepository('UVDeskSupportCenterBundle:Solutions')
-            ->getAllSolutions(null, $this->container, 'a.id, a.name');
+            ->getAllSolutions(null, $container, 'a.id, a.name');
 
         $solutions = array_map(function($solution){
             return [
@@ -50,7 +51,7 @@ class Category extends AbstractController
         ]);
     }
 
-    public function categoryListBySolution(Request $request)
+    public function CategoryListBySolution(Request $request)
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
@@ -74,7 +75,7 @@ class Category extends AbstractController
             $this->noResultFound();
     }
 
-    public function categoryListXhr(Request $request)
+    public function CategoryListXhr(Request $request, ContainerInterface $container)
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
@@ -87,13 +88,13 @@ class Category extends AbstractController
             $request->query->set('solutionId', $request->attributes->get('solution'));
         else
             $request->query->set('limit', self::LIMIT);
-        $json =  $repository->getAllCategories($request->query, $this->container);
+        $json =  $repository->getAllCategories($request->query, $container);
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
     }
 
-    public function category(Request $request)
+    public function Category(Request $request, ContainerInterface $container)
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
@@ -170,7 +171,7 @@ class Category extends AbstractController
 
         $solutions = $this->getDoctrine()
             ->getRepository('UVDeskSupportCenterBundle:Solutions')
-            ->getAllSolutions(null, $this->container, 'a.id, a.name');
+            ->getAllSolutions(null, $container, 'a.id, a.name');
 
         return $this->render('@UVDeskSupportCenter/Staff/Category/categoryForm.html.twig', [
             'category' => $category,
@@ -180,7 +181,7 @@ class Category extends AbstractController
         ]);
     }
 
-    public function categoryXhr(Request $request)
+    public function CategoryXhr(Request $request, ContainerInterface $container)
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
