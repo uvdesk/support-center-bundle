@@ -25,6 +25,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\ReCaptchaService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class Ticket extends AbstractController
 {
@@ -35,8 +36,9 @@ class Ticket extends AbstractController
     private $ticketService;
     private $CustomFieldsService;
     private $recaptchaService;
+    private $kernel;
 
-    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcherInterface $eventDispatcher, TranslatorInterface $translator, TicketService $ticketService, CustomFieldsService $CustomFieldsService, ReCaptchaService $recaptchaService)
+    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcherInterface $eventDispatcher, TranslatorInterface $translator, TicketService $ticketService, CustomFieldsService $CustomFieldsService, ReCaptchaService $recaptchaService, KernelInterface $kernel)
     {
         $this->userService = $userService;
         $this->eventDispatcher = $eventDispatcher;
@@ -45,6 +47,7 @@ class Ticket extends AbstractController
         $this->ticketService = $ticketService;
         $this->CustomFieldsService = $CustomFieldsService;
         $this->recaptchaService = $recaptchaService;
+        $this->kernel = $kernel
     }
 
     protected function isWebsiteActive()
@@ -559,6 +562,7 @@ class Ticket extends AbstractController
 
         return $response;
     }
+
     public function downloadAttachment(Request $request)
     {
         $attachmendId = $request->attributes->get('attachmendId');
@@ -580,7 +584,7 @@ class Ticket extends AbstractController
             }
         }
 
-        $path = $this->get('kernel')->getProjectDir() . "/public/". $attachment->getPath();
+        $path = $this->kernel->getProjectDir() . "/public/". $attachment->getPath();
 
         $response = new Response();
         $response->setStatusCode(200);
