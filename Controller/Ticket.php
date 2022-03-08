@@ -459,7 +459,7 @@ class Ticket extends AbstractController
             'ticket' => $ticket,
             'searchDisable' => true,
             'initialThread' => $this->ticketService->getTicketInitialThreadDetails($ticket),
-            'localizedCreateAtTime' => $this->userService->getLocalizedFormattedTime($user, $ticket->getCreatedAt()),
+            'localizedCreateAtTime' => $this->userService->getLocalizedFormattedTime($ticket->getCreatedAt(), $user),
             'isCollaborator' => $checkTicket,
         ];
 
