@@ -3,6 +3,58 @@ CHANGELOG for 1.0.x
 
 This changelog references any relevant changes introduced in 1.0 minor versions.
 
+* 1.0.13 (2021-10-27)
+
+    * **Misc. Updates:**
+      * Compatibility with PHP 8.
+      * Filter option on customer side with ticket listing.
+
+    * **Bug. Fixes:**
+        * Removed CC/BCC option for collaborator reply.
+        * Preview option fixed for Article. 
+        * login issue on customer login is timestamp not set on branding.
+
+* 1.0.12 (2021-08-21)
+    * **Bug. Fixes:**
+        * **Issue #118:** date icon should be appear in broadcast message.
+        * **Issue #135:** customer is not able to add reply on ticket.
+
+    * **Misc. Updates:**
+        * Reply rosolved from customer end if added CC and BCC in reply.
+        * Date icon added for broadcast message.
+        * Profile picture remove option added.
+        * Default image show in Tickets thread when removed profile picture.
+        * Added kudos feature.
+
+* 1.0.10 (2021-06-19)
+    * **Bug. Fixes:**
+        * **Issue #130:** getting exception on marketing announcement when sort by Created At
+        * **Issue #132:** When an agent logs in on the customer endpoint, redirect them.
+        * **Issue #131:** email login is case sensitive
+
+    * **Misc. Updates:**
+        * Added Marketing Announcement feature.
+        * Broadcast message field type changed to text and added validation for 300 characters for the same.
+        * Colors issue fixed for knowledgebase which is set from branding section.
+
+* 1.0.9 (2021-04-02)
+    * **Bug. Fixes:**
+        * **Issue #103:** Doctrine Entities Mapping error on KnowledgebaseWebsite#website.
+        * **Issue #107:** Getting exception while viewing categories/folder/articles at backend.
+        * **Issue #108:** contact us form is not working.
+        * **Issue #117:** [Feature request] Support HTML in Knowledgebase.
+        * **Issue #110:** customer panel showing error.
+        * **Issue #111:** add image upload icon in tinymc editor for articles.
+        * **Issue #112:** video attachment in article is not working.
+        * **Issue #119:** back date should be disabled while creating broadcast message.
+        * **Issue #120:** getting exception when sort category,article based on created date.
+        * **Issue #121:** duplicate editor options are visible in knowledgebase article editor.
+        * **Issue #122:** ticket list pagination is missing at customer panel.
+        * **Issue #122:** getting error while creating ticket from the front end.
+
+    * **Misc. Updates:**
+        * Added multiple option for Article Editor.
+
 * 1.0.8 (2020-07-21)
     * **Issue #102:** Footer cookie link issue on mobile.
     * **Issue #101:** Missed mobile menu to login, Missed operator three dots menù in a ticket.
