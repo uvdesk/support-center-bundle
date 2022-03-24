@@ -172,7 +172,7 @@ Class Customer extends AbstractController
                     $em->persist($user);
                     $em->flush();
 
-                    $userInstance = $em->getRepository('UVDeskCoreFrameworkBundle:UserInstance')->findOneBy(array('user' => $user->getId()));
+                    $userInstance = $em->getRepository('UVDeskCoreFrameworkBundle:UserInstance')->findOneBy(array('user' => $user->getId(), 'supportRole' => 4));
 
                     if (isset($dataFiles['profileImage'])) {
                         $previousImage = $userInstance->getProfileImagePath();
