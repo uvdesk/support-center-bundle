@@ -150,6 +150,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
                         'solutionId' => $id,
                         'status' => $status,
                     ])
+                    ->orderBy('sc.sortOrder', Criteria::ASC)
                     ->getQuery()
                     ->getResult();
 
