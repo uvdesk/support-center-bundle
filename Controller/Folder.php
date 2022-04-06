@@ -144,6 +144,12 @@ class Folder extends AbstractController
             }
             $formData = $request->request->all();
             if (isset($solutionImage)) {
+                // Removing old image from physical path is new image uploaded
+                $fileService = new Fileservice();
+                if ($knowledgebaseFolder->getSolutionImage()) {
+                    $fileService->remove($this->getParameter('kernel.project_dir')."/public/".$knowledgebaseFolder->getSolutionImage());
+                }
+
                 $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($solutionImage, 'knowledgebase');
                 $knowledgebaseFolder->setSolutionImage($assetDetails['path']);
             }
