@@ -18,10 +18,7 @@
         "psr-4": { "Webkul\\UVDesk\\SupportCenterBundle\\": "" }
     },
     "extra": {
-        "uvdesk-package-extension": "Webkul\\UVDesk\\SupportCenterBundle\\Package\\Composer",
-        "branch-alias": {
-            "dev-master": "1.1.x-dev"
-        }
+        "uvdesk-package-extension": "Webkul\\UVDesk\\SupportCenterBundle\\Package\\Composer"
     },
     "minimum-stability": "stable"
 }

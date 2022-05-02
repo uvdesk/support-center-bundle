@@ -4,6 +4,7 @@ CHANGELOG for 1.1.x
 This changelog references any relevant changes introduced in 1.1 minor versions.
 
 * 1.1.x
+    * Bug #192: Remove old folder image from physical path if new folder image is uploaded (papnoisanjeev)
     * Bug #189: Resolve issue with wrong sort order on category listings and add support for managing enabled locale settings (vipin-shrivastava)
     * Bug #177: Display asterisk icons for required fields on customer create ticket form (Sanjaybhattwebkul)
 
