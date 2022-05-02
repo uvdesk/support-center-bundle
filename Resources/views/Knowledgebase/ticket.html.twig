@@ -24,14 +24,13 @@
 		.mce-path {
       		display: none !important;
 		}
-
-		.uv-element-block label.required::after {
+		
+		.uv-element-block label.uv-field-label.required::after {
 			content: "*";
 			color: #FC6868;
 			font-weight: 700;
 			display: inline-block;
 		}
-		
 	</style>
 
 	{% set isTicketViewPage = (app.user.id is defined ? true : false) %}
