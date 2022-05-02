@@ -133,7 +133,8 @@
 
                     <!-- Field -->
 					<div class="uv-element-block">
-					  	<label class="uv-field-label">{{ 'Helpdesk Locales'|trans }}</label>
+					  	<label class="uv-field-label">{{ 'Locales'|trans }}</label>
+                        
 					  	<div class="uv-field-block">
                             {% for localeCode, localeName in uvdesk_service.getLocalesList() %}
 							    <div class="uv-element-block" style="margin: 10px 0">

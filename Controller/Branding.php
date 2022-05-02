@@ -44,7 +44,7 @@ class Branding extends AbstractController
             $isValid = 0;
             $params = $request->request->all();
             $parmsFile = ($request->files->get('website'));
-            $localesFile = isset($params['locales']) ? $params['locales'] : null;
+            $selectedLocale = isset($params['locales']) ? $params['locales'] : null;
 
             switch($settingType) {
                 case "general":
@@ -69,9 +69,10 @@ class Branding extends AbstractController
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    if (!empty($localesFile) && is_array($localesFile)) {
-                        $localesStatus = $this->uvdeskService->updatesLocales($localesFile);
-                        $localesStatus == true ? '' : $this->addFlash('danger', $this->translator->trans('Warning ! Locales not updates successfully.'));
+                    if (!empty($selectedLocale) && is_array($selectedLocale)) {
+                        if (false == $this->uvdeskService->updatesLocales($selectedLocale)) {
+                            $this->addFlash('danger', $this->translator->trans('Warning! Locales could not be updated successfully.'));
+                        }
                     }
 
                     $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
