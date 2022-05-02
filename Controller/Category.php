@@ -123,7 +123,7 @@ class Category extends AbstractController
             $category->setName($data['name']);
             $category->setDescription($data['description']);
             $category->setSortOrder($data['sortOrder']);
-            $category->setDateAdded(new \DateTime());
+            $category->setDateAdded($category->getDateAdded() ?? new \DateTime());
             $category->setDateUpdated(new \DateTime());
             $category->setSorting($data['sorting']);
             $category->setStatus($data['status']);
