@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Website;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFileservice;
@@ -16,12 +17,14 @@ class Branding extends AbstractController
     private $userService;
     private $translator;
     private $fileSystem;
+    private $uvdeskService;
 
-    public function __construct(UserService $userService, TranslatorInterface $translator, FileSystem $fileSystem)
+    public function __construct(UserService $userService, TranslatorInterface $translator, FileSystem $fileSystem, UVDeskService $uvdeskService)
     {
         $this->userService = $userService;
         $this->translator = $translator;
         $this->fileSystem = $fileSystem;
+        $this->uvdeskService = $uvdeskService;
     }
 
     public function theme(Request $request)
@@ -41,6 +44,7 @@ class Branding extends AbstractController
             $isValid = 0;
             $params = $request->request->all();
             $parmsFile = ($request->files->get('website'));
+            $selectedLocale = isset($params['locales']) ? $params['locales'] : null;
 
             switch($settingType) {
                 case "general":
@@ -64,6 +68,12 @@ class Branding extends AbstractController
                     $entityManager->persist($website);
                     $entityManager->persist($configuration);
                     $entityManager->flush();
+
+                    if (!empty($selectedLocale) && is_array($selectedLocale)) {
+                        if (false == $this->uvdeskService->updatesLocales($selectedLocale)) {
+                            $this->addFlash('danger', $this->translator->trans('Warning! Locales could not be updated successfully.'));
+                        }
+                    }
 
                     $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
 
