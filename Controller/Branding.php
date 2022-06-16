@@ -219,4 +219,23 @@ class Branding extends AbstractController
             'blacklist'=>$configuration->getBlackList(),
         ]);
     }
+
+    public function LocalesUpdateXhr(Request$request)
+    {
+        $params = $request->request->all();
+        $defaultLocale = isset($params['defaultLocale']) ? $params['defaultLocale'] : null;
+
+        if (!empty($defaultLocale)) {
+        $localesStatus = $this->uvdeskService->updatesLocales($defaultLocale);
+        $localesStatus == true ? '' : $this->addFlash('danger', $this->translator->trans('Warning ! Locales not updates successfully.'));
+        }
+
+        $json['alertClass'] = 'success';
+        $json['alertMessage'] = $this->translator->trans('Success ! Updated.');
+
+
+        $response = new Response(json_encode($json));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
 }
