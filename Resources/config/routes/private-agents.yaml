@@ -155,7 +155,3 @@ helpdesk_member_knowledgebase_remove_marketing_announcement_xhr:
     path:     /knowledgebase/announcement/remove/{announcementId}
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::removeAnnouncementXHR
     defaults: { announcementId: 0 }
-
-helpdesk_member_knowledgebase_update_locales:
-    path: /branding/locales/ajax
-    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Branding::LocalesUpdateXhr

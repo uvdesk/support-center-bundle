@@ -39,12 +39,13 @@ class Branding extends AbstractController
         $userService = $this->userService;
         $website = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneBy(['code'=>"knowledgebase"]);
         $configuration = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite')->findOneBy(['website' => $website->getId(),'isActive' => 1]);
+        $currentLocales = $this->uvdeskService->getDefaultLangauge();
 
         if ($request->getMethod() == 'POST') {
             $isValid = 0;
             $params = $request->request->all();
             $parmsFile = ($request->files->get('website'));
-            $selectedLocale = isset($params['locales']) ? $params['locales'] : null;
+            $selectedLocale = isset($params['defaultLocale']) ? $params['defaultLocale'] : null;
 
             switch($settingType) {
                 case "general":
@@ -69,9 +70,11 @@ class Branding extends AbstractController
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    if (!empty($selectedLocale) && is_array($selectedLocale)) {
+                    if (!empty($selectedLocale)) {
                         if (false == $this->uvdeskService->updatesLocales($selectedLocale)) {
                             $this->addFlash('danger', $this->translator->trans('Warning! Locales could not be updated successfully.'));
+                        } else {
+                            $currentLocales = $selectedLocale;
                         }
                     }
 
@@ -185,6 +188,7 @@ class Branding extends AbstractController
             'type' => $settingType,
             'configuration' => $configuration,
             'broadcast' => json_decode($configuration->getBroadcastMessage()),
+            'locales' => $currentLocales,
         ]);
     }
 
@@ -218,24 +222,5 @@ class Branding extends AbstractController
             'whitelist'=>$configuration->getWhiteList(),
             'blacklist'=>$configuration->getBlackList(),
         ]);
-    }
-
-    public function LocalesUpdateXhr(Request$request)
-    {
-        $params = $request->request->all();
-        $defaultLocale = isset($params['defaultLocale']) ? $params['defaultLocale'] : null;
-
-        if (!empty($defaultLocale)) {
-        $localesStatus = $this->uvdeskService->updatesLocales($defaultLocale);
-        $localesStatus == true ? '' : $this->addFlash('danger', $this->translator->trans('Warning ! Locales not updates successfully.'));
-        }
-
-        $json['alertClass'] = 'success';
-        $json['alertMessage'] = $this->translator->trans('Success ! Updated.');
-
-
-        $response = new Response(json_encode($json));
-        $response->headers->set('Content-Type', 'application/json');
-        return $response;
     }
 }

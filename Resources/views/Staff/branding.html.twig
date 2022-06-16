@@ -138,7 +138,7 @@
                             <select name="defaultLocale" class="uv-select">
                                 <option value="">{{ 'Select default language'|trans }}</option>
                                 {% for localeCode, localeName in uvdesk_service.getLocalesList() %}
-                                    <option value="{{localeCode}}" {% if localeCode == uvdesk_service.getDefaultLangauge() %}selected="selected"{% endif %}>{{ localeName }}</option>
+                                    <option value="{{localeCode}}" {{ locales == localeCode  ? "selected='selected'" : ''}}>{{ localeName }}</option>
                                 {% endfor %}
                             </select>
 					  	</div>
@@ -659,7 +659,6 @@
 			var BrandingForm = Backbone.View.extend({
 			    events: {
 			    	'click .general-btn': 'generalBrandingFormSubmit',
-                    'click .general-btn': "generalBrandingLocalesUpdate",
 			        'click .pending-response-btn': 'pendingResponseSettingFormSubmit',
 					'click .uv-btn': 'disableButton',
                     'change input[type="file"]': 'formChanegd',
