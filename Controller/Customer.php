@@ -5,6 +5,8 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\User;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\UserInstance;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Webkul\UVDesk\CoreFrameworkBundle\Form\UserProfile;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -64,10 +66,10 @@ Class Customer extends AbstractController
     protected function isLoginDisabled()
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
+        $website = $entityManager->getRepository(Website::class)->findOneByCode('knowledgebase');
 
         if (!empty($website)) {
-            $configuration = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite')->findOneBy([
+            $configuration = $entityManager->getRepository(KnowledgebaseWebsite::class)->findOneBy([
                 'website' => $website->getId(),
                 'isActive' => 1,
             ]);
@@ -137,7 +139,7 @@ Class Customer extends AbstractController
                 }
             }
 
-            $checkUser = $em->getRepository('UVDeskCoreFrameworkBundle:User')->findOneBy(array('email'=>$data['email']));
+            $checkUser = $em->getRepository(User::class)->findOneBy(array('email'=>$data['email']));
             $errorFlag = 0;
 
             if ($checkUser) {
@@ -172,7 +174,7 @@ Class Customer extends AbstractController
                     $em->persist($user);
                     $em->flush();
 
-                    $userInstance = $em->getRepository('UVDeskCoreFrameworkBundle:UserInstance')->findOneBy(array('user' => $user->getId()));
+                    $userInstance = $em->getRepository(UserInstance::class)->findOneBy(array('user' => $user->getId()));
 
                     if (isset($dataFiles['profileImage'])) {
                         $previousImage = $userInstance->getProfileImagePath();
@@ -225,7 +227,7 @@ Class Customer extends AbstractController
             return $this->redirect($this->generateUrl('helpdesk_customer_ticket_collection'));
         }
 
-        $articleCollection = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Article')->getArticleBySearch($request);
+        $articleCollection = $this->getDoctrine()->getRepository(Article::class)->getArticleBySearch($request);
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/search.html.twig', [
             'search' => $searchQuery,

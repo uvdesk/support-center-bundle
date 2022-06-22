@@ -6,6 +6,8 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\Query;
+use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping;
+use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory;
 
 /**
  * Website
@@ -216,7 +218,7 @@ class SolutionCategory extends EntityRepository
     public function removeSolutionsByCategory($categoryId, $solutionId)
     {
         $queryBuilder = $this->createQueryBuilder('ac');
-        $queryBuilder->delete('UVDeskSupportCenterBundle:SolutionCategoryMapping','ac')
+        $queryBuilder->delete(SolutionCategoryMapping::class,'ac')
                  ->andwhere('ac.categoryId = :categoryId')
                  ->andwhere('ac.solutionId IN (:solutionId)')
                  ->setParameters([
@@ -233,7 +235,7 @@ class SolutionCategory extends EntityRepository
         $where = is_array($categoryId) ? 'ac.categoryId IN (:categoryId)' : 'ac.categoryId = :categoryId';
 
         $queryBuilder = $this->createQueryBuilder('ac');
-        $queryBuilder->delete('UVDeskSupportCenterBundle:SolutionCategoryMapping','ac')
+        $queryBuilder->delete(SolutionCategoryMapping::class,'ac')
                  ->andwhere($where)
                  ->setParameters([
                      'categoryId' => $categoryId ,
@@ -242,7 +244,7 @@ class SolutionCategory extends EntityRepository
                  ->execute()
         ;
 
-        $queryBuilder->delete('UVDeskSupportCenterBundle:ArticleCategory','ac')
+        $queryBuilder->delete(ArticleCategory::class,'ac')
                  ->andwhere($where)
                  ->setParameters([
                      'categoryId' => $categoryId ,

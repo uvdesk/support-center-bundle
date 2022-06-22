@@ -16,6 +16,7 @@ use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleHistory;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\Tag;
 use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleTags;
 use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
+use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
 use Webkul\UVDesk\SupportCenterBundle\Form;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
@@ -45,12 +46,12 @@ class Article extends AbstractController
         }
 
         $solutions = $this->getDoctrine()
-            ->getRepository('UVDeskSupportCenterBundle:Solutions')
+            ->getRepository(Solutions::class)
             ->getAllSolutions(null, $container, 'a.id, a.name');
         if ($solutions) {
             foreach($solutions as $key => $solution) {
                 $solutions[$key]['categories'] = $this->getDoctrine()
-                    ->getRepository('UVDeskSupportCenterBundle:Solutions')
+                    ->getRepository(Solutions::class)
                     ->getCategoriesWithCountBySolution($solution['id']);
             }
         }
@@ -63,22 +64,22 @@ class Article extends AbstractController
     public function ArticleListByCategory(Request $request, ContainerInterface $container)
     {
         $category = $this->getDoctrine()
-            ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
+            ->getRepository(SolutionCategory::class)
             ->findCategoryById(['id' => $request->attributes->get('category')]);
 
         if ($category) {
             return $this->render('@UVDeskSupportCenter/Staff/Articles/articleListByCategory.html.twig',[
                 'category' => $category,
                 'articleCount'      => $this->getDoctrine()
-                    ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
+                    ->getRepository(SolutionCategory::class)
                     ->getArticlesCountByCategory($request->attributes->get('category')),
 
                 'categorySolutions' => $this->getDoctrine()
-                    ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
+                    ->getRepository(SolutionCategory::class)
                     ->getSolutionsByCategory($request->attributes->get('category')),
 
                 'solutions'         => $this->getDoctrine()
-                    ->getRepository('UVDeskSupportCenterBundle:Solutions')
+                    ->getRepository(Solutions::class)
                     ->getAllSolutions(null, $container, 'a.id, a.name')
             ]);
         } else {
@@ -89,18 +90,18 @@ class Article extends AbstractController
     public function ArticleListBySolution(Request $request)
     {
         $solution = $this->getDoctrine()
-            ->getRepository('UVDeskSupportCenterBundle:Solutions')
+            ->getRepository(Solutions::class)
             ->findSolutionById(['id' => $request->attributes->get('solution')]);
 
         if ($solution) {
             return $this->render('@UVDeskSupportCenter/Staff/Articles/articleListBySolution.html.twig', [
                 'solution' => $solution,
                 'solutionArticleCount'  => $this->getDoctrine()
-                    ->getRepository('UVDeskSupportCenterBundle:Solutions')
+                    ->getRepository(Solutions::class)
                     ->getArticlesCountBySolution($request->attributes->get('solution')),
 
                 'solutionCategoryCount' => $this->getDoctrine()
-                    ->getRepository('UVDeskSupportCenterBundle:Solutions')
+                    ->getRepository(Solutions::class)
                     ->getCategoriesCountBySolution($request->attributes->get('solution')),
             ]);
         } else {
@@ -111,7 +112,7 @@ class Article extends AbstractController
     public function ArticleListXhr(Request $request, ContainerInterface $container)
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Article');
+        $repository = $this->getDoctrine()->getRepository(ArticleEntity::class);
 
         if($request->attributes->get('category'))
             $request->query->set('categoryId', $request->attributes->get('category'));
@@ -129,7 +130,7 @@ class Article extends AbstractController
     public function articleHistoryXhr(Request $request)
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Article');
+        $repository = $this->getDoctrine()->getRepository(ArticleEntity::class);
 
         $params = ['articleId' => $request->attributes->get('id')];
         $json = $repository->getAllHistoryByArticle($params);
@@ -151,7 +152,7 @@ class Article extends AbstractController
     public function articleRelatedXhr(Request $request)
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Article');
+        $repository = $this->getDoctrine()->getRepository(ArticleEntity::class);
 
         $params = ['articleId' => $request->attributes->get('id')];
         $json = $repository->getAllRelatedyByArticle($params);
@@ -165,7 +166,7 @@ class Article extends AbstractController
     {
         if ($filterArray) {
             return $this->getDoctrine()
-                ->getRepository('UVDeskSupportCenterBundle:Article')
+                ->getRepository(ArticleEntity::class)
                 ->findOneBy($filterArray);
         }
 
@@ -186,16 +187,16 @@ class Article extends AbstractController
         $articleCategory = $articleTags = [];
         if ($article->getId()) {
             $articleCategory = $this->getDoctrine()
-                ->getRepository('UVDeskSupportCenterBundle:Article')
+                ->getRepository(ArticleEntity::class)
                 ->getCategoryByArticle($article->getId());
 
             $articleTags = $this->getDoctrine()
-                ->getRepository('UVDeskSupportCenterBundle:Article')
+                ->getRepository(ArticleEntity::class)
                 ->getTagsByArticle($article->getId());
         }
 
         $categories = $this->getDoctrine()
-            ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
+            ->getRepository(SolutionCategory::class)
             ->getAllCategories(null, $container, 'a.id, a.name');
 
         if ($request->attributes->get('id')) {
@@ -302,7 +303,7 @@ class Article extends AbstractController
                                 $json['errors']['name'] = $this->translator->trans('Name length must not be greater than 200 !!');
                             }
 
-                            $slug = $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->findOneBy(['slug' => $data['slug']]);
+                            $slug = $entityManager->getRepository(ArticleEntity::class)->findOneBy(['slug' => $data['slug']]);
                             
                             if (!empty($slug)) {
                                 $json['errors']['slug'] = $this->translator->trans('Warning! Article slug is not available.');
@@ -344,13 +345,13 @@ class Article extends AbstractController
                         }
                         break;
                     case 'status':
-                        $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->bulkArticleStatusUpdate($data['ids'], $data['targetId']);
+                        $entityManager->getRepository(ArticleEntity::class)->bulkArticleStatusUpdate($data['ids'], $data['targetId']);
                         $json['alertClass'] = 'success';
                         $json['alertMessage'] = $this->translator->trans('Success ! Article updated successfully.');
                         break;
                     case 'tagUpdate':
                         if ($data['action'] == 'remove') {
-                            $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->removeTagByArticle($data['ids'][0], [$data['entityId']]);
+                            $entityManager->getRepository(ArticleEntity::class)->removeTagByArticle($data['ids'][0], [$data['entityId']]);
 
                             $json['alertClass'] = 'success';
                             $json['alertMessage'] = $this->translator->trans('Success ! Tag removed successfully.');
@@ -363,7 +364,7 @@ class Article extends AbstractController
                             $entityManager->persist($articleTagMapping);
                             $entityManager->flush();
                         } elseif ($data['action'] == 'create') {
-                            $tag = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Tag')->findOneBy(['name' => $data['name']]);
+                            $tag = $entityManager->getRepository(Tag::class)->findOneBy(['name' => $data['name']]);
 
                             if (!$tag) {
                                 $tag = new Tag();
@@ -403,7 +404,7 @@ class Article extends AbstractController
                     case 'categoryUpdate':
                         if ($data['action'] == 'remove') {
                             $this->getDoctrine()
-                                ->getRepository('UVDeskSupportCenterBundle:Article')
+                                ->getRepository(ArticleEntity::class)
                                 ->removeCategoryByArticle($data['ids'][0], [$data['entityId']]);
 
                         } else if ($data['action'] == 'add') {
@@ -420,12 +421,12 @@ class Article extends AbstractController
                         break;
                     case 'relatedUpdate':
                         if ($data['action'] == 'remove') {
-                            $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->removeRelatedByArticle($data['ids'][0], [$data['entityId']]);
+                            $entityManager->getRepository(ArticleEntity::class)->removeRelatedByArticle($data['ids'][0], [$data['entityId']]);
 
                             $json['alertClass'] = 'success';
                             $json['alertMessage'] = $this->translator->trans('Success ! Article Related removed successfully.');
                         } else if($data['action'] == 'add') {
-                            $relatedArticles = $entityManager->getRepository('UVDeskSupportCenterBundle:ArticleRelatedArticle')->findBy([
+                            $relatedArticles = $entityManager->getRepository(ArticleRelatedArticle::class)->findBy([
                                 'articleId' => $data['ids'][0],
                                 'relatedArticleId' => $data['entityId'],
                             ]);
@@ -455,7 +456,7 @@ class Article extends AbstractController
                     case 'delete':
                         if ($data['ids']) {
                             foreach ($data['ids'] as $id) {
-                                $article = $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->find($id);
+                                $article = $entityManager->getRepository(ArticleEntity::class)->find($id);
                                 if ($article) {
                                     $entityManager->remove($article);
                                     $entityManager->flush();
@@ -480,13 +481,13 @@ class Article extends AbstractController
             if (isset($data['editType']))
                 switch($data['editType']) {
                     case 'status':
-                        $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->bulkArticleStatusUpdate([$data['id']], $data['value']);
+                        $entityManager->getRepository(ArticleEntity::class)->bulkArticleStatusUpdate([$data['id']], $data['value']);
                         $json['alertClass'] = 'success';
                         $json['alertMessage'] = $this->translator->trans('Success ! Article status updated successfully.');
 
                         break;
                     case "stared":
-                        $article = $entityManager->getRepository('UVDeskSupportCenterBundle:Article')->findOneBy(['id' => $data['id']]);
+                        $article = $entityManager->getRepository(ArticleEntity::class)->findOneBy(['id' => $data['id']]);
                         if ($article) {
                             $article->setStared( (isset($data['value']) && $data['value'] == 1) ? 1 : 0 );
                             $entityManager->persist($article);
@@ -497,7 +498,7 @@ class Article extends AbstractController
                         break;
                     case "update":
                         $articleBase = $this->getDoctrine()
-                            ->getRepository('UVDeskSupportCenterBundle:SolutionCategory')
+                            ->getRepository(SolutionCategory::class)
                             ->find($data['id']);
 
                         if ($articleBase) {
@@ -517,7 +518,7 @@ class Article extends AbstractController
                         }
 
                     case 'status':
-                        $entityManager->getRepository('WebkulSupportCenterBundle:Article')->bulkArticleStatusUpdate([$data['id']], $data['value']);
+                        $entityManager->getRepository(ArticleEntity::class)->bulkArticleStatusUpdate([$data['id']], $data['value']);
                         $json['alertClass'] = 'success';
                         $json['alertMessage'] =  $this->translator->trans('Success ! Article status updated successfully.');
                         break;
@@ -553,7 +554,7 @@ class Article extends AbstractController
     private function removeArticle($article)
     {
         $this->getDoctrine()
-            ->getRepository('UVDeskSupportCenterBundle:Article')
+            ->getRepository(ArticleEntity::class)
             ->removeEntryByArticle($article->getId());
     }
 

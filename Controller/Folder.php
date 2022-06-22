@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
+use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
+use Webkul\UVDesk\SupportCenterBundle\Entity\Article;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\FileUploadService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
@@ -36,9 +38,9 @@ class Folder extends AbstractController
         }
 
         $entityManager = $this->getDoctrine()->getManager();
-        $totalKnowledgebaseFolders = count($entityManager->getRepository('UVDeskSupportCenterBundle:Solutions')->findAll());
-        $totalKnowledgebaseCategories = count($entityManager->getRepository('UVDeskSupportCenterBundle:SolutionCategory')->findAll());
-        $totalKnowledgebaseArticles = count($entityManager->getRepository('UVDeskSupportCenterBundle:Article')->findAll());
+        $totalKnowledgebaseFolders = count($entityManager->getRepository(Solutions::class)->findAll());
+        $totalKnowledgebaseCategories = count($entityManager->getRepository(SolutionCategory::class)->findAll());
+        $totalKnowledgebaseArticles = count($entityManager->getRepository(Article::class)->findAll());
 
         return $this->render('@UVDeskSupportCenter/Staff/Folders/listFolders.html.twig', [
             'articleCount' => $totalKnowledgebaseArticles,
@@ -113,7 +115,7 @@ class Folder extends AbstractController
 
         $entityManager = $this->getDoctrine()->getManager();
         $request = $this->container->get('request_stack')->getCurrentRequest();
-        $knowledgebaseFolder = $entityManager->getRepository('UVDeskSupportCenterBundle:Solutions')->findSolutionById(['id' => $folderId]);
+        $knowledgebaseFolder = $entityManager->getRepository(Solutions::class)->findSolutionById(['id' => $folderId]);
 
         if (empty($knowledgebaseFolder)) {
             $this->noResultFound();
