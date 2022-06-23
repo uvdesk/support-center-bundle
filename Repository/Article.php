@@ -6,13 +6,8 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Symfony\Component\HttpFoundation\Request;
-use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleTags;
-use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory;
-use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleRelatedArticle;
-use Webkul\UVDesk\SupportCenterBundle\Entity\Article as ArticleBundle;
-use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleHistory;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Tag;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\UserInstance;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
 
 class Article extends EntityRepository
 {
@@ -57,7 +52,7 @@ class Article extends EntityRepository
     {
         $result = $this->getEntityManager()->createQueryBuilder()
             ->select('COUNT(articleTags) as totalArticle')
-            ->from(ArticleTags::class, 'articleTags')
+            ->from(SupportEntites\ArticleTags::class, 'articleTags')
             ->where('articleTags.tagId = :supportTag')->setParameter('supportTag', $supportTag)
             ->getQuery()->getResult();
         
@@ -290,7 +285,7 @@ class Article extends EntityRepository
 
         $queryBuilder = $this->createQueryBuilder('ac');
 
-        $queryBuilder->delete(ArticleCategory::class,'ac')
+        $queryBuilder->delete(SupportEntites\ArticleCategory::class,'ac')
                  ->andwhere('ac.articleId = :articleId')
                  ->andwhere($where)
                  ->setParameters([
@@ -308,7 +303,7 @@ class Article extends EntityRepository
 
         $queryBuilder = $this->createQueryBuilder('ac');
 
-        $queryBuilder->delete(ArticleTags::class,'ac')
+        $queryBuilder->delete(SupportEntites\ArticleTags::class,'ac')
             ->andwhere('ac.articleId = :articleId')
             ->andwhere($where)
             ->setParameters(['articleId' => $articleId,'id' => $tags])
@@ -322,7 +317,7 @@ class Article extends EntityRepository
 
         $queryBuilder = $this->createQueryBuilder('ac');
 
-        $queryBuilder->delete(ArticleRelatedArticle::class,'ac')
+        $queryBuilder->delete(SupportEntites\ArticleRelatedArticle::class,'ac')
             ->andwhere('ac.articleId = :articleId')
             ->andwhere($where)
             ->setParameters(['articleId' => $articleId,'id' => $ids])
@@ -336,7 +331,7 @@ class Article extends EntityRepository
 
         $queryBuilder = $this->createQueryBuilder('ac');
 
-        $queryBuilder->delete(ArticleCategory::class,'ac')
+        $queryBuilder->delete(SupportEntites\ArticleCategory::class,'ac')
                  ->andwhere($where)
                  ->setParameters([
                      'id' => $id ,
@@ -498,9 +493,9 @@ class Article extends EntityRepository
 
         $queryBuilder = $this->getEntityManager()->createQueryBuilder()
             ->select('a')
-            ->from(ArticleBundle::class, 'a')
-            ->leftJoin(ArticleTags::class, 'at', 'WITH', 'at.articleId = a.id')
-            ->leftJoin(Tag::class, 't', 'WITH', 't.id = at.tagId')
+            ->from(SupportEntites\Article::class, 'a')
+            ->leftJoin(SupportEntites\ArticleTags::class, 'at', 'WITH', 'at.articleId = a.id')
+            ->leftJoin(CoreEntites\Tag::class, 't', 'WITH', 't.id = at.tagId')
             ->andwhere('a.status = :status')->setParameter('status', 1)
             ->orderBy(
                 (!empty($sort)) ? 'a.' . $sort : 'a.id',
@@ -530,8 +525,8 @@ class Article extends EntityRepository
 
         $queryBuilder = $this->getEntityManager()->createQueryBuilder()
             ->select('ud')
-            ->from(UserInstance::class, 'ud')
-            ->leftJoin(ArticleHistory::class, 'ah', 'WITH', 'ah.userId = ud.user')
+            ->from(CoreEntites\UserInstance::class, 'ud')
+            ->leftJoin(SupportEntites\ArticleHistory::class, 'ah', 'WITH', 'ah.userId = ud.user')
             ->where('ah.articleId = :articleId')->setParameter('articleId', $articleId)
             // ->andWhere('ud.companyId = :companyId')->setParameter('companyId', $companyId)
             ->andWhere('ud.supportRole != :userRole')->setParameter('userRole', 4)

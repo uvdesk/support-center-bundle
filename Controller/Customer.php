@@ -4,16 +4,13 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\User;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\UserInstance;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Webkul\UVDesk\CoreFrameworkBundle\Form\UserProfile;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Utils\TokenGenerator;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website as CoreWebsite;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -45,10 +42,10 @@ Class Customer extends AbstractController
     protected function isWebsiteActive()
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository(CoreWebsite::class)->findOneByCode('knowledgebase');
+        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneByCode('knowledgebase');
   
         if (!empty($website)) {
-            $knowledgebaseWebsite = $entityManager->getRepository(KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => 1]);
+            $knowledgebaseWebsite = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => 1]);
             
             if (!empty($knowledgebaseWebsite) && true == $knowledgebaseWebsite->getIsActive()) {
                 return true;
@@ -66,10 +63,10 @@ Class Customer extends AbstractController
     protected function isLoginDisabled()
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository(Website::class)->findOneByCode('knowledgebase');
+        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneByCode('knowledgebase');
 
         if (!empty($website)) {
-            $configuration = $entityManager->getRepository(KnowledgebaseWebsite::class)->findOneBy([
+            $configuration = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy([
                 'website' => $website->getId(),
                 'isActive' => 1,
             ]);
@@ -139,7 +136,7 @@ Class Customer extends AbstractController
                 }
             }
 
-            $checkUser = $em->getRepository(User::class)->findOneBy(array('email'=>$data['email']));
+            $checkUser = $em->getRepository(CoreEntites\User::class)->findOneBy(array('email'=>$data['email']));
             $errorFlag = 0;
 
             if ($checkUser) {
@@ -174,7 +171,7 @@ Class Customer extends AbstractController
                     $em->persist($user);
                     $em->flush();
 
-                    $userInstance = $em->getRepository(UserInstance::class)->findOneBy(array('user' => $user->getId()));
+                    $userInstance = $em->getRepository(CoreEntites\UserInstance::class)->findOneBy(array('user' => $user->getId()));
 
                     if (isset($dataFiles['profileImage'])) {
                         $previousImage = $userInstance->getProfileImagePath();

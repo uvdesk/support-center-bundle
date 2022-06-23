@@ -9,7 +9,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Filesystem\Filesystem as Fileservice;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
 
 class KnowledgebaseXHR extends AbstractController
 {
@@ -29,7 +29,7 @@ class KnowledgebaseXHR extends AbstractController
         }
 
         $response = new Response();
-        $folderCollection = $this->getDoctrine()->getRepository(Solutions::class)->getAllSolutions($request->query, $container);
+        $folderCollection = $this->getDoctrine()->getRepository(SupportEntites\Solutions::class)->getAllSolutions($request->query, $container);
 
         $response->setContent(json_encode($folderCollection));
         $response->headers->set('Content-Type', 'application/json');
@@ -50,7 +50,7 @@ class KnowledgebaseXHR extends AbstractController
             case "PATCH":
                 $content = json_decode($request->getContent(), true);
                 $solutionId = $content['id'];
-                $solution = $entityManager->getRepository(Solutions::class)->find($solutionId);
+                $solution = $entityManager->getRepository(SupportEntites\Solutions::class)->find($solutionId);
                 if($solution) {
                     switch($content['editType']){
                         case 'status':
@@ -72,7 +72,7 @@ class KnowledgebaseXHR extends AbstractController
 
                 $content = json_decode($request->getContent(), true);
                 $solutionId = $content['id'];
-                $solution = $entityManager->getRepository(Solutions::class)->find($solutionId);
+                $solution = $entityManager->getRepository(SupportEntites\Solutions::class)->find($solutionId);
                 if($solution) {
 
                     $solution->setName($content['name']);
@@ -91,7 +91,7 @@ class KnowledgebaseXHR extends AbstractController
                 break;
             case "DELETE":
                 $solutionId = $request->attributes->get('folderId');
-                $solutionBase = $entityManager->getRepository(Solutions::class)->find($solutionId);
+                $solutionBase = $entityManager->getRepository(SupportEntites\Solutions::class)->find($solutionId);
 
                 $fileService = new Fileservice();
 
@@ -100,7 +100,7 @@ class KnowledgebaseXHR extends AbstractController
                 }
 
                 if($solutionBase){
-                    $entityManager->getRepository(Solutions::class)->removeEntryBySolution($solutionId);
+                    $entityManager->getRepository(SupportEntites\Solutions::class)->removeEntryBySolution($solutionId);
 
                     $entityManager->remove($solutionBase);
                     $entityManager->flush();

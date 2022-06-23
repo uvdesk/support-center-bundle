@@ -5,8 +5,7 @@ namespace Webkul\UVDesk\SupportCenterBundle\Repository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Request;
-use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
-use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
 
 class Solutions extends \Doctrine\ORM\EntityRepository
 {
@@ -49,7 +48,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
     {
         $categoryResponse = [];
         $categoryQB = $this->getEntityManager()->createQueryBuilder()->select('sc.id, sc.name, sc.description')
-            ->from(SolutionCategory::class, 'sc')
+            ->from(SupportEntites\SolutionCategory::class, 'sc')
             ->andWhere('sc.status = :status')->setParameter('status', true)
             ->orderBy('sc.dateAdded', 'DESC');            
         
@@ -160,7 +159,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         ;
 
         if ($categories) {
-            $solutionCategoryRepository = $this->getEntityManager()->getRepository(SolutionCategory::class);
+            $solutionCategoryRepository = $this->getEntityManager()->getRepository(SupportEntites\SolutionCategory::class);
             
             foreach ($categories as $key => $category) {
                 $categories[$key]['articleCount'] = $solutionCategoryRepository->getArticlesCountByCategory($category['id']);
@@ -219,7 +218,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
 
         $queryBuilder = $this->createQueryBuilder('ac');
         $queryBuilder
-            ->delete(SolutionCategoryMapping::class,'ac')
+            ->delete(SupportEntites\SolutionCategoryMapping::class,'ac')
             ->andwhere($where)
             ->setParameters([
                 'id' => $id ,

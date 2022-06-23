@@ -9,20 +9,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Webkul\UVDesk\SupportCenterBundle\Entity\Article as ArticleEntity;
-use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory;
-use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleRelatedArticle;
-use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleHistory;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Tag;
-use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleTags;
-use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory;
-use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
 use Webkul\UVDesk\SupportCenterBundle\Form;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites; 
+
 
 class Article extends AbstractController
 {
@@ -46,12 +41,12 @@ class Article extends AbstractController
         }
 
         $solutions = $this->getDoctrine()
-            ->getRepository(Solutions::class)
+            ->getRepository(SupportEntites\Solutions::class)
             ->getAllSolutions(null, $container, 'a.id, a.name');
         if ($solutions) {
             foreach($solutions as $key => $solution) {
                 $solutions[$key]['categories'] = $this->getDoctrine()
-                    ->getRepository(Solutions::class)
+                    ->getRepository(SupportEntites\Solutions::class)
                     ->getCategoriesWithCountBySolution($solution['id']);
             }
         }
@@ -64,22 +59,22 @@ class Article extends AbstractController
     public function ArticleListByCategory(Request $request, ContainerInterface $container)
     {
         $category = $this->getDoctrine()
-            ->getRepository(SolutionCategory::class)
+            ->getRepository(SupportEntites\SolutionCategory::class)
             ->findCategoryById(['id' => $request->attributes->get('category')]);
 
         if ($category) {
             return $this->render('@UVDeskSupportCenter/Staff/Articles/articleListByCategory.html.twig',[
                 'category' => $category,
                 'articleCount'      => $this->getDoctrine()
-                    ->getRepository(SolutionCategory::class)
+                    ->getRepository(SupportEntites\SolutionCategory::class)
                     ->getArticlesCountByCategory($request->attributes->get('category')),
 
                 'categorySolutions' => $this->getDoctrine()
-                    ->getRepository(SolutionCategory::class)
+                    ->getRepository(SupportEntites\SolutionCategory::class)
                     ->getSolutionsByCategory($request->attributes->get('category')),
 
                 'solutions'         => $this->getDoctrine()
-                    ->getRepository(Solutions::class)
+                    ->getRepository(SupportEntites\Solutions::class)
                     ->getAllSolutions(null, $container, 'a.id, a.name')
             ]);
         } else {
@@ -90,18 +85,18 @@ class Article extends AbstractController
     public function ArticleListBySolution(Request $request)
     {
         $solution = $this->getDoctrine()
-            ->getRepository(Solutions::class)
+            ->getRepository(SupportEntites\Solutions::class)
             ->findSolutionById(['id' => $request->attributes->get('solution')]);
 
         if ($solution) {
             return $this->render('@UVDeskSupportCenter/Staff/Articles/articleListBySolution.html.twig', [
                 'solution' => $solution,
                 'solutionArticleCount'  => $this->getDoctrine()
-                    ->getRepository(Solutions::class)
+                    ->getRepository(SupportEntites\Solutions::class)
                     ->getArticlesCountBySolution($request->attributes->get('solution')),
 
                 'solutionCategoryCount' => $this->getDoctrine()
-                    ->getRepository(Solutions::class)
+                    ->getRepository(SupportEntites\Solutions::class)
                     ->getCategoriesCountBySolution($request->attributes->get('solution')),
             ]);
         } else {
@@ -112,7 +107,7 @@ class Article extends AbstractController
     public function ArticleListXhr(Request $request, ContainerInterface $container)
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository(ArticleEntity::class);
+        $repository = $this->getDoctrine()->getRepository(SupportEntites\Article::class);
 
         if($request->attributes->get('category'))
             $request->query->set('categoryId', $request->attributes->get('category'));
@@ -130,7 +125,7 @@ class Article extends AbstractController
     public function articleHistoryXhr(Request $request)
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository(ArticleEntity::class);
+        $repository = $this->getDoctrine()->getRepository(SupportEntites\Article::class);
 
         $params = ['articleId' => $request->attributes->get('id')];
         $json = $repository->getAllHistoryByArticle($params);
@@ -152,7 +147,7 @@ class Article extends AbstractController
     public function articleRelatedXhr(Request $request)
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository(ArticleEntity::class);
+        $repository = $this->getDoctrine()->getRepository(SupportEntites\Article::class);
 
         $params = ['articleId' => $request->attributes->get('id')];
         $json = $repository->getAllRelatedyByArticle($params);
@@ -166,7 +161,7 @@ class Article extends AbstractController
     {
         if ($filterArray) {
             return $this->getDoctrine()
-                ->getRepository(ArticleEntity::class)
+                ->getRepository(SupportEntites\Article::class)
                 ->findOneBy($filterArray);
         }
 
@@ -181,22 +176,22 @@ class Article extends AbstractController
             if(!$article)
                 $this->noResultFound();
         } else {
-            $article = new ArticleEntity;
+            $article = new SupportEntites\Article;
         }
 
         $articleCategory = $articleTags = [];
         if ($article->getId()) {
             $articleCategory = $this->getDoctrine()
-                ->getRepository(ArticleEntity::class)
+                ->getRepository(SupportEntites\Article::class)
                 ->getCategoryByArticle($article->getId());
 
             $articleTags = $this->getDoctrine()
-                ->getRepository(ArticleEntity::class)
+                ->getRepository(SupportEntites\Article::class)
                 ->getTagsByArticle($article->getId());
         }
 
         $categories = $this->getDoctrine()
-            ->getRepository(SolutionCategory::class)
+            ->getRepository(SupportEntites\SolutionCategory::class)
             ->getAllCategories(null, $container, 'a.id, a.name');
 
         if ($request->attributes->get('id')) {
@@ -236,7 +231,7 @@ class Article extends AbstractController
                         if ($data['ids'][0]) {
                             $article = $this->getArticle(['id' => $data['ids'][0]]);
                         } else {
-                            $article = new ArticleEntity;
+                            $article = new SupportEntites\Article;
                         }
 
                         $json['errors'] = [];
@@ -292,7 +287,7 @@ class Article extends AbstractController
                         if ($data['ids'][0]) {
                             $article = $this->getArticle(['id' => $data['ids'][0]]);
                         } else {
-                            $article = new ArticleEntity;
+                            $article = new SupportEntites\Article;
                         }
 
                         $json['errors'] = [];
@@ -303,7 +298,7 @@ class Article extends AbstractController
                                 $json['errors']['name'] = $this->translator->trans('Name length must not be greater than 200 !!');
                             }
 
-                            $slug = $entityManager->getRepository(ArticleEntity::class)->findOneBy(['slug' => $data['slug']]);
+                            $slug = $entityManager->getRepository(SupportEntites\Article::class)->findOneBy(['slug' => $data['slug']]);
                             
                             if (!empty($slug)) {
                                 $json['errors']['slug'] = $this->translator->trans('Warning! Article slug is not available.');
@@ -345,35 +340,35 @@ class Article extends AbstractController
                         }
                         break;
                     case 'status':
-                        $entityManager->getRepository(ArticleEntity::class)->bulkArticleStatusUpdate($data['ids'], $data['targetId']);
+                        $entityManager->getRepository(SupportEntites\Article::class)->bulkArticleStatusUpdate($data['ids'], $data['targetId']);
                         $json['alertClass'] = 'success';
                         $json['alertMessage'] = $this->translator->trans('Success ! Article updated successfully.');
                         break;
                     case 'tagUpdate':
                         if ($data['action'] == 'remove') {
-                            $entityManager->getRepository(ArticleEntity::class)->removeTagByArticle($data['ids'][0], [$data['entityId']]);
+                            $entityManager->getRepository(SupportEntites\Article::class)->removeTagByArticle($data['ids'][0], [$data['entityId']]);
 
                             $json['alertClass'] = 'success';
                             $json['alertMessage'] = $this->translator->trans('Success ! Tag removed successfully.');
                             break;
                         } elseif ($data['action'] == 'add') {
-                            $articleTagMapping = new ArticleTags();
+                            $articleTagMapping = new SupportEntites\ArticleTags();
                             $articleTagMapping->setArticleId($data['ids'][0]);
                             $articleTagMapping->setTagId($data['entityId']);
 
                             $entityManager->persist($articleTagMapping);
                             $entityManager->flush();
                         } elseif ($data['action'] == 'create') {
-                            $tag = $entityManager->getRepository(Tag::class)->findOneBy(['name' => $data['name']]);
+                            $tag = $entityManager->getRepository(CoreEntites\Tag::class)->findOneBy(['name' => $data['name']]);
 
                             if (!$tag) {
-                                $tag = new Tag();
+                                $tag = new CoreEntites\Tag();
                                 $tag->setName($data['name']);
                                 $entityManager->persist($tag);
                                 $entityManager->flush();
                             }
 
-                            $articleTagMapping = new ArticleTags();
+                            $articleTagMapping = new SupportEntites\ArticleTags();
                             $articleTagMapping->setArticleId($data['ids'][0]);
                             $articleTagMapping->setTagId($tag->getId());
                             $entityManager->persist($tag);
@@ -404,11 +399,11 @@ class Article extends AbstractController
                     case 'categoryUpdate':
                         if ($data['action'] == 'remove') {
                             $this->getDoctrine()
-                                ->getRepository(ArticleEntity::class)
+                                ->getRepository(SupportEntites\Article::class)
                                 ->removeCategoryByArticle($data['ids'][0], [$data['entityId']]);
 
                         } else if ($data['action'] == 'add') {
-                            $articleCategoryMapping = new ArticleCategory();
+                            $articleCategoryMapping = new SupportEntites\ArticleCategory();
                             $articleCategoryMapping->setArticleId($data['ids'][0]);
                             $articleCategoryMapping->setCategoryId($data['entityId']);
 
@@ -421,12 +416,12 @@ class Article extends AbstractController
                         break;
                     case 'relatedUpdate':
                         if ($data['action'] == 'remove') {
-                            $entityManager->getRepository(ArticleEntity::class)->removeRelatedByArticle($data['ids'][0], [$data['entityId']]);
+                            $entityManager->getRepository(SupportEntites\Article::class)->removeRelatedByArticle($data['ids'][0], [$data['entityId']]);
 
                             $json['alertClass'] = 'success';
                             $json['alertMessage'] = $this->translator->trans('Success ! Article Related removed successfully.');
                         } else if($data['action'] == 'add') {
-                            $relatedArticles = $entityManager->getRepository(ArticleRelatedArticle::class)->findBy([
+                            $relatedArticles = $entityManager->getRepository(SupportEntites\ArticleRelatedArticle::class)->findBy([
                                 'articleId' => $data['ids'][0],
                                 'relatedArticleId' => $data['entityId'],
                             ]);
@@ -440,7 +435,7 @@ class Article extends AbstractController
                                 $json['alertMessage'] = $this->translator->trans('Success ! Cannot add self as relative article.');
 
                             } else {
-                                $articleRelatedMapping = new ArticleRelatedArticle();
+                                $articleRelatedMapping = new SupportEntites\ArticleRelatedArticle();
                                 $articleRelatedMapping->setArticleId($data['ids'][0]);
                                 $articleRelatedMapping->setRelatedArticleId($data['entityId']);
                                 $entityManager->persist($articleRelatedMapping);
@@ -456,7 +451,7 @@ class Article extends AbstractController
                     case 'delete':
                         if ($data['ids']) {
                             foreach ($data['ids'] as $id) {
-                                $article = $entityManager->getRepository(ArticleEntity::class)->find($id);
+                                $article = $entityManager->getRepository(SupportEntites\Article::class)->find($id);
                                 if ($article) {
                                     $entityManager->remove($article);
                                     $entityManager->flush();
@@ -481,13 +476,13 @@ class Article extends AbstractController
             if (isset($data['editType']))
                 switch($data['editType']) {
                     case 'status':
-                        $entityManager->getRepository(ArticleEntity::class)->bulkArticleStatusUpdate([$data['id']], $data['value']);
+                        $entityManager->getRepository(SupportEntites\Article::class)->bulkArticleStatusUpdate([$data['id']], $data['value']);
                         $json['alertClass'] = 'success';
                         $json['alertMessage'] = $this->translator->trans('Success ! Article status updated successfully.');
 
                         break;
                     case "stared":
-                        $article = $entityManager->getRepository(ArticleEntity::class)->findOneBy(['id' => $data['id']]);
+                        $article = $entityManager->getRepository(SupportEntites\Article::class)->findOneBy(['id' => $data['id']]);
                         if ($article) {
                             $article->setStared( (isset($data['value']) && $data['value'] == 1) ? 1 : 0 );
                             $entityManager->persist($article);
@@ -498,7 +493,7 @@ class Article extends AbstractController
                         break;
                     case "update":
                         $articleBase = $this->getDoctrine()
-                            ->getRepository(SolutionCategory::class)
+                            ->getRepository(SupportEntites\SolutionCategory::class)
                             ->find($data['id']);
 
                         if ($articleBase) {
@@ -518,7 +513,7 @@ class Article extends AbstractController
                         }
 
                     case 'status':
-                        $entityManager->getRepository(ArticleEntity::class)->bulkArticleStatusUpdate([$data['id']], $data['value']);
+                        $entityManager->getRepository(SupportEntites\Article::class)->bulkArticleStatusUpdate([$data['id']], $data['value']);
                         $json['alertClass'] = 'success';
                         $json['alertMessage'] =  $this->translator->trans('Success ! Article status updated successfully.');
                         break;
@@ -537,7 +532,7 @@ class Article extends AbstractController
     private function updateContent($articleBase, $content, $updateArticle = true)
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $articleHistory = new ArticleHistory;
+        $articleHistory = new SupportEntites\ArticleHistory;
         $articleHistory->setUserId($this->getUser()->getId());
         $articleHistory->setArticleId($articleBase->getId());
         $articleHistory->setContent($articleBase->getContent());
@@ -554,7 +549,7 @@ class Article extends AbstractController
     private function removeArticle($article)
     {
         $this->getDoctrine()
-            ->getRepository(ArticleEntity::class)
+            ->getRepository(SupportEntites\Article::class)
             ->removeEntryByArticle($article->getId());
     }
 

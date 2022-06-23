@@ -6,8 +6,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\Query;
-use Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping;
-use Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
 
 /**
  * Website
@@ -218,7 +217,7 @@ class SolutionCategory extends EntityRepository
     public function removeSolutionsByCategory($categoryId, $solutionId)
     {
         $queryBuilder = $this->createQueryBuilder('ac');
-        $queryBuilder->delete(SolutionCategoryMapping::class,'ac')
+        $queryBuilder->delete(SupportEntites\SolutionCategoryMapping::class,'ac')
                  ->andwhere('ac.categoryId = :categoryId')
                  ->andwhere('ac.solutionId IN (:solutionId)')
                  ->setParameters([
@@ -235,7 +234,7 @@ class SolutionCategory extends EntityRepository
         $where = is_array($categoryId) ? 'ac.categoryId IN (:categoryId)' : 'ac.categoryId = :categoryId';
 
         $queryBuilder = $this->createQueryBuilder('ac');
-        $queryBuilder->delete(SolutionCategoryMapping::class,'ac')
+        $queryBuilder->delete(SupportEntites\SolutionCategoryMapping::class,'ac')
                  ->andwhere($where)
                  ->setParameters([
                      'categoryId' => $categoryId ,
@@ -244,7 +243,7 @@ class SolutionCategory extends EntityRepository
                  ->execute()
         ;
 
-        $queryBuilder->delete(ArticleCategory::class,'ac')
+        $queryBuilder->delete(SupportEntites\ArticleCategory::class,'ac')
                  ->andwhere($where)
                  ->setParameters([
                      'categoryId' => $categoryId ,

@@ -4,8 +4,7 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Webkul\UVDesk\SupportCenterBundle\Entity\Website;
-use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
@@ -38,8 +37,8 @@ class Branding extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $settingType = $request->attributes->get('type');
         $userService = $this->userService;
-        $website = $entityManager->getRepository(Website::class)->findOneBy(['code'=>"knowledgebase"]);
-        $configuration = $entityManager->getRepository(KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(),'isActive' => 1]);
+        $website = $entityManager->getRepository(SupportEntites\Website::class)->findOneBy(['code'=>"knowledgebase"]);
+        $configuration = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(),'isActive' => 1]);
         $currentLocales = $this->uvdeskService->getDefaultLangauge();
 
         if ($request->getMethod() == 'POST') {
@@ -200,11 +199,11 @@ class Branding extends AbstractController
         }
 
         $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository(Website::class)->findOneBy(['code'=>"knowledgebase"]);
+        $website = $entityManager->getRepository(SupportEntites\Website::class)->findOneBy(['code'=>"knowledgebase"]);
         if(!$website) {
             // return not found
         }
-        $configuration = $entityManager->getRepository(KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
+        $configuration = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
         $params = $request->request->all();
 
 

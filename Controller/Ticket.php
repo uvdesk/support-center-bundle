@@ -5,22 +5,11 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\EventDispatcher\GenericEvent;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Thread;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\TicketRating;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\TicketType;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\SupportRole;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\User;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\TicketStatus;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Attachment;
 use Webkul\UVDesk\SupportCenterBundle\Form\Ticket as TicketForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite;
-use Webkul\UVDesk\SupportCenterBundle\Entity\Announcement;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket as TicketEntity;
 use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
@@ -32,6 +21,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\ReCaptchaService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
+
 
 class Ticket extends AbstractController
 {
@@ -59,10 +51,10 @@ class Ticket extends AbstractController
     protected function isWebsiteActive()
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository(Website::class)->findOneByCode('knowledgebase');
+        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneByCode('knowledgebase');
 
         if (!empty($website)) {
-            $knowledgebaseWebsite = $entityManager->getRepository(KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => 1]);
+            $knowledgebaseWebsite = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => 1]);
             
             if (!empty($knowledgebaseWebsite) && true == $knowledgebaseWebsite->getIsActive()) {
                 return true;
@@ -87,7 +79,7 @@ class Ticket extends AbstractController
         
         $formErrors = $errors = array();
         $em = $this->getDoctrine()->getManager();
-        $website = $em->getRepository(Website::class)->findOneByCode('knowledgebase');
+        $website = $em->getRepository(CoreEntites\Website::class)->findOneByCode('knowledgebase');
         $websiteConfiguration = $this->uvdeskService->getActiveConfiguration($website->getId());
 
         if (!$websiteConfiguration || !$websiteConfiguration->getTicketCreateOption() || ($websiteConfiguration->getLoginRequiredToCreate() && !$this->getUser())) {
@@ -105,7 +97,7 @@ class Ticket extends AbstractController
                 if($_POST) {
                     $error = false;
                     $message = '';
-                    $ticketType = $em->getRepository(TicketType::class)->find($request->request->get('type'));
+                    $ticketType = $em->getRepository(CoreEntites\TicketType::class)->find($request->request->get('type'));
                     
                     if($request->files->get('customFields') && !$this->CustomFieldsService->validateAttachmentsSize($request->files->get('customFields'))) {
                         $error = true;
@@ -117,7 +109,7 @@ class Ticket extends AbstractController
                             );
                     }
     
-                    $ticket = new TicketEntity();
+                    $ticket = new CoreEntites\Ticket();
                     $loggedUser = $this->get('security.token_storage')->getToken()->getUser();
                     
                     if(!empty($loggedUser) && $loggedUser != 'anon.') {
@@ -141,7 +133,7 @@ class Ticket extends AbstractController
                         $name = explode(' ', $request->request->get('name'));
                     }
     
-                    $website = $em->getRepository(Website::class)->findOneByCode('knowledgebase');
+                    $website = $em->getRepository(CoreEntites\Website::class)->findOneByCode('knowledgebase');
                     if(!empty($email) && $this->ticketService->isEmailBlocked($email, $website)) {
                         $request->getSession()->getFlashBag()->set('warning', $this->translator->trans('Warning ! Cannot create ticket, given email is blocked by admin.'));
                         return $this->redirect($this->generateUrl('helpdesk_customer_create_ticket'));
@@ -163,13 +155,13 @@ class Ticket extends AbstractController
                         );
     
                         $em = $this->getDoctrine()->getManager();
-                        $data['type'] = $em->getRepository(TicketType::class)->find($request->request->get('type'));
+                        $data['type'] = $em->getRepository(CoreEntites\TicketType::class)->find($request->request->get('type'));
     
                         if(!is_object($data['customer'] = $this->container->get('security.token_storage')->getToken()->getUser()) == "anon.") {
-                            $supportRole = $em->getRepository(SupportRole::class)->findOneByCode("ROLE_CUSTOMER");
+                            $supportRole = $em->getRepository(CoreEntites\SupportRole::class)->findOneByCode("ROLE_CUSTOMER");
     
                             $customerEmail = $params['email'] = $request->request->get('from');
-                            $customer = $em->getRepository(User::class)->findOneBy(array('email' => $customerEmail));
+                            $customer = $em->getRepository(CoreEntites\User::class)->findOneBy(array('email' => $customerEmail));
                             $params['flag'] = (!$customer) ? 1 : 0;
     
                             $data['firstName'] = current($nameDetails = explode(' ', $request->request->get('name')));
@@ -179,7 +171,7 @@ class Ticket extends AbstractController
                             $data['role'] = 4;
                             $data['customer'] = $this->userService->createUserInstance($customerEmail, $data['fullname'], $supportRole, $extras = ["active" => true]);
                         } else {
-                            $userDetail = $em->getRepository(User::class)->find($data['customer']->getId());
+                            $userDetail = $em->getRepository(CoreEntites\User::class)->find($data['customer']->getId());
                             $data['email'] = $customerEmail = $data['customer']->getEmail();
                             $nameCollection = [$userDetail->getFirstName(), $userDetail->getLastName()];
                             $name = implode(' ', $nameCollection);
@@ -266,7 +258,7 @@ class Ticket extends AbstractController
     public function ticketList(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $ticketRepo = $em->getRepository(TicketEntity::class);
+        $ticketRepo = $em->getRepository(CoreEntites\Ticket::class);
 
         $currentUser = $this->get('security.token_storage')->getToken()->getUser();
         if(!$currentUser || $currentUser == "anon.") {
@@ -284,7 +276,7 @@ class Ticket extends AbstractController
     {
         $this->isWebsiteActive();
         $data = $request->request->all();
-        $ticket = $this->getDoctrine()->getRepository(TicketEntity::class)->find($id);
+        $ticket = $this->getDoctrine()->getRepository(CoreEntites\Ticket::class)->find($id);
         $user = $this->userService->getSessionUser();
 
         // process only if access for the resource.
@@ -321,7 +313,7 @@ class Ticket extends AbstractController
                 $thread = $this->ticketService->createThread($ticket, $data);
 
                 $em = $this->getDoctrine()->getManager();
-                $status = $em->getRepository(TicketStatus::class)->findOneByCode($data['status']);
+                $status = $em->getRepository(CoreEntites\TicketStatus::class)->findOneByCode($data['status']);
                 if($status) {
                     $flag = 0;
                     if($ticket->getStatus() != $status) {
@@ -365,12 +357,12 @@ class Ticket extends AbstractController
         $this->isWebsiteActive();
 
         // List Announcement if any
-        $announcements =  $this->getDoctrine()->getRepository(Announcement::class)->findBy(['isActive' => 1]);
+        $announcements =  $this->getDoctrine()->getRepository(SupportEntites\Announcement::class)->findBy(['isActive' => 1]);
 
         $groupAnnouncement = [];
         foreach($announcements as $announcement) {
             $announcementGroupId = $announcement->getGroup();
-            $isTicketExist =  $this->getDoctrine()->getRepository(TicketEntity::class)->findBy(['supportGroup' => $announcementGroupId, 'customer' => $this->userService->getCurrentUser()]);
+            $isTicketExist =  $this->getDoctrine()->getRepository(CoreEntites\Ticket::class)->findBy(['supportGroup' => $announcementGroupId, 'customer' => $this->userService->getCurrentUser()]);
 
             if (!empty($isTicketExist)) {
                 $groupAnnouncement[] = $announcement;
@@ -396,7 +388,7 @@ class Ticket extends AbstractController
 
         $json = array();
         if($request->isXmlHttpRequest()) {
-            $repository = $this->getDoctrine()->getRepository(TicketEntity::class);
+            $repository = $this->getDoctrine()->getRepository(CoreEntites\Ticket::class);
     
             $json = $repository->getAllCustomerTickets($request->query, $container);
         }
@@ -418,10 +410,10 @@ class Ticket extends AbstractController
 
         $json = array();
         if($request->isXmlHttpRequest()) {
-            $ticket = $this->getDoctrine()->getRepository(TicketEntity::class)->find($request->attributes->get('id'));
+            $ticket = $this->getDoctrine()->getRepository(CoreEntites\Ticket::class)->find($request->attributes->get('id'));
             // $this->denyAccessUnlessGranted('FRONT_VIEW', $ticket);
 
-            $repository = $this->getDoctrine()->getRepository(Thread::class);
+            $repository = $this->getDoctrine()->getRepository(CoreEntites\Thread::class);
             $json = $repository->getAllCustomerThreads($request->attributes->get('id'),$request->query, $container);
         }
 
@@ -436,7 +428,7 @@ class Ticket extends AbstractController
 
         $entityManager = $this->getDoctrine()->getManager();
         $user = $this->userService->getSessionUser();
-        $ticket = $entityManager->getRepository(TicketEntity::class)->findOneBy(['id' => $id]);
+        $ticket = $entityManager->getRepository(CoreEntites\Ticket::class)->findOneBy(['id' => $id]);
         $isConfirmColl = false;
 
         if ($ticket == null && empty($ticket)) {
@@ -459,7 +451,7 @@ class Ticket extends AbstractController
             $entityManager->flush();
         }
 
-        $checkTicket = $entityManager->getRepository(TicketEntity::class)->isTicketCollaborator($ticket, $user->getEmail());
+        $checkTicket = $entityManager->getRepository(CoreEntites\Ticket::class)->isTicketCollaborator($ticket, $user->getEmail());
         
         $twigResponse = [
             'ticket' => $ticket,
@@ -496,16 +488,16 @@ class Ticket extends AbstractController
         $count = intval($data['rating']);
         
         if($count > 0 || $count < 6) {
-            $ticket = $em->getRepository(TicketEntity::class)->find($id);
+            $ticket = $em->getRepository(CoreEntites\Ticket::class)->find($id);
             $customer = $this->userService->getCurrentUser();
-            $rating = $em->getRepository(TicketRating::class)->findOneBy(array('ticket' => $id,'customer'=>$customer->getId()));
+            $rating = $em->getRepository(CoreEntites\TicketRating::class)->findOneBy(array('ticket' => $id,'customer'=>$customer->getId()));
             if($rating) {
                 $rating->setcreatedAt(new \DateTime);
                 $rating->setStars($count);
                 $em->persist($rating);
                 $em->flush();
             } else {
-                $rating = new TicketRating();
+                $rating = new CoreEntites\TicketRating();
                 $rating->setStars($count);
                 $rating->setCustomer($customer);
                 $rating->setTicket($ticket);
@@ -527,8 +519,8 @@ class Ticket extends AbstractController
     public function downloadAttachmentZip(Request $request)
     {
         $threadId = $request->attributes->get('threadId');
-        $attachmentRepository = $this->getDoctrine()->getManager()->getRepository(Attachment::class);
-        $threadRepository = $this->getDoctrine()->getManager()->getRepository(Thread::class);
+        $attachmentRepository = $this->getDoctrine()->getManager()->getRepository(CoreEntites\Attachment::class);
+        $threadRepository = $this->getDoctrine()->getManager()->getRepository(CoreEntites\Thread::class);
 
         $thread = $threadRepository->findOneById($threadId);
 
@@ -572,7 +564,7 @@ class Ticket extends AbstractController
     public function downloadAttachment(Request $request)
     {
         $attachmendId = $request->attributes->get('attachmendId');
-        $attachmentRepository = $this->getDoctrine()->getManager()->getRepository(Attachment::class);
+        $attachmentRepository = $this->getDoctrine()->getManager()->getRepository(CoreEntites\Attachment::class);
         $attachment = $attachmentRepository->findOneById($attachmendId);
         $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
 
@@ -609,7 +601,7 @@ class Ticket extends AbstractController
         $json = array();
         $content = json_decode($request->getContent(), true);
         $em = $this->getDoctrine()->getManager();
-        $ticket = $em->getRepository(TicketEntity::class)->find($content['ticketId']);
+        $ticket = $em->getRepository(CoreEntites\Ticket::class)->find($content['ticketId']);
         $user = $this->userService->getSessionUser();
         
         // process only if access for the resource.
@@ -631,10 +623,10 @@ class Ticket extends AbstractController
                     'role' => 4,
                 );
 
-                $supportRole = $em->getRepository(SupportRole::class)->findOneByCode('ROLE_CUSTOMER');
+                $supportRole = $em->getRepository(CoreEntites\SupportRole::class)->findOneByCode('ROLE_CUSTOMER');
                 $collaborator = $this->userService->createUserInstance($data['from'], $data['firstName'], $supportRole, $extras = ["active" => true]);
                 
-                $checkTicket = $em->getRepository(TicketEntity::class)->isTicketCollaborator($ticket,$content['email']);
+                $checkTicket = $em->getRepository(CoreEntites\Ticket::class)->isTicketCollaborator($ticket,$content['email']);
                 
                 if (!$checkTicket) {
                     $ticket->addCollaborator($collaborator);
@@ -643,7 +635,7 @@ class Ticket extends AbstractController
 
                     $ticket->lastCollaborator = $collaborator;
 
-                    $collaborator = $em->getRepository(User::class)->find($collaborator->getId());
+                    $collaborator = $em->getRepository(CoreEntites\User::class)->find($collaborator->getId());
                     
                     $event = new GenericEvent(CoreWorkflowEvents\Ticket\Collaborator::getId(), [
                         'entity' => $ticket,
@@ -660,7 +652,7 @@ class Ticket extends AbstractController
                 }
             }
         } elseif ($request->getMethod() == "DELETE") {
-            $collaborator = $em->getRepository(User::class)->findOneBy(array('id' => $request->attributes->get('id')));
+            $collaborator = $em->getRepository(CoreEntites\User::class)->findOneBy(array('id' => $request->attributes->get('id')));
             
             if ($collaborator) {
                 $ticket->removeCollaborator($collaborator);

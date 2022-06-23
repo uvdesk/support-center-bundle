@@ -6,8 +6,6 @@ use Doctrine\Persistence\ObjectManager;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 use Doctrine\Bundle\FixturesBundle\Fixture as DoctrineFixture;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportCenterEntities;
-use Webkul\UVDesk\SupportCenterBundle\Entity\KnowledgebaseWebsite as KnowledgebaseWebsiteEntity;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Website;
 
 class KnowledgebaseWebsite extends DoctrineFixture
 {
@@ -32,7 +30,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
 
     public function load(ObjectManager $entityManager)
     {
-        $website = $entityManager->getRepository(Website::class)->findOneByCode('knowledgebase');
+        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
         
         if (empty($website)) {
             ($website = new CoreEntities\Website())
@@ -46,7 +44,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
             $entityManager->flush();
         }
 
-        $knowledgebaseWebsite = $entityManager->getRepository(KnowledgebaseWebsiteEntity::class)->findOneByWebsite($website);
+        $knowledgebaseWebsite = $entityManager->getRepository(SupportCenterEntities\KnowledgebaseWebsite::class)->findOneByWebsite($website);
         
         if (empty($websiteConfiguration)) {
             ($knowledgebaseWebsite = new SupportCenterEntities\KnowledgebaseWebsite())
