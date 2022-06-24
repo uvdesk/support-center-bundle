@@ -8,6 +8,7 @@ use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -64,7 +65,7 @@ Class Announcement extends AbstractController
         
         if($request->getMethod() == "POST") {
             $request = $request->request->get('announcement_form');
-            $group = $em->getRepository(SupportEntites\SupportGroup::class)->find($request['group']);
+            $group = $em->getRepository(CoreEntites\SupportGroup::class)->find($request['group']);
 
             $announcement->setTitle($request['title']);
             $announcement->setPromoText($request['promotext']);

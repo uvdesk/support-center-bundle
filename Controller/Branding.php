@@ -5,6 +5,7 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
@@ -37,7 +38,7 @@ class Branding extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $settingType = $request->attributes->get('type');
         $userService = $this->userService;
-        $website = $entityManager->getRepository(SupportEntites\Website::class)->findOneBy(['code'=>"knowledgebase"]);
+        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneBy(['code'=>"knowledgebase"]);
         $configuration = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(),'isActive' => 1]);
         $currentLocales = $this->uvdeskService->getDefaultLangauge();
 
@@ -199,7 +200,7 @@ class Branding extends AbstractController
         }
 
         $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository(SupportEntites\Website::class)->findOneBy(['code'=>"knowledgebase"]);
+        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneBy(['code'=>"knowledgebase"]);
         if(!$website) {
             // return not found
         }
