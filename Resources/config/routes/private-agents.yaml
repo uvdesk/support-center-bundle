@@ -37,6 +37,10 @@ helpdesk_member_knowledgebase_update_folder_xhr:
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\KnowledgebaseXHR::updateFolderXHR
     defaults: { folderId: 0 }
 
+helpdesk_member_knowledgebase_update_locales:
+    path:     /branding/locales/ajax
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Branding::LocalesUpdateXhr
+
 # Members knowledgebase categories routing resources
 helpdesk_member_knowledgebase_category_collection:
     path:     /categories
