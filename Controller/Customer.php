@@ -224,7 +224,7 @@ Class Customer extends AbstractController
             return $this->redirect($this->generateUrl('helpdesk_customer_ticket_collection'));
         }
 
-        $articleCollection = $this->getDoctrine()->getRepository(Article::class)->getArticleBySearch($request);
+        $articleCollection = $this->getDoctrine()->getRepository(SupportEntites\Article::class)->getArticleBySearch($request);
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/search.html.twig', [
             'search' => $searchQuery,
