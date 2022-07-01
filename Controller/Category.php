@@ -57,7 +57,7 @@ class Category extends AbstractController
         }
 
         $solution = $this->getDoctrine()
-            ->getRepository(Solutions::class)
+            ->getRepository(SupportEntites\Solutions::class)
             ->findSolutionById(['id' => $request->attributes->get('solution')]);
         if($solution){
             $solution_category = [
