@@ -144,7 +144,7 @@ class Category extends AbstractController
 
                 if($oldSolutions){
                     $this->getDoctrine()
-                        ->getRepository(SolutionCategory::class)
+                        ->getRepository(SupportEntites\SolutionCategory::class)
                         ->removeSolutionsByCategory($category->getId(), $oldSolutions);
                 }
             }
