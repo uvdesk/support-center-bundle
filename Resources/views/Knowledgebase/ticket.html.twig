@@ -25,6 +25,12 @@
       		display: none !important;
 		}
 		
+		.uv-element-block label.uv-field-label.required::after {
+			content: "*";
+			color: #FC6868;
+			font-weight: 700;
+			display: inline-block;
+		}
 	</style>
 
 	{% set isTicketViewPage = (app.user.id is defined ? true : false) %}
@@ -40,7 +46,7 @@
 						{% if not isTicketViewPage %}
 							<!-- Field -->
 							<div class="uv-element-block">
-								<label class="uv-field-label">{{ 'Name'|trans }}</label>
+								<label class="uv-field-label required">{{ 'Name'|trans }}</label>
 								<div class="uv-field-block">
 									<input name="name" class="uv-field create-ticket" type="text" value="{{ post.name is defined ? post.name : '' }}">
 								</div>
@@ -50,7 +56,7 @@
 
 							<!-- Field -->
 							<div class="uv-element-block">
-								<label class="uv-field-label">{{ 'Email'|trans }}</label>
+								<label class="uv-field-label required">{{ 'Email'|trans }}</label>
 								<div class="uv-field-block">
 									<input name="from" class="uv-field create-ticket" type="text" value="{{ post.from is defined ? post.from : '' }}">
 								</div>
@@ -60,7 +66,7 @@
 						{% endif %}
 						<!-- Field -->
 						<div class="uv-element-block">
-							<label class="uv-field-label">{{ 'Type'|trans }}</label>
+							<label class="uv-field-label required">{{ 'Type'|trans }}</label>
 							<div class="uv-field-block">
 								<select name="type" class="uv-select create-ticket" id="type">
 									<option value="">{{ 'Select type'|trans }}</option>
@@ -76,7 +82,7 @@
 
 						<!-- Field -->
 						<div class="uv-element-block">
-							<label class="uv-field-label">{{ 'Subject'|trans }}</label>
+							<label class="uv-field-label required">{{ 'Subject'|trans }}</label>
 							<div class="uv-field-block">
 								<input name="subject" class="uv-field create-ticket" type="text" value="{{ post.subject is defined ? post.subject : '' }}">
 							</div>
@@ -86,7 +92,7 @@
 
 						<!-- Field -->
 						<div class="uv-element-block">
-							<label class="uv-field-label">{{ 'Message'|trans }}</label>
+							<label class="uv-field-label required">{{ 'Message'|trans }}</label>
 							<div class="uv-field-block grammarly-fix-message-container">
 								<textarea name="reply" id="create-reply" class="uv-field create-ticket grammarly-fix-message" type="text">{{ post.reply is defined ? post.reply : '' }}</textarea>
 							</div>

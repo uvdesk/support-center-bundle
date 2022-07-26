@@ -3,6 +3,12 @@ CHANGELOG for 1.1.x
 
 This changelog references any relevant changes introduced in 1.1 minor versions.
 
+* 1.1.x
+    * PR #193: Entity reference updates; Set default locale (vipin-shrivastava)
+    * Bug #192: Remove old folder image from physical path if new folder image is uploaded (papnoisanjeev)
+    * Bug #189: Resolve issue with wrong sort order on category listings and add support for managing enabled locale settings (vipin-shrivastava)
+    * Bug #177: Display asterisk icons for required fields on customer create ticket form (Sanjaybhattwebkul)
+
 * 1.1.0 (2022-03-23)
     * Feature: Improved compatibility with PHP 8 and Symfony 5 components
     * Bug #172: Update misc. validation error messages while working with knowledgebase categories and folders (vipin-shrivastava)

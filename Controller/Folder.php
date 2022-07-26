@@ -7,11 +7,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Webkul\UVDesk\SupportCenterBundle\Entity\Solutions;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\FileUploadService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Filesystem\Filesystem as Fileservice;
 
 class Folder extends AbstractController
 {
@@ -35,9 +36,9 @@ class Folder extends AbstractController
         }
 
         $entityManager = $this->getDoctrine()->getManager();
-        $totalKnowledgebaseFolders = count($entityManager->getRepository('UVDeskSupportCenterBundle:Solutions')->findAll());
-        $totalKnowledgebaseCategories = count($entityManager->getRepository('UVDeskSupportCenterBundle:SolutionCategory')->findAll());
-        $totalKnowledgebaseArticles = count($entityManager->getRepository('UVDeskSupportCenterBundle:Article')->findAll());
+        $totalKnowledgebaseFolders = count($entityManager->getRepository(SupportEntites\Solutions::class)->findAll());
+        $totalKnowledgebaseCategories = count($entityManager->getRepository(SupportEntites\SolutionCategory::class)->findAll());
+        $totalKnowledgebaseArticles = count($entityManager->getRepository(SupportEntites\Article::class)->findAll());
 
         return $this->render('@UVDeskSupportCenter/Staff/Folders/listFolders.html.twig', [
             'articleCount' => $totalKnowledgebaseArticles,
@@ -52,7 +53,7 @@ class Folder extends AbstractController
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
-        $folder = new Solutions();
+        $folder = new SupportEntites\Solutions();
         $errors = [];
 
         if ($request->getMethod() == "POST") {
@@ -112,7 +113,7 @@ class Folder extends AbstractController
 
         $entityManager = $this->getDoctrine()->getManager();
         $request = $this->container->get('request_stack')->getCurrentRequest();
-        $knowledgebaseFolder = $entityManager->getRepository('UVDeskSupportCenterBundle:Solutions')->findSolutionById(['id' => $folderId]);
+        $knowledgebaseFolder = $entityManager->getRepository(SupportEntites\Solutions::class)->findSolutionById(['id' => $folderId]);
 
         if (empty($knowledgebaseFolder)) {
             $this->noResultFound();
@@ -144,6 +145,12 @@ class Folder extends AbstractController
             }
             $formData = $request->request->all();
             if (isset($solutionImage)) {
+                // Removing old image from physical path is new image uploaded
+                $fileService = new Fileservice();
+                if ($knowledgebaseFolder->getSolutionImage()) {
+                    $fileService->remove($this->getParameter('kernel.project_dir')."/public/".$knowledgebaseFolder->getSolutionImage());
+                }
+
                 $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($solutionImage, 'knowledgebase');
                 $knowledgebaseFolder->setSolutionImage($assetDetails['path']);
             }
