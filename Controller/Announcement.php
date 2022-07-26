@@ -4,11 +4,11 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Webkul\UVDesk\SupportCenterBundle\Entity\Website;
-use Webkul\UVDesk\SupportCenterBundle\Entity\Announcement as MarketingAnnouncement;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -35,7 +35,7 @@ Class Announcement extends AbstractController
     public function listAnnouncementXHR(Request $request, ContainerInterface $container)    
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Announcement');
+        $repository = $this->getDoctrine()->getRepository(SupportEntites\Announcement::class);
         $json =  $repository->getAllAnnouncements($request->query, $container);
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
@@ -51,7 +51,7 @@ Class Announcement extends AbstractController
         $em = $this->getDoctrine()->getManager();
         
         if($request->attributes->get('announcementId')){
-            $announcement = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Announcement')
+            $announcement = $this->getDoctrine()->getRepository(SupportEntites\Announcement::class)
                         ->findOneBy([
                                 'id' => $request->attributes->get('announcementId')
                             ]);
@@ -59,13 +59,13 @@ Class Announcement extends AbstractController
             if(!$announcement)
                 $this->noResultFound();
         } else {
-            $announcement = new MarketingAnnouncement;
+            $announcement = new SupportEntites\Announcement();
             $announcement->setCreatedAt(new \DateTime('now'));
         }
         
         if($request->getMethod() == "POST") {
             $request = $request->request->get('announcement_form');
-            $group = $em->getRepository('UVDeskCoreFrameworkBundle:SupportGroup')->find($request['group']);
+            $group = $em->getRepository(CoreEntites\SupportGroup::class)->find($request['group']);
 
             $announcement->setTitle($request['title']);
             $announcement->setPromoText($request['promotext']);
@@ -98,7 +98,7 @@ Class Announcement extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $knowledgebaseAnnouncementId = $request->attributes->get('announcementId');
 
-        $knowledgebaseAnnouncement = $this->getDoctrine()->getRepository('UVDeskSupportCenterBundle:Announcement')
+        $knowledgebaseAnnouncement = $this->getDoctrine()->getRepository(SupportEntites\Announcement::class)
             ->findOneBy([
                 'id' => $request->attributes->get('announcementId')
             ]);

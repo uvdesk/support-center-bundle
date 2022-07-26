@@ -4,7 +4,8 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Webkul\UVDesk\SupportCenterBundle\Entity\Website;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
@@ -37,14 +38,15 @@ class Branding extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $settingType = $request->attributes->get('type');
         $userService = $this->userService;
-        $website = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneBy(['code'=>"knowledgebase"]);
-        $configuration = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite')->findOneBy(['website' => $website->getId(),'isActive' => 1]);
+        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneBy(['code'=>"knowledgebase"]);
+        $configuration = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(),'isActive' => 1]);
+        $currentLocales = $this->uvdeskService->getDefaultLangauge();
 
         if ($request->getMethod() == 'POST') {
             $isValid = 0;
             $params = $request->request->all();
             $parmsFile = ($request->files->get('website'));
-            $selectedLocale = isset($params['locales']) ? $params['locales'] : null;
+            $selectedLocale = isset($params['defaultLocale']) ? $params['defaultLocale'] : null;
 
             switch($settingType) {
                 case "general":
@@ -69,9 +71,11 @@ class Branding extends AbstractController
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    if (!empty($selectedLocale) && is_array($selectedLocale)) {
+                    if (!empty($selectedLocale)) {
                         if (false == $this->uvdeskService->updatesLocales($selectedLocale)) {
                             $this->addFlash('danger', $this->translator->trans('Warning! Locales could not be updated successfully.'));
+                        } else {
+                            $currentLocales = $selectedLocale;
                         }
                     }
 
@@ -185,6 +189,7 @@ class Branding extends AbstractController
             'type' => $settingType,
             'configuration' => $configuration,
             'broadcast' => json_decode($configuration->getBroadcastMessage()),
+            'locales' => $currentLocales,
         ]);
     }
 
@@ -195,11 +200,11 @@ class Branding extends AbstractController
         }
 
         $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneBy(['code'=>"knowledgebase"]);
+        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneBy(['code'=>"knowledgebase"]);
         if(!$website) {
             // return not found
         }
-        $configuration = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite')->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
+        $configuration = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
         $params = $request->request->all();
 
 
@@ -218,5 +223,24 @@ class Branding extends AbstractController
             'whitelist'=>$configuration->getWhiteList(),
             'blacklist'=>$configuration->getBlackList(),
         ]);
+    }
+
+    public function LocalesUpdateXhr(Request $request)
+    {
+        $params = $request->request->all();
+        $defaultLocale = isset($params['defaultLocale']) ? $params['defaultLocale'] : null;
+
+        if (!empty($defaultLocale)) {
+            $localesStatus = $this->uvdeskService->updatesLocales($defaultLocale);
+            $localesStatus == true ? '' : $this->addFlash('danger', $this->translator->trans('Warning ! Locales not updates successfully.'));
+        }
+
+        $json['alertClass'] = 'success';
+        $json['alertMessage'] = $this->translator->trans('Success ! Updated.');
+
+
+        $response = new Response(json_encode($json));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
 }

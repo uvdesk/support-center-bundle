@@ -133,20 +133,14 @@
 
                     <!-- Field -->
 					<div class="uv-element-block">
-					  	<label class="uv-field-label">{{ 'Locales'|trans }}</label>
-                        
+					  	<label class="uv-field-label">{{ 'Default Language (Optional)'|trans }}</label>
 					  	<div class="uv-field-block">
-                            {% for localeCode, localeName in uvdesk_service.getLocalesList() %}
-							    <div class="uv-element-block" style="margin: 10px 0">
-                                    <label>
-                                        <div class="uv-checkbox">
-                                            <input name="locales[{{localeCode}}]" type="checkbox" {{ localeCode in uvdesk_service.getActiveLocales() ? 'checked="checked"':""}} />
-                                            <span class="uv-checkbox-view"></span>
-                                        </div>
-                                        <span class="uv-checkbox-label">{{ localeName }}</span>
-                                    </label>
-                                </div>
-							{% endfor %}
+                            <select name="defaultLocale" class="uv-select">
+                                <option value="">{{ 'Select default language'|trans }}</option>
+                                {% for localeCode, localeName in uvdesk_service.getLocalesList() %}
+                                    <option value="{{localeCode}}" {{ locales == localeCode  ? "selected='selected'" : ''}}>{{ localeName }}</option>
+                                {% endfor %}
+                            </select>
 					  	</div>
 					</div>
 					<!-- //Field -->
@@ -702,7 +696,7 @@
                         $(this).css('color', textColor)
                     });
 
-			        Backbone.Validation.bind(this);			      
+			        Backbone.Validation.bind(this);		      
 			    },
 			    formChanegd: function(e) {
                     if(!Backbone.$(e.currentTarget).parents('.links').length) {
@@ -717,6 +711,27 @@
                     
 			        if(this.model.isValid(true)) {
 			           $("#generalSettingForm").submit();
+			        }
+			    },
+                generalBrandingLocalesUpdate: function (e) {
+			        e.preventDefault();
+			        this.model.set($('#generalSettingForm').serializeObject());
+                        console.log("form_submited fail");
+                    
+			        if(this.model.isValid(true)) {
+
+                       	$.ajax({
+							url: "{{ url('helpdesk_member_knowledgebase_update_locales') }}",
+							method: 'POST',
+							data: $('#generalSettingForm').serializeObject(),
+							success: function(response) {
+								app.appView.renderResponseAlert(response);
+								window.location.reload();
+							},
+							error: function(response) {
+								app.appView.renderResponseAlert(response);
+							}
+						});
 			        }
 			    },
 			    pendingResponseSettingFormSubmit: function (e) {

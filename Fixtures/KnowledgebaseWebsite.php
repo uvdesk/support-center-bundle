@@ -30,7 +30,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
 
     public function load(ObjectManager $entityManager)
     {
-        $website = $entityManager->getRepository('UVDeskCoreFrameworkBundle:Website')->findOneByCode('knowledgebase');
+        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
         
         if (empty($website)) {
             ($website = new CoreEntities\Website())
@@ -44,7 +44,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
             $entityManager->flush();
         }
 
-        $knowledgebaseWebsite = $entityManager->getRepository('UVDeskSupportCenterBundle:KnowledgebaseWebsite')->findOneByWebsite($website);
+        $knowledgebaseWebsite = $entityManager->getRepository(SupportCenterEntities\KnowledgebaseWebsite::class)->findOneByWebsite($website);
         
         if (empty($websiteConfiguration)) {
             ($knowledgebaseWebsite = new SupportCenterEntities\KnowledgebaseWebsite())
