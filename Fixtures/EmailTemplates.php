@@ -15,7 +15,7 @@ class EmailTemplates extends DoctrineFixture
 
     public function load(ObjectManager $entityManager)
     {
-        // $emailTemplateCollection = $entityManager->getRepository('UVDeskCoreFrameworkBundle:EmailTemplates')->findAll();
+        // $emailTemplateCollection = $entityManager->getRepository(CoreEntities\EmailTemplates::class)->findAll();
 
         // if (empty($emailTemplateCollection)) {
         //     foreach (self::$seeds as $coreEmailTemplate) {
