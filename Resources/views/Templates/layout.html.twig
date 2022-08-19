@@ -125,29 +125,30 @@
         {% endblock %}
         {% block wrapper %}
             <div class="uv-body">
-                <div class="uv-container">
-                    {% block body %}
-                        <div class="uv-cta-wrapper">
-                            <div class="uv-cta-lt">
-                                <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                xmlns:xlink="http://www.w3.org/1999/xlink"
-                                width="60px" height="60px">
-                                <path fill-rule="evenodd"  fill="rgb(124, 116, 241)"
-                                d="M57.000,12.000 L51.000,12.000 L50.984,38.993 L12.000,39.000 L12.000,45.000 C12.000,46.649 13.351,48.000 15.000,48.000 L48.000,48.000 L60.000,60.000 L60.000,15.000 C60.000,13.351 58.649,12.000 57.000,12.000 ZM45.000,30.000 L45.000,3.000 C45.000,1.351 43.649,0.000 42.000,0.000 L3.000,0.000 C1.351,0.000 -0.000,1.351 -0.000,3.000 L-0.000,45.000 L12.000,33.000 L42.000,33.000 C43.649,33.000 45.000,31.649 45.000,30.000 Z"/>
-                                </svg>
-                            </div>
-                            <div class="uv-cta-rt">
-                                <h2>{{"Unable to find an answer?"|trans}}</h2>
-                                <p>{{"Looking for anything specific article which resides in general queries? Just browse the various relevant folders and categories and then you will find the desired article."|trans}}
-                                </p>
-            					{% if websiteConfiguration is defined and websiteConfiguration.ticketCreateOption is defined %}
-                                    <a href="{{ path('helpdesk_customer_create_ticket') }}" class="uv-btn uv-margin-top-15">{{'Contact Us'|trans}}</a>
-                                {% endif %}
-                            </div>
+                {% if websiteConfiguration is defined and websiteConfiguration.ticketCreateOption %}
+                    {% if not websiteConfiguration.loginRequiredToCreate or app.user %}
+                        <div class="uv-container">
+                            {% block body %}
+                                <div class="uv-cta-wrapper">
+                                    <div class="uv-cta-lt">
+                                        <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                                        width="60px" height="60px">
+                                        <path fill-rule="evenodd"  fill="rgb(124, 116, 241)"
+                                        d="M57.000,12.000 L51.000,12.000 L50.984,38.993 L12.000,39.000 L12.000,45.000 C12.000,46.649 13.351,48.000 15.000,48.000 L48.000,48.000 L60.000,60.000 L60.000,15.000 C60.000,13.351 58.649,12.000 57.000,12.000 ZM45.000,30.000 L45.000,3.000 C45.000,1.351 43.649,0.000 42.000,0.000 L3.000,0.000 C1.351,0.000 -0.000,1.351 -0.000,3.000 L-0.000,45.000 L12.000,33.000 L42.000,33.000 C43.649,33.000 45.000,31.649 45.000,30.000 Z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="uv-cta-rt">
+                                        <h2>{{"Unable to find an answer?"|trans}}</h2>
+                                        <p>{{"Looking for anything specific article which resides in general queries? Just browse the various relevant folders and categories and then you will find the desired article."|trans}}</p>
+                                        <a href="{{ path('helpdesk_customer_create_ticket') }}" class="uv-btn uv-margin-top-15">{{'Contact Us'|trans}}</a>
+                                    </div>
+                                </div>
+                            {% endblock %}
                         </div>
-                    </div>
-                {% endblock %}
+                    {% endif %}
+                {% endif %}    
             </div>
         {% endblock %}
 
