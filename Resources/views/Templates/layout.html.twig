@@ -125,10 +125,10 @@
         {% endblock %}
         {% block wrapper %}
             <div class="uv-body">
-                {% if websiteConfiguration is defined and websiteConfiguration.ticketCreateOption %}
-                    {% if not websiteConfiguration.loginRequiredToCreate or app.user %}
-                        <div class="uv-container">
-                            {% block body %}
+                <div class="uv-container">
+                    {% block body %}
+                        {% if websiteConfiguration is defined and websiteConfiguration.ticketCreateOption %}
+                            {% if not websiteConfiguration.loginRequiredToCreate or app.user %}
                                 <div class="uv-cta-wrapper">
                                     <div class="uv-cta-lt">
                                         <svg
@@ -145,10 +145,10 @@
                                         <a href="{{ path('helpdesk_customer_create_ticket') }}" class="uv-btn uv-margin-top-15">{{'Contact Us'|trans}}</a>
                                     </div>
                                 </div>
-                            {% endblock %}
-                        </div>
-                    {% endif %}
-                {% endif %}    
+                            {% endif %}
+                        {% endif %} 
+                    {% endblock %}
+                </div>   
             </div>
         {% endblock %}
 
