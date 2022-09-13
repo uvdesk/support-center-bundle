@@ -3,7 +3,8 @@ CHANGELOG for 1.1.x
 
 This changelog references any relevant changes introduced in 1.1 minor versions.
 
-* 1.1.x
+* 1.1.1
+    * Bug #193: Correctly enable/disable contact us banner on front website based on settings (vipin-shrivastava)
     * PR #193: Entity reference updates; Set default locale (vipin-shrivastava)
     * Bug #192: Remove old folder image from physical path if new folder image is uploaded (papnoisanjeev)
     * Bug #189: Resolve issue with wrong sort order on category listings and add support for managing enabled locale settings (vipin-shrivastava)
