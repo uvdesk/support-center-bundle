@@ -15,7 +15,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\TicketService;
-use Webkul\UVDesk\CoreFrameworkBundle\Services\CustomFieldsService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\ReCaptchaService;
@@ -32,18 +31,16 @@ class Ticket extends AbstractController
     private $translator;
     private $uvdeskService;
     private $ticketService;
-    private $CustomFieldsService;
     private $recaptchaService;
     private $kernel;
 
-    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcherInterface $eventDispatcher, TranslatorInterface $translator, TicketService $ticketService, CustomFieldsService $CustomFieldsService, ReCaptchaService $recaptchaService, KernelInterface $kernel)
+    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcherInterface $eventDispatcher, TranslatorInterface $translator, TicketService $ticketService, ReCaptchaService $recaptchaService, KernelInterface $kernel)
     {
         $this->userService = $userService;
         $this->eventDispatcher = $eventDispatcher;
         $this->translator = $translator;
         $this->uvdeskService = $uvdeskService;
         $this->ticketService = $ticketService;
-        $this->CustomFieldsService = $CustomFieldsService;
         $this->recaptchaService = $recaptchaService;
         $this->kernel = $kernel;
     }
@@ -99,14 +96,33 @@ class Ticket extends AbstractController
                     $message = '';
                     $ticketType = $em->getRepository(CoreEntites\TicketType::class)->find($request->request->get('type'));
                     
-                    if($request->files->get('customFields') && !$this->CustomFieldsService->validateAttachmentsSize($request->files->get('customFields'))) {
-                        $error = true;
-                        $this->addFlash(
-                                'warning',
-                                $this->translator->trans("Warning ! Files size can not exceed %size% MB", [
-                                    '%size%' => $this->getParameter('max_upload_size')
-                                ])
-                            );
+                    try {
+                        try {
+                            $customFieldsService = null;
+                            
+                            if ($this->userService->isfileExists('apps/uvdesk/custom-fields')) {
+                                $customFieldsService = $this->get('uvdesk_package_custom_fields.service');
+                            } else if ($this->userService->isfileExists('apps/uvdesk/form-component')) {
+                                $customFieldsService = $this->get('uvdesk_package_form_component.service');
+                            }
+
+                            if (!empty($customFieldsService)) {
+                                if ($request->files->get('customFields') && !$customFieldsService->validateAttachmentsSize($request->files->get('customFields'))) {
+                                    $error = true;
+
+                                    $this->addFlash(
+                                        'warning',
+                                        $this->translator->trans("Warning ! Files size can not exceed %size% MB", [
+                                            '%size%' => $this->getParameter('max_upload_size')
+                                        ])
+                                    );
+                                }
+                            }
+                        } catch (\Exception $e) {
+                            // @TODO: Log execption message
+                        }
+                    } catch (\Exception $e) {
+                        // @TODO: Log execption message
                     }
     
                     $ticket = new CoreEntites\Ticket();
