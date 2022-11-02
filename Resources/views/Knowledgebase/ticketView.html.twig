@@ -223,7 +223,10 @@
                     </div>
                 {% endif %}
             </aside>
+            
             {% if user_service.isfileExists('apps/uvdesk/form-component') %}
+                {{ user_service.getCustomFieldTemplateCustomer() | raw }}
+            {% elseif user_service.isfileExists('apps/uvdesk/custom-fields') %}
                 {{ user_service.getCustomFieldTemplateCustomer() | raw }}
             {% endif %}
         </div>
