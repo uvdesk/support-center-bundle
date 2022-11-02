@@ -3,6 +3,9 @@ CHANGELOG for 1.1.x
 
 This changelog references any relevant changes introduced in 1.1 minor versions.
 
+* 1.1.2 (2022-11-02)
+    * PR #210: Render ticket id on customer ticket view page (Komal-sharma-2712)
+
 * 1.1.1 (2022-09-13)
     * Bug #193: Correctly enable/disable contact us banner on front website based on settings (vipin-shrivastava)
     * PR #193: Entity reference updates; Set default locale (vipin-shrivastava)
