@@ -220,9 +220,10 @@ class Ticket extends AbstractController
                             $this->addFlash('warning', $this->translator->trans('Warning ! Can not create ticket, invalid details.'));
                         }
                         // Trigger ticket created event
-                        $event = new GenericEvent(CoreWorkflowEvents\Ticket\Create::getId(), [
-                            'entity' => $thread->getTicket(),
-                        ]);
+                        $event = new CoreWorkflowEvents\Ticket\Create();
+                        $event
+                            ->setTicket($thread->getTicket())
+                        ;
     
                         $this->eventDispatcher->dispatch($event, 'uvdesk.automation.workflow.execute');
     
@@ -330,27 +331,34 @@ class Ticket extends AbstractController
 
                 $em = $this->getDoctrine()->getManager();
                 $status = $em->getRepository(CoreEntites\TicketStatus::class)->findOneByCode($data['status']);
-                if($status) {
+
+                if ($status) {
                     $flag = 0;
-                    if($ticket->getStatus() != $status) {
+
+                    if ($ticket->getStatus() != $status) {
                         $flag = 1;
                     }
 
-                    $ticket->setStatus($status);
+                    $ticket
+                        ->setStatus($status)
+                    ;
+
                     $em->persist($ticket);
                     $em->flush();
                 }
 
                 if ($thread->getcreatedBy() == 'customer') {
-                    $event = new GenericEvent(CoreWorkflowEvents\Ticket\CustomerReply::getId(), [
-                        'entity' =>  $ticket,
-                        'thread' =>  $thread
-                    ]);
+                    $event = new CoreWorkflowEvents\Ticket\CustomerReply();
+                    $event
+                        ->setTicket($ticket)
+                        ->setThread($thread)
+                    ;
                 } else {
-                    $event = new GenericEvent(CoreWorkflowEvents\Ticket\CollaboratorReply::getId(), [
-                        'entity' =>  $ticket,
-                        'thread' =>  $thread
-                    ]);
+                    $event = new CoreWorkflowEvents\Ticket\CollaboratorReply();
+                    $event
+                        ->setTicket($ticket)
+                        ->setThread($thread)
+                    ;
                 }
 
                 $this->eventDispatcher->dispatch($event, 'uvdesk.automation.workflow.execute');
@@ -653,9 +661,10 @@ class Ticket extends AbstractController
 
                     $collaborator = $em->getRepository(CoreEntites\User::class)->find($collaborator->getId());
                     
-                    $event = new GenericEvent(CoreWorkflowEvents\Ticket\Collaborator::getId(), [
-                        'entity' => $ticket,
-                    ]);
+                    $event = new CoreWorkflowEvents\Ticket\Collaborator();
+                    $event
+                        ->setTicket($ticket)
+                    ;
 
                     $this->eventDispatcher->dispatch($event, 'uvdesk.automation.workflow.execute');
                    
