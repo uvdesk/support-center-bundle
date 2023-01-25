@@ -647,10 +647,13 @@
                 },
                 imageFile: function(value, attr) { 
                     var field = $('input[name="' + attr + '"]');
+                    var supportedFileTypes = ['image/jpeg', 'image/jpg', 'image/jfif', 'image/png'];
+
                     if(field.length && field[0].files && field[0].files.length ) {
                         var file = field[0].files[0];
-                        if(file && file.type.indexOf('image/') != 0) {
-                            return true; //error                            
+
+                        if (file && supportedFileTypes.indexOf(file.type) === -1) {
+                            return true; //error
                         }
                     }
                 }
