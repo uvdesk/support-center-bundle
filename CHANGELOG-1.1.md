@@ -3,6 +3,9 @@ CHANGELOG for 1.1.x
 
 This changelog references any relevant changes introduced in 1.1 minor versions.
 
+* 1.1.2.1 (2023-01-31)
+    * Fixes: Resolve issues while saving custom fields on a ticket
+
 * 1.1.2 (2022-11-02)
     * PR #210: Render ticket id on customer ticket view page (Komal-sharma-2712)
 
