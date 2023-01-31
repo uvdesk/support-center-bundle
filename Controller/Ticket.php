@@ -23,7 +23,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
 
-
 class Ticket extends AbstractController
 {
     private $userService;
@@ -580,32 +579,36 @@ class Ticket extends AbstractController
     public function downloadAttachment(Request $request)
     {
         $attachmendId = $request->attributes->get('attachmendId');
-        $attachmentRepository = $this->getDoctrine()->getManager()->getRepository(CoreEntites\Attachment::class);
-        $attachment = $attachmentRepository->findOneById($attachmendId);
+        $attachment = $this->getDoctrine()->getManager()->getRepository(CoreEntites\Attachment::class)->findOneById($attachmendId);
+
         $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
 
-        if (!$attachment) {
+        if (empty($attachment)) {
             $this->noResultFound();
         }
 
-        $ticket = $attachment->getThread()->getTicket();
-        $user = $this->userService->getSessionUser();
-        
-        // process only if access for the resource.
-        if (empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
-            if(!$this->isCollaborator($ticket, $user)) {
-                throw new \Exception('Access Denied', 403);
+        $thread = $attachment->getThread();
+
+        if (!empty($thread)) {
+            $ticket = $thread->getTicket();
+            $user = $this->userService->getSessionUser();
+
+            // process only if access for the resource.
+            if (empty($ticket) || ((!empty($user)) && $user->getId() != $ticket->getCustomer()->getId())) {
+                if (!$this->isCollaborator($ticket, $user)) {
+                    throw new \Exception('Access Denied', 403);
+                }
             }
         }
 
         $path = $this->kernel->getProjectDir() . "/public/". $attachment->getPath();
 
         $response = new Response();
-        $response->setStatusCode(200);
-        
         $response->headers->set('Content-type', $attachment->getContentType());
         $response->headers->set('Content-Disposition', 'attachment; filename='. $attachment->getName());
         $response->headers->set('Content-Length', $attachment->getSize());
+        
+        $response->setStatusCode(200);
         $response->sendHeaders();
         $response->setContent(readfile($path));
         
