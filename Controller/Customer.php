@@ -97,11 +97,20 @@ Class Customer extends AbstractController
 
         $error = $session->get(Security::AUTHENTICATION_ERROR);
         $session->remove(Security::AUTHENTICATION_ERROR);
+        $errorMessage = '';
+
+        if (!empty($error)){
+            if ($error->getMessageKey() == 'Invalid credentials.') {
+                $errorMessage = 'Invalid credentials provide.';
+            } else {
+                $errorMessage = $error->getMessage();
+            }
+        }
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/login.html.twig', [
             'searchDisable' => true,
             'last_username' => $session->get(Security::LAST_USERNAME),
-            'error'         => $error,
+            'errorMessage'         =>$errorMessage,
             'breadcrumbs' => [
                 [
                     'label' => $this->translator->trans('Support Center'),
