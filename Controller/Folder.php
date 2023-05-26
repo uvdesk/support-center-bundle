@@ -77,16 +77,25 @@ class Folder extends AbstractController
 
                     return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
                 }
+
+                if (strpos($imageFile->getClientOriginalName(), '.php') !== false) {
+                    $message = $this->translator->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
+                        $this->addFlash('warning', $message);
+    
+                        return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
+                }
             }
 
             $data = $request->request->all();
             $folder->setName($data['name']);
             $folder->setDescription($data['description']);
             $folder->setvisibility($data['visibility']);
-            if(isset($solutionImage)){
+            
+            if (isset($solutionImage)) {
                 $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($solutionImage, 'knowledgebase');
                 $folder->setSolutionImage($assetDetails['path']);
             }
+            
             $folder->setDateAdded( new \DateTime());
             $folder->setDateUpdated( new \DateTime());
             $folder->setSortOrder(1);
@@ -124,7 +133,7 @@ class Folder extends AbstractController
             $solutionImage = $request->files->get('solutionImage');
 
             if ($imageFile = $request->files->get('solutionImage')) {
-
+               
                 if ($imageFile->getMimeType() == "image/svg+xml" || $imageFile->getMimeType() == "image/svg") {
                     if (!$this->fileUploadService->svgFileCheck($imageFile)){
                         $message = $this->translator->trans('Warning! Not a vaild svg. (Recommened: PNG, JPG or GIF Format).');
@@ -142,8 +151,17 @@ class Folder extends AbstractController
                         'folder' => $folder
                     ]);
                 }
+                
+                if (strpos($imageFile->getClientOriginalName(), '.php') !== false) {
+                    $message = $this->translator->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
+                        $this->addFlash('warning', $message);
+    
+                        return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_folders_collection'));
+                }
             }
+
             $formData = $request->request->all();
+            
             if (isset($solutionImage)) {
                 // Removing old image from physical path is new image uploaded
                 $fileService = new Fileservice();
