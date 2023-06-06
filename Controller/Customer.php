@@ -102,8 +102,8 @@ Class Customer extends AbstractController
         if (!empty($error)){
             if ($error->getMessageKey() == 'Invalid credentials.') {
                 $errorMessage = 'Invalid credentials provide.';
-            } else {
-                $errorMessage = $error->getMessage();
+            } elseif ($error->getMessage() == 'Account disabled.') {
+                $errorMessage =  'Your account has been disabled.';
             }
         }
 
