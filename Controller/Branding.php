@@ -201,16 +201,32 @@ class Branding extends AbstractController
 
         $entityManager = $this->getDoctrine()->getManager();
         $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneBy(['code'=>"knowledgebase"]);
+
         if(!$website) {
             // return not found
         }
+
         $configuration = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
+        
         $params = $request->request->all();
 
+        $blacklist = explode(',', $request->request->get('blackList'));
+        $whitelist = explode(',', $request->request->get('whiteList'));
+
+        $blacklist = array_values(array_filter(array_map(function ($email) {
+            return trim($email);
+        }, $blacklist)));
+
+        $whitelist = array_values(array_filter(array_map(function ($email) {
+            return trim($email);
+        }, $whitelist)));
+
+        $whitelist2 = implode(',', $whitelist);
+        $blacklist2 = implode(',', $blacklist);
 
         if ($request->getMethod() == 'POST') {
-            $configuration->setWhiteList($request->request->get('whiteList'));
-            $configuration->setBlackList($request->request->get('blackList'));
+            $configuration->setWhiteList($whitelist2);
+            $configuration->setBlackList($blacklist2);
             $entityManager->persist($configuration);
             $entityManager->flush();
 
