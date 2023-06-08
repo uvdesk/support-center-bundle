@@ -148,7 +148,8 @@ class Folder extends AbstractController
                     $this->addFlash('warning', $message);
 
                     return $this->render('@UVDeskSupportCenter/Staff/Folders/updateFolder.html.twig', [
-                        'folder' => $folder
+                        'folder' => $knowledgebaseFolder,
+                        'errors'=>$message 
                     ]);
                 }
                 
