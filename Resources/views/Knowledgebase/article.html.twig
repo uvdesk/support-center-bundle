@@ -14,7 +14,7 @@
 {% block body %}
 	<div class="uv-paper-article">
 		<div class="uv-paper-section">
-			<section>
+			<section style="word-wrap: break-word;">
 				<h1 {% if article.stared %}class="uv-starred"{% endif %}>{{ article.name }}</h1>
 				<p>{{ article.content |raw }}</p>
 				<div class="uv-author">
