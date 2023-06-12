@@ -174,10 +174,13 @@
                         maxLength: 16,
                         msg: '{{ "Maximum character length is 16" | trans}}'
                     }],
-					'announcement_form[linkURL]': {
+					'announcement_form[linkURL]': [{
 						required: true,
 						msg: "{{ 'This field is mandatory'|trans }}"
-					},
+					},{
+                        pattern: '^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$',
+						msg: '{{ "Provide a valid url(with protocol)"| trans}}'
+                    }],
 					'announcement_form[status]': {
 						required: true,
 						msg: "{{ 'This field is mandatory'|trans }}"
