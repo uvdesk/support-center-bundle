@@ -199,19 +199,20 @@ class Branding extends AbstractController
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
+        $params = $request->request->all();
         $entityManager = $this->getDoctrine()->getManager();
+
         $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneBy(['code'=>"knowledgebase"]);
-
-        if(!$website) {
-            // return not found
+        
+        if (!$website) {
+            throw new \Exception("No knowledgebase website details were found.");
         }
-
+        
         $configuration = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
         
-        $params = $request->request->all();
 
-        $blacklist = explode(',', $request->request->get('blackList'));
-        $whitelist = explode(',', $request->request->get('whiteList'));
+        $blacklist = !empty($params['blackList']) ? explode(',', $params['blackList']) : [];
+        $whitelist = !empty($params['whiteList']) ? explode(',', $params['whiteList']) : [];
 
         $blacklist = array_values(array_filter(array_map(function ($email) {
             return trim($email);
@@ -221,12 +222,15 @@ class Branding extends AbstractController
             return trim($email);
         }, $whitelist)));
 
-        $whitelist2 = implode(',', $whitelist);
-        $blacklist2 = implode(',', $blacklist);
+        $whitelist = implode(',', $whitelist);
+        $blacklist = implode(',', $blacklist);
 
         if ($request->getMethod() == 'POST') {
-            $configuration->setWhiteList($whitelist2);
-            $configuration->setBlackList($blacklist2);
+            $configuration
+                ->setWhiteList($whitelist)
+                ->setBlackList($blacklist)
+            ;
+
             $entityManager->persist($configuration);
             $entityManager->flush();
 
@@ -236,8 +240,8 @@ class Branding extends AbstractController
         }
 
         return $this->render('@UVDeskSupportCenter/Staff/spam.html.twig', [
-            'whitelist'=>$configuration->getWhiteList(),
-            'blacklist'=>$configuration->getBlackList(),
+            'whitelist' => $configuration->getWhiteList(),
+            'blacklist' => $configuration->getBlackList(),
         ]);
     }
 
