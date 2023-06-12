@@ -87,6 +87,10 @@
 						msg: "{{ 'This field is mandatory'|trans }}"
 					},
 					{
+						pattern: '^((?![$%<]).)*$',
+						msg: "{{ 'This field must have valid characters only'|trans }}"						
+					},
+					{
 						maxLength:250,
 						msg: '{{ "This field contain maximum 250 charecters only"|trans }}'
 					}]

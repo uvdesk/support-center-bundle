@@ -925,7 +925,7 @@
 
 					if (e.which === 13 && text) {
 						if ((text.match(/^((?![!@#$%^&*()<_+]).)*$/))) {
-								if(text.length <= 35) {
+								if(text.length <= 20) {
 								let existed = false;
 								$('.uv-filtered-tags .uv-tag').each(function(key, el){
 									if($(el).text().toLowerCase() == text.toLowerCase())
@@ -977,7 +977,7 @@
 								}
 							} else {
 								inputElement.addClass('uv-field-error');
-								inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Text length should be less than 35 charactors'|trans }}</span>");
+								inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Text length should be less than 20 characters'|trans }}</span>");
 							}
 						} else {
 							inputElement.addClass('uv-field-error');
