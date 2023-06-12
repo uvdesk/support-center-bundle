@@ -83,7 +83,7 @@
     {% if app.request.locale == "ar" %}
         {% set bodyClass = 'uv-rtl' %}
     {% endif %}
-   
+
     <body class="{{ bodySkinClass ~ ' ' ~ bodyClass }}">
         {% set broadcastMessage = uvdesk_service.getValidBroadcastMessage(websiteConfiguration.broadcastMessage is defined ? websiteConfiguration.broadcastMessage : '') %}
         {% if broadcastMessage %}
