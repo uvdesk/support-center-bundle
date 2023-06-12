@@ -317,7 +317,17 @@
                         required: true,
                         msg: '{{ "This field is mandatory"|trans }}'
                     },
-                    'user_form[lastName]': function(value) {
+
+                    'user_form[lastName]': [{
+                        required: false,
+                        msg: '{{ "This field is mandatory"|trans }}'
+                    },{
+                        pattern : /^[A-Za-z][A-Za-z]*[\sA-Za-z]*$/,
+                        msg : '{{ "This field must have characters only"}}'
+                    }],
+
+                    // this line is not working 
+                    {# 'user_form[lastName]': function(value) {
                         if(value != undefined && value !== '') {
                             [{
                                 pattern: /^[A-Za-z][A-Za-z]*[\sA-Za-z]*$/,
@@ -327,7 +337,9 @@
                                 msg: '{{ "Maximum character length is 40"|trans }}'
                             }]
                         }
-                    },
+                    }, #}
+
+                    
                     'user_form[email]': [{
                         required: true,
                         msg: '{{ "This field is mandatory"|trans }}'
