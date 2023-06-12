@@ -4,6 +4,7 @@ CHANGELOG for 1.1.x
 This changelog references any relevant changes introduced in 1.1 minor versions.
 
 * 1.1.x
+    * PR #222: Trim whitespaces while updating spam settings (Abhi12-gupta)
     * PR #208: Add RTL support for supported locales (ar) (papnoisanjeev)
 
 * 1.1.2.1 (2023-01-31)
