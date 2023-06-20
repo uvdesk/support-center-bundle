@@ -453,6 +453,11 @@ class Ticket extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $user = $this->userService->getSessionUser();
         $ticket = $entityManager->getRepository(CoreEntites\Ticket::class)->findOneBy(['id' => $id]);
+        
+        if ($ticket->getIsTrashed()) {
+            return $this->redirect($this->generateUrl('helpdesk_customer_ticket_collection'));
+        }
+        
         $isConfirmColl = false;
 
         if ($ticket == null && empty($ticket)) {
