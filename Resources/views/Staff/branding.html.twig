@@ -554,11 +554,14 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/js/bootstrap-colorpicker.min.js"></script>
 
     <script>
-  		$('.datetime').datetimepicker({
-			format: 'YYYY-MM-DD H:mm:ss',
-            minDate: new Date()
-		});
-    </script>
+    var currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    $('.datetime').datetimepicker({
+        format: 'YYYY-MM-DD H:mm:ss',
+        minDate: currentDate
+    });
+</script>
     
     <!-- Header Link template -->
 	<script id="header_link_tmp" type="text/template">
@@ -619,7 +622,15 @@
                             sizeLimit: true,
                             msg: "{{ 'File size must not be greater than 200KB !!'|trans }}",
                         }, {
-                            imageFile: true,
+                            imageFile: true, <script>
+    var currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    $('.datetime').datetimepicker({
+        format: 'YYYY-MM-DD H:mm:ss',
+        minDate: currentDate
+    });
+</script>
                             msg: "{{ 'Please upload valid Image file (Only JPEG, JPG, PNG allowed)!!'|trans }}",
                         }
                     ],
