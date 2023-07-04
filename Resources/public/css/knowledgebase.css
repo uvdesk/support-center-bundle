@@ -589,6 +589,17 @@ input[type="radio"][disabled="disabled"] + .uv-radio-view {
   overflow-y: auto;
   animation: fade-in-white 0.3s ease-in-out;
 }
+
+.uv-rtl .uv-pop-up-box {
+  top: 50px;
+  bottom: 1000px;
+  left: -23%;
+  z-index: 5000;
+  background: rgba(255, 255, 255, 0.9);
+  overflow-y: auto;
+  animation: fade-in-white 0.3s ease-in-out;
+}
+
 .uv-pop-up-box {
   background: #FFFFFF;
   padding: 25px;
