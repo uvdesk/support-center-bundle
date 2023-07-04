@@ -553,7 +553,7 @@
  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/css/bootstrap-colorpicker.min.css">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/js/bootstrap-colorpicker.min.js"></script>
 
-    <script>
+   <script>
     var currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
 
@@ -622,15 +622,7 @@
                             sizeLimit: true,
                             msg: "{{ 'File size must not be greater than 200KB !!'|trans }}",
                         }, {
-                            imageFile: true, <script>
-    var currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-
-    $('.datetime').datetimepicker({
-        format: 'YYYY-MM-DD H:mm:ss',
-        minDate: currentDate
-    });
-</script>
+                            imageFile: true,
                             msg: "{{ 'Please upload valid Image file (Only JPEG, JPG, PNG allowed)!!'|trans }}",
                         }
                     ],
