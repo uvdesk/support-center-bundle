@@ -269,6 +269,7 @@ class Article extends EntityRepository
                 ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleTags','at','WITH', 'at.articleId = a.id')
                 ->leftJoin('Webkul\UVDesk\CoreFrameworkBundle\Entity\Tag','t','WITH', 'at.tagId = t.id')
                 ->andwhere('at.articleId = :articleId')
+                ->andwhere('at.tagId = t.id')
                 ->setParameters([
                     'articleId' => $id,
                 ])
