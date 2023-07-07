@@ -588,7 +588,7 @@ input[type="radio"][disabled="disabled"] + .uv-radio-view {
   background: rgba(255, 255, 255, 0.9);
   overflow-y: auto;
   animation: fade-in-white 0.3s ease-in-out;
-} 
+}
 
 
 .uv-rtl .uv-pop-up-box {
@@ -1311,7 +1311,7 @@ h1 {
   font-size: 28px;
   color: #6F6F6F;
   font-weight: 600;
-  margin: 0px 0px 10px 0px;
+  margin: 20px 0px 10px 0px;
 }
 h2 {
   font-size: 20px;
@@ -2104,10 +2104,9 @@ p {
   margin-right: 10px;
 }
 .uv-paper-article {
-  padding-top: 60px;
+  padding-top: 20px;
   padding-bottom: 40px;
   border-bottom: solid 1px #D3D3D3;
-  font-size: 0;
 }
 .uv-paper-article .uv-paper-section {
   width: 75%;
@@ -2130,7 +2129,8 @@ p {
 .uv-paper-article .uv-paper-section ul {
   font-size: 15px;
   color: #2750C4;
-  padding: 0px 0px 0px 20px;
+  padding: 20px 0px 0px 20px;
+  flex-basis: 3px;
 }
 .uv-paper-article .uv-paper-section ul li {
   margin: 12px 0px;
