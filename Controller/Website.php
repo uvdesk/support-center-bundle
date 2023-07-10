@@ -281,8 +281,9 @@ class Website extends AbstractController
         if (empty($article)) {
             $this->noResultFound();
         }
-        $stringReplace = str_replace("<ol>","<ul>",$article->getContent());
-        $stringReplace = str_replace("</ol>","</ul>",$stringReplace);
+        
+        $stringReplace = str_replace("<ol>","<ol>",$article->getContent());
+        $stringReplace = str_replace("</ol>","</ol>",$stringReplace);
 
         $article->setContent($stringReplace);
         $article->setViewed((int) $article->getViewed() + 1);
