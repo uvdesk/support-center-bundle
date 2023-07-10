@@ -2092,10 +2092,10 @@ p {
   margin-right: 10px;
 }
 .uv-paper-article {
-  padding-top: 60px;
+  padding-top: 20px;
   padding-bottom: 40px;
   border-bottom: solid 1px #D3D3D3;
-  font-size: 0;
+  font-size: 18px;
 }
 .uv-paper-article .uv-paper-section {
   width: 75%;
