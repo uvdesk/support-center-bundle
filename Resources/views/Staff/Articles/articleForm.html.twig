@@ -1043,7 +1043,8 @@
                         var name = currentElement.text().trim();
                         app.appView.showLoader();
 						self = this;
-                        this.model.save({ editType: field, value: value, id: self.model.id }, {
+						var articleIds = '{{article.id}}';
+                        this.model.save({ editType: field, value: value, id: articleIds }, {
                             patch: true,
                             success: function (model, response, options) {
                                 uvSelect.find('.uv-aside-select-value').attr('data-id', value).text(name)
