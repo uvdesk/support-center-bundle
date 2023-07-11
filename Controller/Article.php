@@ -212,13 +212,13 @@ class Article extends AbstractController
         {
             throw new \Exception('Access Denied', 403); 
         }
-
+        
         $json = array();
-
+        
         if ($request->getMethod() == "POST") {
             $data = $request->request->get("data");
             $entityManager = $this->getDoctrine()->getManager();
-
+            
             if (isset($data['actionType'])) {
                 switch ($data['actionType']) {
                     case 'articleUpdate':
