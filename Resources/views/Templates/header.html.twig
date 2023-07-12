@@ -162,7 +162,7 @@
             <div class="uv-container">
                 <article>
                     <h1>
-                        {% if websiteConfiguration is defined and websiteConfiguration.siteDescription is defined %}
+                        {% if websiteConfiguration is defined and websiteConfiguration.siteDescription is not empty %}
                             {{ websiteConfiguration.siteDescription }}
                         {% else %}
                             {% trans %}Hi! how can we help?{% endtrans %}
