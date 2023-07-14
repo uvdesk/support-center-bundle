@@ -124,7 +124,7 @@ helpdesk_member_knowledgebase_related_article_xhr:
 
 # Members knowledgebase setting routing resources
 helpdesk_member_knowledgebase_theme:
-    path:     /branding/theme/{type}
+    path:     /branding/theme/
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Branding::theme
     defaults: { type: '' }
 
