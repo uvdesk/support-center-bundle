@@ -222,6 +222,13 @@ class Branding extends AbstractController
             return trim($email);
         }, $whitelist)));
 
+        foreach ($blacklist as $blacklistedEmail) {
+            if (in_array($blacklistedEmail, $whitelist)) {
+                $this->addFlash('warning', $this->translator->trans('Same email address or I.P address not save in both blacklist & white list.'));
+                return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_spam'));
+            }
+        }
+
         $whitelist = implode(',', $whitelist);
         $blacklist = implode(',', $blacklist);
 
