@@ -136,9 +136,6 @@ class Website extends AbstractController
         if(!$solution)
             $this->noResultFound();
 
-        if ($solution->getVisibility() == 'private') 
-            return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
-
         $breadcrumbs = [
             [
                 'label' => $this->translator->trans('Support Center'),
@@ -186,9 +183,6 @@ class Website extends AbstractController
 
         if(!$solution)
             $this->noResultFound();
-            
-        if ($solution->getVisibility() == 'private')
-            return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
 
         $breadcrumbs = [
             [

@@ -10,6 +10,7 @@
 					{% endfor %}
 				</ul>
 			</div>
+
 			<div class="uv-footer-rt">
 				<!-- Google Translation  -->
 				<div id="google_translate_element"></div>
@@ -28,12 +29,15 @@
 							});
 						}
 					</script>
+
 					<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async="async"></script>
        				<!-- Google Translation  -->
 				</div>
 			</div>
-    <div class="uv-footer-credit">
-      <span class="uv-credit-text">{{ 'Powered by'|trans }} <a href="https://www.uvdesk.com/en/" target="_blank">UVdesk</a>, {{ 'an open source project by'|trans }} <a href="https://store.webkul.com/" target="_blank">Webkul</a></span> 
-    </div>
+
+			<div class="uv-footer-credit" style="padding-bottom: 1.4em;">
+				<span class="uv-credit-text">{{ 'Powered by %uvdesk%, an open-source project by %webkul%.'|trans({'%uvdesk%': '<a href="https://www.uvdesk.com/en/" target="_blank">Uvdesk</a>', '%webkul%': '<a href="https://store.webkul.com/" target="_blank">Webkul</a>'})|raw }}</span>
+			</div>
+		</div>
 	</div>
 </div>
