@@ -3,6 +3,9 @@ CHANGELOG for 1.1.x
 
 This changelog references any relevant changes introduced in 1.1 minor versions.
 
+* 1.1.3.1 (2023-07-28)
+    * PR #246: Update branding content in knowledgebase (Abhi12-gupta)
+
 * 1.1.3 (2023-06-12)
     * Update: Dropped dependency on uvdesk/composer-plugin in support of symfony/flex
     * Update: Redefined workflow events & action, updated workflow triggers for improved compatibility support
