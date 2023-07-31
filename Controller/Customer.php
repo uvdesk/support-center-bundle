@@ -129,8 +129,16 @@ Class Customer extends AbstractController
 
             // Profile upload validation
             $validMimeType = ['image/jpeg', 'image/png', 'image/jpg'];
+            
             if (isset($dataFiles['profileImage'])) {
                 if (!in_array($dataFiles['profileImage']->getMimeType(), $validMimeType)) {
+                    $this->addFlash('warning', $this->translator->trans('Error ! Profile image is not valid, please upload a valid format'));
+                    return $this->redirect($this->generateUrl('helpdesk_customer_account'));
+                }
+            }
+
+            if (isset($dataFiles['profileImage'])) {
+                if (strpos($dataFiles['profileImage']->getClientOriginalName(), '.php') !== false) {
                     $this->addFlash('warning', $this->translator->trans('Error ! Profile image is not valid, please upload a valid format'));
                     return $this->redirect($this->generateUrl('helpdesk_customer_account'));
                 }
