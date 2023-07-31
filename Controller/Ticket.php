@@ -514,6 +514,15 @@ class Ticket extends AbstractController
         if($count > 0 || $count < 6) {
             $ticket = $em->getRepository(CoreEntites\Ticket::class)->find($id);
             $customer = $this->userService->getCurrentUser();
+
+            if ($ticket->getCustomer()->getId() != $customer->getId()){
+                $json['alertClass'] = 'danger';
+                $json['alertMessage'] = $this->translator->trans('Warning ! tickets not found.');
+                $response = new Response(json_encode($json));
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;
+            }
+            
             $rating = $em->getRepository(CoreEntites\TicketRating::class)->findOneBy(array('ticket' => $id,'customer'=>$customer->getId()));
             if($rating) {
                 $rating->setcreatedAt(new \DateTime);
