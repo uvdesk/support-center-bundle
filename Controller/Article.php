@@ -218,7 +218,7 @@ class Article extends AbstractController
         if ($request->getMethod() == "POST") {
             $data = $request->request->get("data");
             $entityManager = $this->getDoctrine()->getManager();
-
+            
             if (isset($data['actionType'])) {
                 switch ($data['actionType']) {
                     case 'articleUpdate':
@@ -359,6 +359,18 @@ class Article extends AbstractController
                             $entityManager->persist($articleTagMapping);
                             $entityManager->flush();
                         } elseif ($data['action'] == 'create') {
+                            if (! preg_match('/^((?![!@#$%^&*()<_+]).)*$/',$data['name'])) {
+                                $json['alertClass'] = 'danger';
+                                $json['alertMessage'] = $this->translator->trans('Only character are allowed');
+                                break;
+                            }
+
+                            if (strlen($data['name']) >= 35) {
+                                $json['alertClass'] = 'danger';
+                                $json['alertMessage'] = $this->translator->trans('Text length should be less than 35 charactors');
+                                break;
+                            }
+
                             $tag = $entityManager->getRepository(CoreEntites\Tag::class)->findOneBy(['name' => $data['name']]);
 
                             if (!$tag) {
