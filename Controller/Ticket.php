@@ -579,6 +579,7 @@ class Ticket extends AbstractController
         $response->setStatusCode(200);
         $response->headers->set('Content-type', 'application/zip');
         $response->headers->set('Content-Disposition', 'attachment; filename=' . $threadId . '.zip');
+        $response->headers->set('Content-length', filesize($zipname));
         $response->sendHeaders();
         $response->setContent(readfile($zipname));
 
@@ -619,8 +620,7 @@ class Ticket extends AbstractController
         
         $response->setStatusCode(200);
         $response->sendHeaders();
-        $response->setContent(readfile($path));
-        
+        readfile($path);
         return $response;
     }
     
