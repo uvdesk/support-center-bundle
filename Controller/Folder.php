@@ -78,15 +78,24 @@ class Folder extends AbstractController
                     return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
                 }
             }
+  
+            if (strpos($imageFile->getClientOriginalName(), '.php') !== false) {
+                $message = $this->translator->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
+                    $this->addFlash('warning', $message);
+
+                    return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
+            }
 
             $data = $request->request->all();
             $folder->setName($data['name']);
             $folder->setDescription($data['description']);
-            $folder->setvisibility($data['visibility']);
+            $folder->setvisibility($data['visibility']); 
+
             if(isset($solutionImage)){
                 $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($solutionImage, 'knowledgebase');
                 $folder->setSolutionImage($assetDetails['path']);
-            }
+            } 
+            
             $folder->setDateAdded( new \DateTime());
             $folder->setDateUpdated( new \DateTime());
             $folder->setSortOrder(1);
