@@ -49,7 +49,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         $categoryResponse = [];
         $categoryQB = $this->getEntityManager()->createQueryBuilder()->select('sc.id, sc.name, sc.description')
             ->from(SupportEntites\SolutionCategory::class, 'sc')
-            ->andWhere('sc.status = :status')->setParameter('status', true)
+            ->andWhere('sc.status = :status')->setParameter('status', 1)
             ->orderBy('sc.dateAdded', 'DESC');            
         
         return $categoryQB->getQuery()->getResult();
