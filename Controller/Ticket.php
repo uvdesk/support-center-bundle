@@ -344,8 +344,12 @@ class Ticket extends AbstractController
                     ;
 
                     $em->persist($ticket);
-                    $em->flush();
                 }
+
+                $ticket->setCustomerRepliedAt(new \DateTime('now'));
+                $em->persist($ticket);
+
+                $em->flush();
 
                 if ($thread->getcreatedBy() == 'customer') {
                     $event = new CoreWorkflowEvents\Ticket\CustomerReply();
