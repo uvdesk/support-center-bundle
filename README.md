@@ -31,7 +31,8 @@ $ composer require uvdesk/support-center-bundle
 License
 --------------
 
-The **UVDeskSupportCenterBundle** and libraries included within the bundle are released under the MIT or BSD license.
+The **UVDeskSupportCenterBundle** and libraries included within the bundle are released under the [OSL-3.0 license][3]
 
 [1]: https://www.uvdesk.com/
 [2]: https://getcomposer.org/
+[3]: https://github.com/uvdesk/community-skeleton/blob/master/LICENSE.txt
