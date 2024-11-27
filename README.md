@@ -35,4 +35,4 @@ The **UVDeskSupportCenterBundle** and libraries included within the bundle are r
 
 [1]: https://www.uvdesk.com/
 [2]: https://getcomposer.org/
-[3]: https://github.com/uvdesk/community-skeleton/blob/master/LICENSE.txt
+[3]: https://github.com/uvdesk/support-center-bundle/blob/master/LICENSE.txt
