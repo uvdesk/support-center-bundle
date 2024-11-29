@@ -120,7 +120,7 @@ class Website extends AbstractController
     {
         $this->isKnowledgebaseActive();
         
-        if(!$request->attributes->get('solution'))
+        if (!$request->attributes->get('solution'))
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
 
         $filterArray = ['id' => $request->attributes->get('solution')];
@@ -129,7 +129,7 @@ class Website extends AbstractController
                     ->getRepository(SupportEntites\Solutions::class)
                     ->findOneBy($filterArray);
 
-        if(!$solution)
+        if (! $solution)
             $this->noResultFound();
 
         if ($solution->getVisibility() == 'private') 
@@ -171,7 +171,7 @@ class Website extends AbstractController
     {
         $this->isKnowledgebaseActive();
 
-        if(!$request->attributes->get('solution'))
+        if (! $request->attributes->get('solution'))
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
 
         $filterArray = ['id' => $request->attributes->get('solution')];
@@ -283,10 +283,8 @@ class Website extends AbstractController
         if (empty($article)) {
             $this->noResultFound();
         }
-        $stringReplace = str_replace("<ol>","<ul>",$article->getContent());
-        $stringReplace = str_replace("</ol>","</ul>",$stringReplace);
 
-        $article->setContent($stringReplace);
+        $article->setContent($article->getContent());
         $article->setViewed((int) $article->getViewed() + 1);
         
         // Log article view
@@ -340,7 +338,7 @@ class Website extends AbstractController
         $articleCollection = $this->getDoctrine()->getRepository(SupportEntites\Article::class)->getArticleBySearch($request);
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/search.html.twig', [
-            'search' => $searchQuery,
+            'search'   => $searchQuery,
             'articles' => $articleCollection,
         ]);
     }
