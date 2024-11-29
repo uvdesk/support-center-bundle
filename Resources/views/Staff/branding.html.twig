@@ -648,14 +648,17 @@
                         }
                     }                    
                 },
-                imageFile: function(value, attr) { 
+                imageFile: function(value, attr) {
                     var field = $('input[name="' + attr + '"]');
-                    if(field.length && field[0].files && field[0].files.length ) {
+                    if (field.length && field[0].files && field[0].files.length) {
                         var file = field[0].files[0];
-                        if(file && file.type.indexOf('image/') != 0) {
-                            return true; //error                            
+                        // Check if the file type is valid
+                        if (! ['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+                            return true; // Invalid file type
                         }
                     }
+
+                    return false; // Valid file type or no file selected
                 }
             });
 
