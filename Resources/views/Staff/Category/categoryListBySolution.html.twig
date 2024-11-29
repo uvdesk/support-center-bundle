@@ -590,10 +590,30 @@
 
             var FolderModel = Backbone.Model.extend({
 				validation: {
-					'name': {
+					'name': [{
                         required: true,
                         msg: '{{ "This field is mandatory"|trans }}'
-                    }
+                    }, 
+					{
+						pattern: '^((?![$%<]).)*$',
+						msg: "{{ 'This field must have valid characters only'|trans }}"						
+					},
+					{
+						maxLength:18,
+						msg: "{{ 'This field contain maximum 18 characters.'|trans }}"
+					}],
+					'description': [{
+						required: true,
+						msg: "{{ 'This field is mandatory'|trans }}"
+					}, 
+					{
+						pattern: '^((?![$%<]).)*$',
+						msg: "{{ 'This field must have valid characters only'|trans }}"						
+					},
+					{
+						maxLength:250,
+						msg: '{{ "This field contain maximum 250 charecters only"|trans }}'
+					}]
 				},
                 urlRoot : "{{ path('helpdesk_member_knowledgebase_update_folder_xhr') }}"
 			});
