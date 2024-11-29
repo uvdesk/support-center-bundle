@@ -2095,8 +2095,13 @@ p {
   padding-top: 60px;
   padding-bottom: 40px;
   border-bottom: solid 1px #D3D3D3;
-  font-size: 0;
+  font-size: 0px;
 }
+
+.uv-paper-article div {
+  font-size: 16px;
+}
+
 .uv-paper-article .uv-paper-section {
   width: 75%;
   display: inline-block;
