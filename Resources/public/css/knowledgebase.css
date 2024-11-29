@@ -2095,7 +2095,7 @@ p {
   padding-top: 60px;
   padding-bottom: 40px;
   border-bottom: solid 1px #D3D3D3;
-  font-size: 0px;
+  display: flex;
 }
 
 .uv-paper-article div {
