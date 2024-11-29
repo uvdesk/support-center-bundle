@@ -41,7 +41,7 @@ class Folder extends AbstractController
         $totalKnowledgebaseArticles = count($entityManager->getRepository(SupportEntites\Article::class)->findAll());
 
         return $this->render('@UVDeskSupportCenter/Staff/Folders/listFolders.html.twig', [
-            'articleCount' => $totalKnowledgebaseArticles,
+            'articleCount'  => $totalKnowledgebaseArticles,
             'categoryCount' => $totalKnowledgebaseCategories,
             'solutionCount' => $totalKnowledgebaseFolders,
         ]);
@@ -63,7 +63,7 @@ class Folder extends AbstractController
             if ($imageFile = $request->files->get('solutionImage')) { 
                 if ($imageFile->getMimeType() == "image/svg+xml" || $imageFile->getMimeType() == "image/svg") {
                     if (!$this->fileUploadService->svgFileCheck($imageFile)){
-                        $message = $this->translator->trans('Warning! Not a vaild svg. (Recommened: PNG, JPG or GIF Format).');
+                        $message = $this->translator->trans('Warning! Not a valid svg. (Recommended: PNG, JPG or GIF Format).');
                         $this->addFlash('warning', $message);
     
                         return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
@@ -72,10 +72,17 @@ class Folder extends AbstractController
 
                 if (!preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
 
-                    $message = $this->translator->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
+                    $message = $this->translator->trans('Warning! Provide valid image file. (Recommended: PNG, JPG or GIF Format).');
                     $this->addFlash('warning', $message);
 
                     return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
+                }
+
+                if (strpos($imageFile->getClientOriginalName(), '.php') !== false) {
+                    $message = $this->translator->trans('Warning! Provide valid image file. (Recommended: PNG, JPG or GIF Format).');
+                        $this->addFlash('warning', $message);
+    
+                        return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
                 }
             }
 
@@ -127,7 +134,7 @@ class Folder extends AbstractController
 
                 if ($imageFile->getMimeType() == "image/svg+xml" || $imageFile->getMimeType() == "image/svg") {
                     if (!$this->fileUploadService->svgFileCheck($imageFile)){
-                        $message = $this->translator->trans('Warning! Not a vaild svg. (Recommened: PNG, JPG or GIF Format).');
+                        $message = $this->translator->trans('Warning! Not a valid svg. (Recommended: PNG, JPG or GIF Format).');
                         $this->addFlash('warning', $message);
     
                         return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
@@ -135,14 +142,15 @@ class Folder extends AbstractController
                 }
                 
                 if (!preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
-                    $message = $this->translator->trans('Warning! Provide valid image file. (Recommened: PNG, JPG or GIF Format).');
+                    $message = $this->translator->trans('Warning! Provide valid image file. (Recommended: PNG, JPG or GIF Format).');
                     $this->addFlash('warning', $message);
 
                     return $this->render('@UVDeskSupportCenter/Staff/Folders/updateFolder.html.twig', [
-                        'folder' => $folder
+                        'folder' => $knowledgebaseFolder
                     ]);
                 }
             }
+
             $formData = $request->request->all();
             if (isset($solutionImage)) {
                 // Removing old image from physical path is new image uploaded
