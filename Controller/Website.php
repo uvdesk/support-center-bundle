@@ -2,20 +2,16 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
-use Doctrine\Common\Collections\Criteria;
-use Webkul\UVDesk\SupportCenterBundle\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites; 
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
-
 
 class Website extends AbstractController
 {
@@ -39,10 +35,10 @@ class Website extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneByCode('knowledgebase');
 
-        if (!empty($website)) {
+        if (! empty($website)) {
             $knowledgebaseWebsite = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => true]);
 
-            if (!empty($knowledgebaseWebsite) && true == $knowledgebaseWebsite->getIsActive()) {
+            if (! empty($knowledgebaseWebsite) && true == $knowledgebaseWebsite->getIsActive()) {
                 return true;
             }
         }
@@ -56,8 +52,8 @@ class Website extends AbstractController
 
         $parameterBag = [
             'visibility' => 'public',
-            'sort' => 'id',
-            'direction' => 'desc'
+            'sort'       => 'id',
+            'direction'  => 'desc'
         ];
 
         $articleRepository = $this->getDoctrine()->getRepository(SupportEntites\Article::class);
@@ -65,22 +61,22 @@ class Website extends AbstractController
 
         $twigResponse = [
             'searchDisable' => false,
-            'popArticles' => $articleRepository->getPopularTranslatedArticles($request->getLocale()),
-            'solutions' => $solutionRepository->getAllSolutions(new ParameterBag($parameterBag), $this->constructContainer, 'a', [1]),
+            'popArticles'   => $articleRepository->getPopularTranslatedArticles($request->getLocale()),
+            'solutions'     => $solutionRepository->getAllSolutions(new ParameterBag($parameterBag), $this->constructContainer, 'a', [1]),
         ];
 
         $newResult = [];
        
         foreach ($twigResponse['solutions'] as $key => $result) {
             $newResult[] = [
-                'id' => $result->getId(),
-                'name' => $result->getName(),
-                'description' => $result->getDescription(),
-                'visibility' => $result->getVisibility(),
-                'solutionImage' => ($result->getSolutionImage() == null) ? '' : $result->getSolutionImage(),
+                'id'              => $result->getId(),
+                'name'            => $result->getName(),
+                'description'     => $result->getDescription(),
+                'visibility'      => $result->getVisibility(),
+                'solutionImage'   => ($result->getSolutionImage() == null) ? '' : $result->getSolutionImage(),
                 'categoriesCount' => $solutionRepository->getCategoriesCountBySolution($result->getId()),
-                'categories' => $solutionRepository->getCategoriesWithCountBySolution($result->getId()),
-                'articleCount' => $solutionRepository->getArticlesCountBySolution($result->getId()),
+                'categories'      => $solutionRepository->getCategoriesWithCountBySolution($result->getId()),
+                'articleCount'    => $solutionRepository->getArticlesCountBySolution($result->getId()),
             ];
         }
 
@@ -88,19 +84,19 @@ class Website extends AbstractController
         $twigResponse['solutions']['categories'] = array_map(function($category) use ($articleRepository) {
             $parameterBag = [
                 'categoryId' => $category['id'],
-                'status' => 1,
-                'sort' => 'id',
-                'limit'=>10,
-                'direction' => 'desc'
+                'status'     => 1,
+                'sort'       => 'id',
+                'limit'      => 10,
+                'direction'  => 'desc'
             ];
 
             $article =  $articleRepository->getAllArticles(new ParameterBag($parameterBag), $this->constructContainer, 'a.id, a.name, a.slug, a.stared');
              
             return [
-                'id' => $category['id'],
-                'name' => $category['name'],
+                'id'          => $category['id'],
+                'name'        => $category['name'],
                 'description' => $category['description'],
-                'articles' => $article
+                'articles'    => $article
             ];
         }, $solutionRepository->getAllCategories(10, 2));
 
@@ -115,7 +111,7 @@ class Website extends AbstractController
         $categoryCollection = $solutionRepository->getAllCategories(10, 4);
         
         return $this->render('@UVDeskSupportCenter/Knowledgebase/categoryListing.html.twig', [
-            'categories' => $categoryCollection,
+            'categories'    => $categoryCollection,
             'categoryCount' => count($categoryCollection),
         ]);
     }
@@ -136,22 +132,25 @@ class Website extends AbstractController
         if(!$solution)
             $this->noResultFound();
 
+        if ($solution->getVisibility() == 'private') 
+            return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
+
         $breadcrumbs = [
             [
                 'label' => $this->translator->trans('Support Center'),
-                'url' => $this->generateUrl('helpdesk_knowledgebase')
+                'url'   => $this->generateUrl('helpdesk_knowledgebase')
             ],
             [
                 'label' => $solution->getName(),
-                'url' => '#'
+                'url'   => '#'
             ],
         ];
 
         $testArray = [1, 2, 3, 4];
         foreach ($testArray as $test) {
             $categories[] = [
-                'id' => $test,
-                'name' => $test . " name",
+                'id'           => $test,
+                'name'         => $test . " name",
                 'articleCount' => $test . " articleCount",
             ];
         }
@@ -181,25 +180,28 @@ class Website extends AbstractController
                     ->getRepository(SupportEntites\Solutions::class)
                     ->findOneBy($filterArray);
 
-        if(!$solution)
+        if (! $solution)
             $this->noResultFound();
+            
+        if ($solution->getVisibility() == 'private')
+            return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
 
         $breadcrumbs = [
             [
                 'label' => $this->translator->trans('Support Center'),
-                'url' => $this->generateUrl('helpdesk_knowledgebase')
+                'url'   => $this->generateUrl('helpdesk_knowledgebase')
             ],
             [
                 'label' => $solution->getName(),
-                'url' => '#'
+                'url'   => '#'
             ],
         ];
 
         $parameterBag = [
-            'solutionId' => $solution->getId(),
-            'status' => 1,
-            'sort' => 'id',
-            'direction' => 'desc'
+            'solutionId'  => $solution->getId(),
+            'status'      => 1,
+            'sort'        => 'id',
+            'direction'   => 'desc'
         ];
         $article_data = [
             'folder' => $solution,
@@ -219,11 +221,11 @@ class Website extends AbstractController
     {
         $this->isKnowledgebaseActive();
 
-        if(!$request->attributes->get('category'))
+        if (!$request->attributes->get('category'))
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
 
         $filterArray = array(
-                            'id' => $request->attributes->get('category'),
+                            'id'     => $request->attributes->get('category'),
                             'status' => 1,
                         );
        
@@ -241,9 +243,9 @@ class Website extends AbstractController
         
         $parameterBag = [
             'categoryId' => $category->getId(),
-            'status' => 1,
-            'sort' => 'id',
-            'direction' => 'desc'
+            'status'     => 1,
+            'sort'       => 'id',
+            'direction'  => 'desc'
         ];
 
         $category_data=  array(
@@ -301,10 +303,10 @@ class Website extends AbstractController
         // Get article feedbacks
         $feedbacks = ['enabled' => false, 'submitted' => false, 'article' => $articleRepository->getArticleFeedbacks($article)];
 
-        if (!empty($user) && $user != 'anon.') {
+        if (! empty($user) && $user != 'anon.') {
             $feedbacks['enabled'] = true;
 
-            if (!empty($feedbacks['article']['collection']) && in_array($user->getId(), array_column($feedbacks['article']['collection'], 'user'))) {
+            if (! empty($feedbacks['article']['collection']) && in_array($user->getId(), array_column($feedbacks['article']['collection'], 'user'))) {
                 $feedbacks['submitted'] = true;
             }
         }
@@ -316,11 +318,11 @@ class Website extends AbstractController
                 ['label' => $this->translator->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
                 ['label' => $article->getName(), 'url' => '#']
             ],
-            'dateAdded' => $this->userService->convertToTimezone($article->getDateAdded()),
-            'articleTags' => $articleRepository->getTagsByArticle($article->getId()),
-            'articleAuthor' => $articleRepository->getArticleAuthorDetails($article->getId()),
+            'dateAdded'       => $this->userService->convertToTimezone($article->getDateAdded()),
+            'articleTags'     => $articleRepository->getTagsByArticle($article->getId()),
+            'articleAuthor'   => $articleRepository->getArticleAuthorDetails($article->getId()),
             'relatedArticles' => $articleRepository->getAllRelatedyByArticle(['locale' => $request->getLocale(), 'articleId' => $article->getId()], [1]),
-            'popArticles'  => $articleRepository->getPopularTranslatedArticles($request->getLocale())
+            'popArticles'     => $articleRepository->getPopularTranslatedArticles($request->getLocale())
         ];
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/article.html.twig',$article_details);
