@@ -40,10 +40,11 @@ class Article extends EntityRepository
 
     private function cleanAllData(&$data)
     {
-        if(isset($data['isActive'])){
+        if (isset($data['isActive'])) {
             $data['status'] = $data['isActive'];
             unset($data['isActive']);
         }
+
         unset($data['categoryId']);
         unset($data['solutionId']);
     }
@@ -101,7 +102,7 @@ class Article extends EntityRepository
             )
             ->setParameters([
                 'articleId' => $params['articleId'],
-                'status' => $status,
+                'status'    => $status,
             ]);
 
         $results = $qbS->getQuery()->getResult();
@@ -120,8 +121,7 @@ class Article extends EntityRepository
 
         $articles = [];
 
-        if(isset($data['categoryId']))
-        {
+        if (isset($data['categoryId'])) {
             $qbS = $this->getEntityManager()->createQueryBuilder();
             $qbS->select('a.articleId')->from('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory', 'a');
             $qbS->where('a.categoryId = :categoryId');
@@ -142,29 +142,29 @@ class Article extends EntityRepository
             $articles = $articles ? $articles : [0];
         }
 
-        if(isset($data['search'])){
+        if (isset($data['search'])){
             $search = explode(':', $data['search']);
 
-            if(isset($search[0]) && isset($search[1])){
-                if(in_array($search[0], $this->searchAllowed)){
-                    if($search[0] == 'tag'){
+            if (isset($search[0]) && isset($search[1])) {
+                if (in_array($search[0], $this->searchAllowed)){
+                    if ($search[0] == 'tag'){
                         $qbS = $this->getEntityManager()->createQueryBuilder();
                         $qbS->select('at.articleId')->from('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleTags', 'at');
                           
                         $articlesTag = $qbS->getQuery()->getResult();
 
-                        if($articlesTag){
-                            if($articles){
+                        if ($articlesTag) {
+                            if ($articles) {
                                 $oldArticles = $articles;
                                 $articles = [0];
-                                foreach($oldArticles as $article){
-                                    if(in_array($article, $articlesTag)){
+                                foreach ($oldArticles as $article) {
+                                    if (in_array($article, $articlesTag)) {
                                         $articles[] = $article;
                                     }
                                 }
-                            }else
+                            } else
                                 $articles = $articlesTag;
-                        }else
+                        } else
                             $articles = [0];
                     }
                     unset($data['search']);
@@ -176,12 +176,12 @@ class Article extends EntityRepository
 
         
         foreach ($data as $key => $value) {
-            if(!in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
-                if($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search' AND $key!='query') {
+            if (!in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
+                if ($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search' AND $key!='query') {
                         $qb->Andwhere('a.'.$key.' = :'.$key);
                         $qb->setParameter($key, $value);
                 } else {
-                    if($key == 'search' || $key == 'query') {
+                    if ($key == 'search' || $key == 'query') {
                         $qb->orwhere('a.name'.' LIKE :name');
                         $qb->setParameter('name', '%'.urldecode(trim($value)).'%');
                         $qb->orwhere('a.content'.' LIKE :content'); //can use regexBundle for it so that it can\'t match html
@@ -191,12 +191,12 @@ class Article extends EntityRepository
             }
         }
 
-        if($articles){
+        if ($articles){
             $qb->Andwhere('a.id IN (:articles)');
             $qb->setParameter('articles', $articles);
         }
-        // dump($qb);die;
-        if(!$allResult){
+
+        if (! $allResult) {
             $paginator  = $container->get('knp_paginator');
 
             $results = $paginator->paginate(
@@ -205,41 +205,38 @@ class Article extends EntityRepository
                 self::LIMIT,
                 array('distinct' => true)
             );
-        }else{
+        } else {
             $qb->select($allResult);
             $results = $qb->getQuery()->getResult();
+
             return $results;
         }
 
         $newResult = [];
-        // dump($results);die;
         foreach ($results as $key => $result) {
-            // dump($result['id']);
             $newResult[] = array(
-                'id'                   => $result->getId(),
-                'name'                 => $result->getName(),
-                'slug'                 => $result->getSlug(),
-                'status'               => $result->getStatus(),
-                'viewed'               => $result->getViewed(),
-                'dateAdded'            => date_format($result->getDateAdded(),'d-M h:i A'),
-                'categories'           => ($articles ? $this->getCategoryByArticle($result->getId()) : $this->getCategoryByArticle($result->getId())),
+                'id'         => $result->getId(),
+                'name'       => $result->getName(),
+                'slug'       => $result->getSlug(),
+                'status'     => $result->getStatus(),
+                'viewed'     => $result->getViewed(),
+                'dateAdded'  => date_format($result->getDateAdded(),'d-M h:i A'),
+                'categories' => ($articles ? $this->getCategoryByArticle($result->getId()) : $this->getCategoryByArticle($result->getId())),
             );
         }
-
-        // die;
 
         $paginationData = $results->getPaginationData();
         $queryParameters = $results->getParams();
        
         unset($queryParameters['solution']);
-        if(isset($queryParameters['category']))
+        if (isset($queryParameters['category']))
             unset($queryParameters['category']);
 
         $paginationData['url'] = '#'.$container->get('uvdesk.service')->buildPaginationQuery($queryParameters);
 
         $json['results'] = $newResult;
         $json['pagination_data'] = $paginationData;
-        // dump($json);die;
+
         return $json;
     }
    
@@ -269,6 +266,7 @@ class Article extends EntityRepository
                 ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleTags','at','WITH', 'at.articleId = a.id')
                 ->leftJoin('Webkul\UVDesk\CoreFrameworkBundle\Entity\Tag','t','WITH', 'at.tagId = t.id')
                 ->andwhere('at.articleId = :articleId')
+                ->andwhere('at.tagId = t.id')
                 ->setParameters([
                     'articleId' => $id,
                 ])
@@ -290,7 +288,7 @@ class Article extends EntityRepository
                  ->andwhere($where)
                  ->setParameters([
                      'articleId' => $articleId,
-                     'id' => $categories ,
+                     'id'        => $categories ,
                  ])
                  ->getQuery()
                  ->execute()
@@ -469,7 +467,7 @@ class Article extends EntityRepository
         $searchTagList = explode(' ', trim($searchQuery));
 
         $params = [
-            'name' => '%' . trim($searchQuery) . '%',
+            'name'   => '%' . trim($searchQuery) . '%',
             'status' => 1,
         ];
 
