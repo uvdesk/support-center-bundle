@@ -2,22 +2,18 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Criteria;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Webkul\UVDesk\SupportCenterBundle\Form;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites; 
-
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
 
 class Article extends AbstractController
 {
@@ -43,6 +39,7 @@ class Article extends AbstractController
         $solutions = $this->getDoctrine()
             ->getRepository(SupportEntites\Solutions::class)
             ->getAllSolutions(null, $container, 'a.id, a.name');
+
         if ($solutions) {
             foreach($solutions as $key => $solution) {
                 $solutions[$key]['categories'] = $this->getDoctrine()
@@ -109,16 +106,17 @@ class Article extends AbstractController
         $json = array();
         $repository = $this->getDoctrine()->getRepository(SupportEntites\Article::class);
 
-        if($request->attributes->get('category'))
+        if ($request->attributes->get('category'))
             $request->query->set('categoryId', $request->attributes->get('category'));
 
-        if($request->attributes->get('solution'))
+        if ($request->attributes->get('solution'))
             $request->query->set('solutionId', $request->attributes->get('solution'));
 
         $json = $repository->getAllArticles($request->query, $container);
 
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 
@@ -131,7 +129,7 @@ class Article extends AbstractController
         $json = $repository->getAllHistoryByArticle($params);
 
         if ($json) {
-            foreach($json as $key => $js) {
+            foreach ($json as $key => $js) {
                 $json[$key]['dateAdded'] = [
                     'format' => $this->userService->convertToTimezone($js['dateAdded']),
                     'timestamp' => $this->userService->convertToDatetimeTimezoneTimestamp($js['dateAdded']),
@@ -141,6 +139,7 @@ class Article extends AbstractController
 
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 
@@ -154,6 +153,7 @@ class Article extends AbstractController
 
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 
@@ -173,7 +173,7 @@ class Article extends AbstractController
         if ($request->attributes->get('id')) {
             $article = $this->getArticle(['id' => $request->attributes->get('id')]);
 
-            if(!$article)
+            if (! $article)
                 $this->noResultFound();
         } else {
             $article = new SupportEntites\Article;
@@ -208,8 +208,10 @@ class Article extends AbstractController
     public function articleXhr(Request $request)
     {
         // Proceed only if user has access to the resource        
-        if( (!$this->userService->getSessionUser()) || (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) )
-        {
+        if (
+            (!$this->userService->getSessionUser()) 
+            || (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) 
+        ) {
             throw new \Exception('Access Denied', 403); 
         }
 
@@ -218,7 +220,7 @@ class Article extends AbstractController
         if ($request->getMethod() == "POST") {
             $data = $request->request->get("data");
             $entityManager = $this->getDoctrine()->getManager();
-
+            
             if (isset($data['actionType'])) {
                 switch ($data['actionType']) {
                     case 'articleUpdate':
@@ -359,6 +361,18 @@ class Article extends AbstractController
                             $entityManager->persist($articleTagMapping);
                             $entityManager->flush();
                         } elseif ($data['action'] == 'create') {
+                            if (! preg_match('/^((?![!@#$%^&*()<_+]).)*$/', $data['name'])) {
+                                $json['alertClass'] = 'danger';
+                                $json['alertMessage'] = $this->translator->trans('Only characters are allowed');
+                                break;
+                            }
+
+                            if (strlen($data['name']) >= 35) {
+                                $json['alertClass'] = 'danger';
+                                $json['alertMessage'] = $this->translator->trans('Text length should be less than 35 characters');
+                                break;
+                            }
+
                             $tag = $entityManager->getRepository(CoreEntites\Tag::class)->findOneBy(['name' => $data['name']]);
 
                             if (!$tag) {
@@ -474,7 +488,7 @@ class Article extends AbstractController
             $data = json_decode($request->getContent(), true);
 
             if (isset($data['editType']))
-                switch($data['editType']) {
+                switch ($data['editType']) {
                     case 'status':
                         $entityManager->getRepository(SupportEntites\Article::class)->bulkArticleStatusUpdate([$data['id']], $data['value']);
                         $json['alertClass'] = 'success';
