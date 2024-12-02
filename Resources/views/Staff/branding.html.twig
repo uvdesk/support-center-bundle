@@ -63,12 +63,85 @@
 					<li for="knowledgebase" {% if type == 'knowledgebase' %} class="uv-tab-active"{% endif %}>{{ 'Knowledgebase'|trans }}</li>
                     <li for="time" {% if type == 'time' %}class="uv-tab-active"{% endif %}>{{ 'Time'|trans }}</li>
 					<li for="seo" {% if type == 'seo' %}class="uv-tab-active"{% endif %}>{{ 'SEO'|trans }}</li>
+                    {% if user_service.isfileExists('apps/uvdesk/sla') %}
+                        <li for="business-hours" {% if type == 'business-hours' %}class="uv-tab-active"{% endif %}>{{ 'Business Hours'|trans }}</li>
+                    {% endif %}
 					<li for="links" {% if type == 'links' %}class="uv-tab-active"{% endif %}>{{ 'Links'|trans }}</li>
                     <li for="advanced" {% if type == 'advanced' %}class="uv-tab-active"{% endif %}>{{ 'Advanced'|trans }}</li>
 					<li for="broadcasting" {% if type == 'broadcasting' %}class="uv-tab-active"{% endif %}>{{ 'Broadcast Message'|trans }}</li>                  
 				</ul>
 			</div>
 			<!--Tabs-->
+
+            <!--Tab View-->
+			<div class="uv-tab-view {% if type == 'business-hours' %}uv-tab-view-active{% endif %}" id="business-hours">
+				<!--Form-->
+				<form method="post" action="{{ path('helpdesk_member_knowledgebase_theme', {'type': 'business-hours'}) }}" id="businessHoursSettingForm">
+                    <div class="uv-element-block">
+						{# <label class="uv-field-label">{{ 'Business Hours Status'|trans }}</label> #}
+						<div class="uv-element-block">
+							<label>
+								<div class="uv-checkbox">
+									<input name="status" type="checkbox"  {{ websiteData.businessHourStatus ? 'checked' : ''}}>
+									<span class="uv-checkbox-view"></span>
+								</div>
+								<span class="uv-checkbox-label">{{ 'Business Hours is Active'|trans }}</span>
+							</label>
+						</div>
+	                </div>
+	                <div class="business-hours" style="margin-top: 20px; {{ websiteData.businessHourStatus ? '' : 'display: none'}}">
+		                {% for day in days %}
+		                	{% if business_hours|length > 0 %}
+			                	<div>
+									<label>
+										<div class="uv-checkbox">
+											<input name="businessHours[{{ day }}][is_active]" type="checkbox" {% if business_hours[day]['is_active'] is defined %} checked="" {% endif %} >
+											<span class="uv-checkbox-view"></span>
+										</div>
+										<span class="uv-checkbox-label" style="width: 140px;">{{ day|trans }}</span>
+									</label>
+								    <select class="uv-select uv-select-grouped" name="businessHours[{{ day }}][from]" style="width: 300px;">
+								        {% for key,time in time_interval %}
+								        	<option value="{{ key }}" {% if business_hours[day]['from'] == key %} selected="selected" {% endif %}>{{ time }}</option>
+								    	{% endfor %}
+								    </select>
+								    <select class="uv-select uv-select-grouped" name="businessHours[{{ day }}][to]" style="width: 300px;">
+								        {% for key,time in time_interval %}
+								        	<option value="{{ key }}" {% if business_hours[day]['to'] == key %} selected="selected" {% endif %}>{{ time }}</option>
+								    	{% endfor %}
+								    </select>
+								</div>
+		                	{% else %}
+		                		<div>
+		                			<label>
+										<div class="uv-checkbox">
+											<input name="businessHours[{{ day }}][is_active]" type="checkbox" {% if day != 'Saturday' and day != 'Sunday' %} checked="checked" {% endif %} >
+											<span class="uv-checkbox-view"></span>
+										</div>
+										<span class="uv-checkbox-label" style="width: 200px;">{{ day|trans }}</span>
+									</label>
+								    <select class="uv-select uv-select-grouped" name="businessHours[{{ day }}][from]" style="width: 300px;">
+								        {% for key,time in time_interval %}
+								        	<option value="{{ key }}" {% if day != 'Saturday' and day != 'Sunday' and key == "9:00" %} selected="selected" {% endif %}>{{ time }}</option>
+								    	{% endfor %}
+								    </select>
+								    <select class="uv-select uv-select-grouped" name="businessHours[{{ day }}][to]" style="width: 300px;">
+								        {% for key,time in time_interval %}
+								        	<option value="{{ key }}" {% if day != 'Saturday' and day != 'Sunday' and key == "18:00" %} selected="selected" {% endif %}>{{ time }}</option>
+								    	{% endfor %}
+								    </select>
+		                		</div>
+		                	{% endif %}
+		                {% endfor %}
+	                </div>
+
+					<!--CTA-->
+					<input class="uv-btn" href="#" value="{{ 'Save Changes'|trans }}" type="button">
+					<!--//CTA-->
+				</form>
+				<!--//Form-->
+			</div>
+			<!--//Tab View-->
 
 			<!--Tab View-->
 			<div class="uv-tab-view {% if type == 'general' or type == '' %}uv-tab-view-active{% endif %}" id="general">
@@ -666,6 +739,7 @@
 			    events: {
 			    	'click .general-btn': 'generalBrandingFormSubmit',
 			        'click .pending-response-btn': 'pendingResponseSettingFormSubmit',
+                    'change input[type="checkbox"][name="status"]': 'toggleBusinessHours',
 					'click .uv-btn': 'disableButton',
                     'change input[type="file"]': 'formChanegd',
                     'change .convertToSlug': 'convertToSlug',
@@ -704,6 +778,13 @@
 
 			        Backbone.Validation.bind(this);		      
 			    },
+                toggleBusinessHours: function(e) {
+					if (e.currentTarget.checked) {
+					$('.business-hours').fadeIn(0);
+					} else {
+					$('.business-hours').fadeOut(0);
+					}
+				},
 			    formChanegd: function(e) {
                     if(!Backbone.$(e.currentTarget).parents('.links').length) {
                         this.model.set(Backbone.$(e.currentTarget).attr('name'), Backbone.$(e.currentTarget).val())
@@ -750,7 +831,8 @@
 			    },
 				disableButton: function(e) {
 					var form = Backbone.$(e.currentTarget).parents('form');
-					if(form.attr('id') == 'seoForm' || form.attr('id') == 'advancedForm' || form.attr('id') == 'knowledgebaseForm') {
+
+					if(form.attr('id') == 'businessHoursSettingForm' || form.attr('id') == 'seoForm' || form.attr('id') == 'advancedForm' || form.attr('id') == 'knowledgebaseForm') {
 						Backbone.$(e.currentTarget).attr('disabled', 'disabled');
 						form.submit()
 					}
