@@ -367,6 +367,7 @@ class Ticket extends AbstractController
                 }
 
                 $this->eventDispatcher->dispatch($event, 'uvdesk.automation.workflow.execute');
+                $this->eventDispatcher->dispatch($event, 'uvdesk.automation.report_app.workflow.execute');
 
                 $this->addFlash('success', $this->translator->trans('Success ! Reply added successfully.'));
             } else {
