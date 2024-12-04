@@ -38,7 +38,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
 
     private function cleanAllData(&$data)
     {
-        if(isset($data['isActive'])){
+        if (isset($data['isActive'])) {
             $data['visibility'] = ($data['isActive'] ? 'public' : 'private');
             unset($data['isActive']);
         }
@@ -66,12 +66,12 @@ class Solutions extends \Doctrine\ORM\EntityRepository
 
         $this->presetting($data);
         foreach ($data as $key => $value) {
-            if(!in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
-                if($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search') {
+            if (!in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
+                if ($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search') {
                     $qb->Andwhere('a.'.$key.' = :'.$key);
                     $qb->setParameter($key, $value);
                 } else {
-                    if($key == 'search') {
+                    if ($key == 'search') {
                         $qb->orwhere('a.name'.' LIKE :name');
                         $qb->setParameter('name', '%'.urldecode(trim($value)).'%');
                         $qb->orwhere('a.description'.' LIKE :description');
@@ -81,7 +81,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
             }
         }
 
-        if(!$allResult){
+        if (!$allResult) {
             $paginator  = $container->get('knp_paginator');
 
             $results = $paginator->paginate(
@@ -90,24 +90,24 @@ class Solutions extends \Doctrine\ORM\EntityRepository
                 self::LIMIT,
                 array('distinct' => false)
             );
-        }else{
+        } else {
             $qb->select($allResult);
             $results = $qb->getQuery()->getResult();
+
             return $results;
         }
       
         $newResult = [];
         foreach ($results as $key => $result) {
-           
             $newResult[] = array(
-                'id'                   => $result->getId(),
-                'name'                 => $result->getName(),
-                'description'          => $result->getDescription(),
-                'visibility'           => $result->getVisibility(),
-                'solutionImage'        => ($result->getSolutionImage() == null) ? $this->defaultImage : $result->getSolutionImage(),
-                'categoriesCount'      => $this->getCategoriesCountBySolution($result->getId(), $status),
-                'categories'           => $this->getCategoriesWithCountBySolution($result->getId(), $status),
-                'articleCount'         => $this->getArticlesCountBySolution($result->getId(), $status)
+                'id'              => $result->getId(),
+                'name'            => $result->getName(),
+                'description'     => $result->getDescription(),
+                'visibility'      => $result->getVisibility(),
+                'solutionImage'   => ($result->getSolutionImage() == null) ? $this->defaultImage : $result->getSolutionImage(),
+                'categoriesCount' => $this->getCategoriesCountBySolution($result->getId(), $status),
+                'categories'      => $this->getCategoriesWithCountBySolution($result->getId(), $status),
+                'articleCount'    => $this->getArticlesCountBySolution($result->getId(), $status)
             );
         }
 
@@ -135,7 +135,6 @@ class Solutions extends \Doctrine\ORM\EntityRepository
 
         $result = $qb->getQuery()->getOneOrNullResult();
         
-
         return($result);
     }
 

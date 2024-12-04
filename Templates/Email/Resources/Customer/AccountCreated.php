@@ -3,7 +3,6 @@
 namespace Webkul\UVDesk\SupportCenterBundle\Templates\Email\Resources\Customer;
 
 use Webkul\UVDesk\CoreFrameworkBundle\Templates\Email\UVDeskEmailTemplateInterface;
-
 abstract class AccountCreated implements UVDeskEmailTemplateInterface
 {
     private static $name = 'Customer Account Created';

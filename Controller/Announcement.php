@@ -11,7 +11,6 @@ use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 Class Announcement extends AbstractController
 {
     private $translator;
@@ -39,6 +38,7 @@ Class Announcement extends AbstractController
         $json =  $repository->getAllAnnouncements($request->query, $container);
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 
@@ -50,20 +50,21 @@ Class Announcement extends AbstractController
         
         $em = $this->getDoctrine()->getManager();
         
-        if($request->attributes->get('announcementId')){
+        if ($request->attributes->get('announcementId')) {
             $announcement = $this->getDoctrine()->getRepository(SupportEntites\Announcement::class)
                         ->findOneBy([
                                 'id' => $request->attributes->get('announcementId')
                             ]);
-            $announcement->setCreatedAt(new \DateTime('now'));          
-            if(!$announcement)
+            $announcement->setCreatedAt(new \DateTime('now'));
+
+            if (!$announcement)
                 $this->noResultFound();
         } else {
             $announcement = new SupportEntites\Announcement();
             $announcement->setCreatedAt(new \DateTime('now'));
         }
         
-        if($request->getMethod() == "POST") {
+        if ($request->getMethod() == "POST") {
             $request = $request->request->get('announcement_form');
             $group = $em->getRepository(CoreEntites\SupportGroup::class)->find($request['group']);
 
@@ -79,13 +80,13 @@ Class Announcement extends AbstractController
             $em->flush();
 
             $this->addFlash('success', 'Success! Announcement data saved successfully.');
+
             return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_marketing_announcement'));
-            
         }
 
         return $this->render('@UVDeskSupportCenter/Staff/Announcement/announcementForm.html.twig', [
                 'announcement' => $announcement,
-                'errors' => ''
+                'errors'       => ''
         ]);
     }
 
@@ -108,19 +109,20 @@ Class Announcement extends AbstractController
             $entityManager->flush();
 
             $json = [
-                'alertClass' => 'success',
+                'alertClass'   => 'success',
                 'alertMessage' => 'Announcement deleted successfully!',
             ];
             $responseCode = 200;
         } else {
             $json = [
-                'alertClass' => 'warning',
+                'alertClass'   => 'warning',
                 'alertMessage' => 'Announcement not found!',
             ];
         }
 
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 }

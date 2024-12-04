@@ -12,7 +12,6 @@ use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
-
 class Category extends AbstractController
 {
     const LIMIT = 10;
@@ -38,13 +37,14 @@ class Category extends AbstractController
 
         $solutions = array_map(function($solution){
             return [
-                'id'=>$solution['id'],
-                'name'=>$solution['name'],
-                'categoriesCount'=>$this->getDoctrine()
+                'id'              => $solution['id'],
+                'name'            =>  $solution['name'],
+                'categoriesCount' => $this->getDoctrine()
                     ->getRepository(SupportEntites\Solutions::class)
                     ->getCategoriesCountBySolution($solution['id'])
             ];
-        },$solutions);
+        }, $solutions);
+
         return $this->render('@UVDeskSupportCenter/Staff/Category/categoryList.html.twig', [
             'solutions' => $solutions
         ]);
@@ -61,8 +61,8 @@ class Category extends AbstractController
             ->findSolutionById(['id' => $request->attributes->get('solution')]);
         if($solution){
             $solution_category = [
-                'solution' => $solution,
-                'solutionArticleCount' => $this->getDoctrine()
+                'solution'              => $solution,
+                'solutionArticleCount'  => $this->getDoctrine()
                     ->getRepository(SupportEntites\Solutions::class)
                     ->getArticlesCountBySolution($request->attributes->get('solution')),
                 'solutionCategoryCount' => $this->getDoctrine()
@@ -83,13 +83,14 @@ class Category extends AbstractController
         $json = array();
         $repository = $this->getDoctrine()->getRepository(SupportEntites\SolutionCategory::class);
 
-        if($request->attributes->get('solution'))
+        if ($request->attributes->get('solution'))
             $request->query->set('solutionId', $request->attributes->get('solution'));
         else
             $request->query->set('limit', self::LIMIT);
         $json =  $repository->getAllCategories($request->query, $container);
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 
@@ -110,13 +111,13 @@ class Category extends AbstractController
         }
 
         $categorySolutions = [];
-        if($category->getId())
+        if ($category->getId())
             $categorySolutions = $this->getDoctrine()
                 ->getRepository(SupportEntites\SolutionCategory::class)
                 ->getSolutionsByCategory($category->getId());
 
         $errors = [];
-        if($request->getMethod() == "POST") {
+        if ($request->getMethod() == "POST") {
             $data = $request->request->all();
             $em = $this->getDoctrine()->getManager();
             $category->setName($data['name']);
@@ -133,25 +134,24 @@ class Category extends AbstractController
             $em = $this->getDoctrine()->getManager();
 
             $oldSolutions = [];
-            if($categorySolutions)
-            {
+            if ($categorySolutions) {
                 foreach ($categorySolutions as $solution) {
-                    if($key = array_search($solution['id'], $tempSolutions))
+                    if ($key = array_search($solution['id'], $tempSolutions))
                         unset($tempSolutions[$key]);
                     else
                         $oldSolutions[] = $solution['id'];
                 }
 
-                if($oldSolutions){
+                if ($oldSolutions) {
                     $this->getDoctrine()
                         ->getRepository(SupportEntites\SolutionCategory::class)
                         ->removeSolutionsByCategory($category->getId(), $oldSolutions);
                 }
             }
 
-            if($tempSolutions){
-                foreach($tempSolutions as $solution){
-                    if($solution) {
+            if ($tempSolutions) {
+                foreach ($tempSolutions as $solution) {
+                    if ($solution) {
                         $solutionCategoryMapping = new SupportEntites\SolutionCategoryMapping();
                         $solutionCategoryMapping->setSolutionId($solution);
                         $solutionCategoryMapping->setCategoryId($category->getId());
@@ -173,10 +173,10 @@ class Category extends AbstractController
             ->getAllSolutions(null, $container, 'a.id, a.name');
 
         return $this->render('@UVDeskSupportCenter/Staff/Category/categoryForm.html.twig', [
-            'category' => $category,
+            'category'          => $category,
             'categorySolutions' => $categorySolutions,
-            'solutions' => $solutions,
-            'errors' => json_encode($errors)
+            'solutions'         => $solutions,
+            'errors'            => json_encode($errors)
         ]);
     }
 
@@ -194,9 +194,9 @@ class Category extends AbstractController
             $data = $request->request->get("data");
             $dataIds = array_map('intval', $data['ids']);
 
-            switch($data['actionType']){
+            switch($data['actionType']) {
                 case 'sortUpdate':
-                    foreach($dataIds as $sort => $id){
+                    foreach ($dataIds as $sort => $id) {
                         $em->getRepository(SupportEntites\SolutionCategory::class)->categorySortingUpdate($id, $sort);
                     }
                     $json['alertClass'] = 'success';
@@ -208,12 +208,12 @@ class Category extends AbstractController
                     $json['alertMessage'] = $this->translator->trans('Success ! Category status updated successfully.');
                     break;
                 case 'solutionUpdate':
-                    if($data['action'] == 'remove'){
+                    if ($data['action'] == 'remove') {
                         $this->getDoctrine()
                             ->getRepository(SupportEntites\SolutionCategory::class)
                             ->removeSolutionsByCategory($data['ids'][0], [$data['solutionId']]);
 
-                    }elseif($data['action'] == 'add'){
+                    } elseif ($data['action'] == 'add') {
                         $company = $this->userService->getCurrentCompany();
 
                         $solutionCategoryMapping = new SupportEntites\SolutionCategoryMapping();
@@ -228,9 +228,9 @@ class Category extends AbstractController
                     break;
                 case 'delete':
                     if($dataIds){
-                        foreach($dataIds as $id){
+                        foreach ($dataIds as $id) {
                             $category = $em->getRepository(SupportEntites\SolutionCategory::class)->find($id);
-                            if($category){
+                            if ($category) {
                                 // $this->get('event.manager')->trigger([
                                 //         'event' => 'category.deleted',
                                 //         'entity' => $category
@@ -248,12 +248,12 @@ class Category extends AbstractController
                     }
                     break;
             }
-        }elseif($request->getMethod() == "PUT") {
+        } elseif ($request->getMethod() == "PUT") {
             $em = $this->getDoctrine()->getManager();
             $content = json_decode($request->getContent(), true);
             $id = $content['id'];
             $category = $em->getRepository(SupportEntites\SolutionCategory::class)->find($id);
-            if($category) {
+            if ($category) {
                 $form = $this->createFormBuilder($category, [
                     'data_class' => 'Webkul\UVDeskSupportCenterBundle\Entity\SolutionCategory',
                     'csrf_protection' => false,
@@ -284,7 +284,7 @@ class Category extends AbstractController
             $content = json_decode($request->getContent(), true);
             $id = $content['id'];
             $category = $em->getRepository(SupportEntites\SolutionCategory::class)->find($id);
-            if($category) {
+            if ($category) {
                 switch($content['editType']){
                     case 'status':
                         $category->setStatus($content['value']);

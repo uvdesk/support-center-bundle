@@ -2,7 +2,6 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
-use Doctrine\Common\Collections\Criteria;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +12,6 @@ use Webkul\UVDesk\CoreFrameworkBundle\Services\FileUploadService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Filesystem\Filesystem as Fileservice;
-
 class Folder extends AbstractController
 {
     private $userService;
@@ -90,7 +88,7 @@ class Folder extends AbstractController
             $folder->setName($data['name']);
             $folder->setDescription($data['description']);
             $folder->setvisibility($data['visibility']);
-            if(isset($solutionImage)){
+            if (isset($solutionImage)){
                 $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($solutionImage, 'knowledgebase');
                 $folder->setSolutionImage($assetDetails['path']);
             }
@@ -131,7 +129,6 @@ class Folder extends AbstractController
             $solutionImage = $request->files->get('solutionImage');
 
             if ($imageFile = $request->files->get('solutionImage')) {
-
                 if ($imageFile->getMimeType() == "image/svg+xml" || $imageFile->getMimeType() == "image/svg") {
                     if (!$this->fileUploadService->svgFileCheck($imageFile)){
                         $message = $this->translator->trans('Warning! Not a valid svg. (Recommended: PNG, JPG or GIF Format).');

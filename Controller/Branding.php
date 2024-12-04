@@ -12,7 +12,6 @@ use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFileservice;
-
 class Branding extends AbstractController
 {
     private $userService;

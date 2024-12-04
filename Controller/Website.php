@@ -156,14 +156,14 @@ class Website extends AbstractController
         }
 
         return $this->render('@UVDeskSupportCenter//Knowledgebase//folder.html.twig', [
-            'folder' => $solution,
+            'folder'        => $solution,
             'categoryCount' => $this->getDoctrine()
                 ->getRepository(SupportEntites\Solutions::class)
                 ->getCategoriesCountBySolution($solution->getId()),
-            'categories' => $this->getDoctrine()
+            'categories'    => $this->getDoctrine()
                 ->getRepository(SupportEntites\Solutions::class)
                 ->getCategoriesWithCountBySolution($solution->getId()),
-            'breadcrumbs' => $breadcrumbs
+            'breadcrumbs'   => $breadcrumbs
         ]);
     }
 
@@ -204,14 +204,14 @@ class Website extends AbstractController
             'direction'   => 'desc'
         ];
         $article_data = [
-            'folder' => $solution,
+            'folder'        => $solution,
             'articlesCount' => $this->getDoctrine()
                 ->getRepository(SupportEntites\Solutions::class)
                 ->getArticlesCountBySolution($solution->getId(), [1]),
-            'articles' => $this->getDoctrine()
+            'articles'      => $this->getDoctrine()
                 ->getRepository(SupportEntites\Article::class)
                 ->getAllArticles(new ParameterBag($parameterBag), $this->constructContainer, 'a.id, a.name, a.slug, a.stared'),
-            'breadcrumbs' => $breadcrumbs,
+            'breadcrumbs'   => $breadcrumbs,
         ];
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/folderArticle.html.twig', $article_data);
@@ -249,14 +249,14 @@ class Website extends AbstractController
         ];
 
         $category_data=  array(
-            'category' => $category,
+            'category'      => $category,
             'articlesCount' => $this->getDoctrine()
-                            ->getRepository(SupportEntites\SolutionCategory::class)
-                            ->getArticlesCountByCategory($category->getId(), [1]),
-            'articles' => $this->getDoctrine()
-                        ->getRepository(SupportEntites\Article::class)
-                        ->getAllArticles(new ParameterBag($parameterBag), $this->constructContainer, 'a.id, a.name, a.slug, a.stared'),
-            'breadcrumbs' => $breadcrumbs
+                                ->getRepository(SupportEntites\SolutionCategory::class)
+                                ->getArticlesCountByCategory($category->getId(), [1]),
+            'articles'      => $this->getDoctrine()
+                                ->getRepository(SupportEntites\Article::class)
+                                ->getAllArticles(new ParameterBag($parameterBag), $this->constructContainer, 'a.id, a.name, a.slug, a.stared'),
+            'breadcrumbs'   => $breadcrumbs
         );
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/category.html.twig',$category_data);
@@ -319,7 +319,7 @@ class Website extends AbstractController
             'dateAdded'       => $this->userService->convertToTimezone($article->getDateAdded()),
             'articleTags'     => $articleRepository->getTagsByArticle($article->getId()),
             'articleAuthor'   => $articleRepository->getArticleAuthorDetails($article->getId()),
-            'relatedArticles' => $articleRepository->getAllRelatedyByArticle(['locale' => $request->getLocale(), 'articleId' => $article->getId()], [1]),
+            'relatedArticles' => $articleRepository->getAllRelatedByArticle(['locale' => $request->getLocale(), 'articleId' => $article->getId()], [1]),
             'popArticles'     => $articleRepository->getPopularTranslatedArticles($request->getLocale())
         ];
 

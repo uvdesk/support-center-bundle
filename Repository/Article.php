@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Criteria;
 use Symfony\Component\HttpFoundation\Request;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
-
 class Article extends EntityRepository
 {
     const LIMIT = 10;
@@ -86,7 +85,7 @@ class Article extends EntityRepository
         return $results;
     }
 
-    public function getAllRelatedyByArticle($params, $status = [0, 1])
+    public function getAllRelatedByArticle($params, $status = [0, 1])
     {
         $qbS = $this->getEntityManager()->createQueryBuilder();
 
@@ -106,6 +105,7 @@ class Article extends EntityRepository
             ]);
 
         $results = $qbS->getQuery()->getResult();
+
         return $results;
     }
 
@@ -178,13 +178,13 @@ class Article extends EntityRepository
         foreach ($data as $key => $value) {
             if (!in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
                 if ($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search' AND $key!='query') {
-                        $qb->Andwhere('a.'.$key.' = :'.$key);
+                        $qb->andWhere('a.'.$key.' = :'.$key);
                         $qb->setParameter($key, $value);
                 } else {
                     if ($key == 'search' || $key == 'query') {
-                        $qb->orwhere('a.name'.' LIKE :name');
+                        $qb->orWhere('a.name'.' LIKE :name');
                         $qb->setParameter('name', '%'.urldecode(trim($value)).'%');
-                        $qb->orwhere('a.content'.' LIKE :content'); //can use regexBundle for it so that it can\'t match html
+                        $qb->orWhere('a.content'.' LIKE :content'); //can use regexBundle for it so that it can\'t match html
                         $qb->setParameter('content', '%'.urldecode(trim($value)).'%');
                     }
                 }
@@ -192,7 +192,7 @@ class Article extends EntityRepository
         }
 
         if ($articles){
-            $qb->Andwhere('a.id IN (:articles)');
+            $qb->andWhere('a.id IN (:articles)');
             $qb->setParameter('articles', $articles);
         }
 
@@ -357,7 +357,7 @@ class Article extends EntityRepository
             case 'popularity':
                 return 'DESC';
                 break;
-            Default:
+            default:
                 return 'DESC';
                 break;
         }
@@ -485,7 +485,6 @@ class Article extends EntityRepository
 
     public function getArticleByTags(array $tagList = [], $sort = null, $direction = null)
     {
-      
         if (empty($tagList))
             return [];
 
@@ -513,8 +512,6 @@ class Article extends EntityRepository
 
         return (!empty($articleCollection)) ? $articleCollection : [];
     }
-
-    
 
     public function getArticleAuthorDetails($articleId = null, $companyId = null)
     {

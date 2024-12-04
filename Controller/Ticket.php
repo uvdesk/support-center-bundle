@@ -18,7 +18,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
-
 class Ticket extends AbstractController
 {
     private $userService;
@@ -86,7 +85,7 @@ class Ticket extends AbstractController
         $post = $request->request->all();
         $recaptchaDetails = $this->recaptchaService->getRecaptchaDetails();
 
-        if($request->getMethod() == "POST") {
+        if ($request->getMethod() == "POST") {
             if ($recaptchaDetails && $recaptchaDetails->getIsActive() == true && $this->recaptchaService->getReCaptchaResponse($request->request->get('g-recaptcha-response'))
             ) {
                 $this->addFlash('warning', $this->translator->trans("Warning ! Please select correct CAPTCHA !"));
@@ -142,7 +141,7 @@ class Ticket extends AbstractController
                         }
                     } else {
                         $form = $this->createForm(TicketForm::class, $ticket, [
-                            'container' => $container,
+                            'container'      => $container,
                             'entity_manager' => $em,
                         ]);
                         $email = $request->request->get('from');
@@ -160,14 +159,14 @@ class Ticket extends AbstractController
     
                     if ($form->isValid() && !count($formErrors) && !$error) {
                         $data = array(
-                            'from' => $email, //email$request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
-                            'subject' => $request->request->get('subject'),
+                            'from'      => $email, //email$request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
+                            'subject'   => $request->request->get('subject'),
                             // @TODO: We need to filter js (XSS) instead of html
-                            'reply' => str_replace(['&lt;script&gt;', '&lt;/script&gt;'], '', htmlspecialchars($request->request->get('reply'))),
+                            'reply'     => str_replace(['&lt;script&gt;', '&lt;/script&gt;'], '', htmlspecialchars($request->request->get('reply'))),
                             'firstName' => $name[0],
-                            'lastName' => isset($name[1]) ? $name[1] : '',
-                            'role' => 4,
-                            'active' => true
+                            'lastName'  => isset($name[1]) ? $name[1] : '',
+                            'role'      => 4,
+                            'active'    => true
                         );
     
                         $em = $this->getDoctrine()->getManager();
@@ -203,7 +202,7 @@ class Ticket extends AbstractController
     
                         if (! empty($request->server->get("HTTP_CF_CONNECTING_IP") )) {
                             $data['ipAddress'] = $request->server->get("HTTP_CF_CONNECTING_IP");
-                            if(!empty($request->server->get("HTTP_CF_IPCOUNTRY"))) {
+                            if (!empty($request->server->get("HTTP_CF_IPCOUNTRY"))) {
                                 $data['ipAddress'] .= '(' . $request->server->get("HTTP_CF_IPCOUNTRY") . ')';
                             }
                         }
@@ -212,7 +211,7 @@ class Ticket extends AbstractController
                         
                         if (! empty($thread)) {
                             $ticket = $thread->getTicket();
-                            if($request->request->get('customFields') || $request->files->get('customFields')) {
+                            if ($request->request->get('customFields') || $request->files->get('customFields')) {
                                 $this->ticketService->addTicketCustomFields($thread, $request->request->get('customFields'), $request->files->get('customFields'));                        
                             }
                             $this->addFlash('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
@@ -493,11 +492,11 @@ class Ticket extends AbstractController
         $checkTicket = $entityManager->getRepository(CoreEntites\Ticket::class)->isTicketCollaborator($ticket, $user->getEmail());
         
         $twigResponse = [
-            'ticket' => $ticket,
-            'searchDisable' => true,
-            'initialThread' => $this->ticketService->getTicketInitialThreadDetails($ticket),
+            'ticket'                => $ticket,
+            'searchDisable'         => true,
+            'initialThread'         => $this->ticketService->getTicketInitialThreadDetails($ticket),
             'localizedCreateAtTime' => $this->userService->getLocalizedFormattedTime($ticket->getCreatedAt(), $user),
-            'isCollaborator' => $checkTicket,
+            'isCollaborator'        => $checkTicket,
         ];
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketView.html.twig', $twigResponse);
@@ -508,7 +507,7 @@ class Ticket extends AbstractController
         $isCollaborator = false;
         if (! empty($ticket->getCollaborators()->toArray())) {
             foreach ($ticket->getCollaborators()->toArray() as $collaborator) {
-                if($collaborator->getId() == $user->getId()) {
+                if ($collaborator->getId() == $user->getId()) {
                     $isCollaborator = true;
                 }
             }
@@ -669,10 +668,10 @@ class Ticket extends AbstractController
                 $json['alertMessage'] = $this->translator->trans('Error ! Can not add customer as a collaborator.');
             } else {
                 $data = array(
-                    'from' => $content['email'],
+                    'from'      => $content['email'],
                     'firstName' => ($firstName = ucfirst(current(explode('@', $content['email'])))),
-                    'lastName' => ' ',
-                    'role' => 4,
+                    'lastName'  => ' ',
+                    'role'      => 4,
                 );
 
                 $supportRole = $em->getRepository(CoreEntites\SupportRole::class)->findOneByCode('ROLE_CUSTOMER');

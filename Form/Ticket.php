@@ -29,20 +29,20 @@ class Ticket extends AbstractType
         $container = $options['container'];
         $entityManager = $options['entity_manager'];
 
-        if(!is_object($container->get('user.service')->getSessionUser()) || $container->get('user.service')->getSessionUser() == 'anon.') {
+        if (!is_object($container->get('user.service')->getSessionUser()) || $container->get('user.service')->getSessionUser() == 'anon.') {
 
             $builder->add('name', null, [
                 'required' => true,
-                'label' => 'Your Name',
-                'attr' => array('placeholder' => 'Enter Your Name'),
-                'mapped' => false,
+                'label'    => 'Your Name',
+                'attr'     => array('placeholder' => 'Enter Your Name'),
+                'mapped'   => false,
             ]);
 
             $builder->add('from', EmailType::class, array(
                 'required' => true,
-                'label' => 'Your Email',
-                'mapped' => false,
-                'attr' => array('placeholder' => 'Enter Your Email'),
+                'label'    => 'Your Email',
+                'mapped'   => false,
+                'attr'     => array('placeholder' => 'Enter Your Email'),
             ));
         }
 
@@ -67,13 +67,13 @@ class Ticket extends AbstractType
 
         $builder->add('subject', null, array(
             'required' => true,
-            'label' => 'Subject',
-            'mapped' => false,
-            'attr' => ['placeholder' => 'Enter Subject'],
+            'label'    => 'Subject',
+            'mapped'   => false,
+            'attr'     => ['placeholder' => 'Enter Subject'],
         ));
         
         $builder->add('reply', TextareaType::class, array(
-            'label' => 'Message',
+            'label'  => 'Message',
             'mapped' => false,
             'attr' => array(
                 'placeholder' => 'Brief Description about your query',

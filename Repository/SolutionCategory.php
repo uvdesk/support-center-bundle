@@ -45,7 +45,7 @@ class SolutionCategory extends EntityRepository
 
     private function cleanAllData(&$data)
     {
-        if(isset($data['isActive'])){
+        if (isset($data['isActive'])) {
             $data['status'] = $data['isActive'];
             unset($data['isActive']);
             unset($data['solutionId']);
@@ -63,7 +63,7 @@ class SolutionCategory extends EntityRepository
 
         $categories = [];
 
-        if(isset($data['solutionId'])){
+        if (isset($data['solutionId'])) {
             $qbS = $this->getEntityManager()->createQueryBuilder();
             $qbS->select('a.categoryId')->from('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping', 'a');
             $qbS->where('a.solutionId = :solutionId');
@@ -76,12 +76,12 @@ class SolutionCategory extends EntityRepository
         $this->presetting($data);
 
         foreach ($data as $key => $value) {
-            if(!in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
+            if (!in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
                 if($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search') {
                         $qb->Andwhere('a.'.$key.' = :'.$key);
                         $qb->setParameter($key, $value);
                 } else {
-                    if($key == 'search') {
+                    if ($key == 'search') {
                         $qb->orwhere('a.name'.' LIKE :name');
                         $qb->setParameter('name', '%'.urldecode(trim($value)).'%');
                         $qb->orwhere('a.description'.' LIKE :description');
@@ -94,12 +94,12 @@ class SolutionCategory extends EntityRepository
         // $qb->Andwhere('a.companyId'.' = :company');
         // $qb->setParameter('company', $container->get('user.service')->getCurrentCompany()->getId());
 
-        if($categories){
+        if ($categories) {
             $qb->Andwhere('a.id IN (:categories)');
             $qb->setParameter('categories', $categories);
         }
 
-        if(!$allResult){
+        if (!$allResult) {
             $paginator  = $container->get('knp_paginator');
             $results = $paginator->paginate(
                 $qb,
@@ -107,28 +107,25 @@ class SolutionCategory extends EntityRepository
                 isset($data['limit']) ? $data['limit'] : self::LIMIT,
                 array('distinct' => false)
             );
-        }else{
+        } else {
             $qb->select($allResult);
             $results = $qb->getQuery()->getResult();
+
             return $results;
         }
 
         $newResult = [];
         foreach ($results as $key => $result) {
             $newResult[] = array(
-                'id'                   => $result->getId(),
-                'name'                 => $result->getName(),
-                'description'          => $result->getDescription(),
-                'status'               => $result->getStatus(),
-
-                'sorting'              => $result->getSorting(),
-                'sortOrder'            => $result->getSortOrder(),
-
-                'dateAdded'            => date_format($result->getDateAdded(),"d-M h:i A"),
-
-                'articleCount'         => $this->getArticlesCountByCategory($result->getId()),
-
-                'solutions'            => ($categories ? [] : $this->getSolutionsByCategory($result->getId())),
+                'id'           => $result->getId(),
+                'name'         => $result->getName(),
+                'description'  => $result->getDescription(),
+                'status'       => $result->getStatus(),
+                'sorting'      => $result->getSorting(),
+                'sortOrder'    => $result->getSortOrder(),
+                'dateAdded'    => date_format($result->getDateAdded(),"d-M h:i A"),
+                'articleCount' => $this->getArticlesCountByCategory($result->getId()),
+                'solutions'    => ($categories ? [] : $this->getSolutionsByCategory($result->getId())),
             );
         }
 
@@ -141,6 +138,7 @@ class SolutionCategory extends EntityRepository
 
         $json['results'] = $newResult;
         $json['pagination_data'] = $paginationData;
+
         return $json;
     }
 
@@ -169,8 +167,8 @@ class SolutionCategory extends EntityRepository
             ->andwhere('ac.categoryId = :categoryId')
             ->andwhere('aA.status IN (:status)')
             ->setParameters([
-                'categoryId' => $categoryId ,
-                'status' => $status ,
+                'categoryId' => $categoryId,
+                'status'     => $status,
             ])
             ->getQuery()
             ->getSingleScalarResult();

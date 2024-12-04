@@ -33,8 +33,8 @@ class AccountValidation extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Webkul\UserBundle\Entity\User',
-            'csrf_protection' => false, 
+            'data_class'        => 'Webkul\UserBundle\Entity\User',
+            'csrf_protection'   => false, 
             'validation_groups' => 'userValidation',
         ));
     }

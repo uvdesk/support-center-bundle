@@ -10,7 +10,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Filesystem\Filesystem as Fileservice;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
-
 class KnowledgebaseXHR extends AbstractController
 {
     private $userService;
@@ -33,6 +32,7 @@ class KnowledgebaseXHR extends AbstractController
 
         $response->setContent(json_encode($folderCollection));
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 
@@ -45,13 +45,12 @@ class KnowledgebaseXHR extends AbstractController
         $json = array();
 
         $entityManager = $this->getDoctrine()->getManager();
-        switch($request->getMethod())
-        {
+        switch($request->getMethod()) {
             case "PATCH":
                 $content = json_decode($request->getContent(), true);
                 $solutionId = $content['id'];
                 $solution = $entityManager->getRepository(SupportEntites\Solutions::class)->find($solutionId);
-                if($solution) {
+                if ($solution) {
                     switch($content['editType']){
                         case 'status':
                             $solution->setVisibility($content['value']);
@@ -69,12 +68,10 @@ class KnowledgebaseXHR extends AbstractController
                 }
                 break;
             case "PUT":
-
                 $content = json_decode($request->getContent(), true);
                 $solutionId = $content['id'];
                 $solution = $entityManager->getRepository(SupportEntites\Solutions::class)->find($solutionId);
-                if($solution) {
-
+                if ($solution) {
                     $solution->setName($content['name']);
                     $solution->setDescription($content['description']);
                     $entityManager->persist($solution);
@@ -99,7 +96,7 @@ class KnowledgebaseXHR extends AbstractController
                     $fileService->remove($this->getParameter('kernel.project_dir')."/public/".$solutionBase->getSolutionImage());
                 }
 
-                if($solutionBase){
+                if ($solutionBase) {
                     $entityManager->getRepository(SupportEntites\Solutions::class)->removeEntryBySolution($solutionId);
 
                     $entityManager->remove($solutionBase);
@@ -107,8 +104,7 @@ class KnowledgebaseXHR extends AbstractController
 
                     $json['alertClass'] = 'success';
                     $json['alertMessage'] = $this->translator->trans('Success ! Folder deleted successfully.');
-                }else{
-
+                } else {
                     $json['alertClass'] = 'error';
                     $json['alertMessage'] = $this->translator->trans('Warning ! Folder does not exists.');
                 }
@@ -117,11 +113,11 @@ class KnowledgebaseXHR extends AbstractController
                 $json['alertClass'] = 'error';
                 $json['alertMessage'] = "Warning ! Bad request !";
                 break;
-
         }
 
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
+        
         return $response;
     }
 }

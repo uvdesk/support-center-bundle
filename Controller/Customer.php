@@ -6,17 +6,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
-use Symfony\Component\EventDispatcher\GenericEvent;
 use Webkul\UVDesk\CoreFrameworkBundle\Form\UserProfile;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Webkul\UVDesk\CoreFrameworkBundle\Utils\TokenGenerator;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\FileUploadService;
 use Symfony\Component\Filesystem\Filesystem as Fileservice;
-
 Class Customer extends AbstractController
 {
     private $translator;
@@ -35,7 +32,7 @@ Class Customer extends AbstractController
     protected function redirectUserToLogin()
     {
         $authChecker = $this->container->get('security.authorization_checker');
-        if($authChecker->isGranted('ROLE_CUSTOMER'))
+        if ($authChecker->isGranted('ROLE_CUSTOMER'))
             return true;
     }
 
@@ -88,7 +85,7 @@ Class Customer extends AbstractController
         }
 
         /** check disabled customer login **/
-        if($this->isLoginDisabled()) {
+        if ($this->isLoginDisabled()) {
             $this->addFlash('warning', $this->translator->trans('Warning ! Customer Login disabled by admin.') );
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
         }
@@ -105,10 +102,10 @@ Class Customer extends AbstractController
             'breadcrumbs' => [
                 [
                     'label' => $this->translator->trans('Support Center'),
-                    'url' => $this->generateUrl('helpdesk_knowledgebase')
+                    'url'   => $this->generateUrl('helpdesk_knowledgebase')
                 ], [
                     'label' => $this->translator->trans('Sign In'),
-                    'url' => '#'
+                    'url'   => '#'
                 ]
             ]
         ]);
@@ -140,7 +137,7 @@ Class Customer extends AbstractController
             $errorFlag = 0;
 
             if ($checkUser) {
-                if($checkUser->getId() != $user->getId())
+                if ($checkUser->getId() != $user->getId())
                     $errorFlag = 1;
             }
 
@@ -175,7 +172,7 @@ Class Customer extends AbstractController
 
                     if (isset($dataFiles['profileImage'])) {
                         $previousImage = $userInstance->getProfileImagePath();
-                        if($previousImage != null){
+                        if ($previousImage != null) {
                             $image = str_replace("\\","/",$this->getParameter('kernel.project_dir').'/public'.$previousImage);
                             $check = $this->fileUploadService->fileRemoveFromFolder($image); 
                         }
@@ -197,22 +194,22 @@ Class Customer extends AbstractController
                     $em->flush();
 
                     $this->addFlash('success', $this->translator->trans('Success ! Profile updated successfully.'));
+
                     return $this->redirect($this->generateUrl('helpdesk_customer_account'));
                 } else {
                     $errors = $form->getErrors();
-                    dump($errors);
-                    die;
                     $errors = $this->getFormErrors($form);
                 }
             } else {
                 $this->addFlash('warning', $this->translator->trans('Error ! User with same email is already exist.'));
+
                 return $this->redirect($this->generateUrl('helpdesk_customer_account'));
             }
         }
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/customerAccount.html.twig', [
             'searchDisable' => true,
-            'user' => $user,
+            'user'          => $user,
         ]);
     }
 
@@ -227,14 +224,12 @@ Class Customer extends AbstractController
         $articleCollection = $this->getDoctrine()->getRepository(SupportEntites\Article::class)->getArticleBySearch($request);
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/search.html.twig', [
-            'search' => $searchQuery,
+            'search'   => $searchQuery,
             'articles' => $articleCollection,
             'breadcrumbs' => [
                 ['label' => $this->translator->trans('Support Center'), 'url' => $this->generateUrl('helpdesk_knowledgebase')],
                 ['label' => $searchQuery, 'url' => '#'],
             ],
         ]);
-
     }
-
 }

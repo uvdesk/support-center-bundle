@@ -14,7 +14,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
-
 class Article extends AbstractController
 {
     private $userService;
@@ -41,7 +40,7 @@ class Article extends AbstractController
             ->getAllSolutions(null, $container, 'a.id, a.name');
 
         if ($solutions) {
-            foreach($solutions as $key => $solution) {
+            foreach ($solutions as $key => $solution) {
                 $solutions[$key]['categories'] = $this->getDoctrine()
                     ->getRepository(SupportEntites\Solutions::class)
                     ->getCategoriesWithCountBySolution($solution['id']);
@@ -61,7 +60,7 @@ class Article extends AbstractController
 
         if ($category) {
             return $this->render('@UVDeskSupportCenter/Staff/Articles/articleListByCategory.html.twig',[
-                'category' => $category,
+                'category'          => $category,
                 'articleCount'      => $this->getDoctrine()
                     ->getRepository(SupportEntites\SolutionCategory::class)
                     ->getArticlesCountByCategory($request->attributes->get('category')),
@@ -87,7 +86,7 @@ class Article extends AbstractController
 
         if ($solution) {
             return $this->render('@UVDeskSupportCenter/Staff/Articles/articleListBySolution.html.twig', [
-                'solution' => $solution,
+                'solution'              => $solution,
                 'solutionArticleCount'  => $this->getDoctrine()
                     ->getRepository(SupportEntites\Solutions::class)
                     ->getArticlesCountBySolution($request->attributes->get('solution')),
@@ -131,7 +130,7 @@ class Article extends AbstractController
         if ($json) {
             foreach ($json as $key => $js) {
                 $json[$key]['dateAdded'] = [
-                    'format' => $this->userService->convertToTimezone($js['dateAdded']),
+                    'format'    => $this->userService->convertToTimezone($js['dateAdded']),
                     'timestamp' => $this->userService->convertToDatetimeTimezoneTimestamp($js['dateAdded']),
                 ];
             }
@@ -149,7 +148,7 @@ class Article extends AbstractController
         $repository = $this->getDoctrine()->getRepository(SupportEntites\Article::class);
 
         $params = ['articleId' => $request->attributes->get('id')];
-        $json = $repository->getAllRelatedyByArticle($params);
+        $json = $repository->getAllRelatedByArticle($params);
 
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
@@ -196,10 +195,10 @@ class Article extends AbstractController
 
         if ($request->attributes->get('id')) {
             return  $this->render('@UVDeskSupportCenter/Staff/Articles/articleForm.html.twig', [
-                'article' => $article,
+                'article'         => $article,
                 'articleCategory' => $articleCategory,
-                'articleTags' => $articleTags,
-                'categories' => $categories
+                'articleTags'     => $articleTags,
+                'categories'      => $categories
             ]);
         }
 
@@ -239,7 +238,6 @@ class Article extends AbstractController
                         $json['errors'] = [];
 
                         if ($article) {
-
                             if (strlen($data['name']) > 200) {
                                 $json['errors']['name'] = $this->translator->trans('Name length must not be greater than 200 !!');
                             }
@@ -537,6 +535,7 @@ class Article extends AbstractController
                         $json['alertMessage'] =  $this->translator->trans('Warning ! This is not a valid request');
                 }
         }
+        
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
 
