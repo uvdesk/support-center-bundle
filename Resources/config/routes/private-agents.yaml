@@ -159,3 +159,26 @@ helpdesk_member_knowledgebase_remove_marketing_announcement_xhr:
     path:     /knowledgebase/announcement/remove/{announcementId}
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::removeAnnouncementXHR
     defaults: { announcementId: 0 }
+
+# Marketing Module section resources
+helpdesk_member_knowledgebase_marketing_module:
+    path:     /module/list
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\MarketingModule::listModules
+
+helpdesk_member_knowledgebase_marketing_module_xhr:
+    path:     /module/xhr
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\MarketingModule::listModulesXHR
+
+helpdesk_member_knowledgebase_create_marketing_module:
+    path:     /knowledgebase/module/new
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\MarketingModule::updateModule
+
+helpdesk_member_knowledgebase_update_marketing_module:
+    path:     /knowledgebase/module/update/{announcementId}
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\MarketingModule::updateModule
+    defaults: { announcementId: 0 }
+
+helpdesk_member_knowledgebase_remove_marketing_module_xhr:
+    path:     /knowledgebase/module/remove/{announcementId}
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\MarketingModule::removeModuleXHR
+    defaults: { announcementId: 0 }
