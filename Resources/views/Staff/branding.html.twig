@@ -623,7 +623,7 @@
 
 {% block footer %}
 	{{ parent() }}
- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/css/bootstrap-colorpicker.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/css/bootstrap-colorpicker.min.css">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/js/bootstrap-colorpicker.min.js"></script>
 
     <script>
@@ -705,7 +705,7 @@
             _.extend(Backbone.Validation.validators, {
                 notEmptyFile: function(value, attr) {
                     var field = $('input[name="' + attr + '"]');
-                    if(field.length && field[0].files && field[0].files.length ) {
+                    if (field.length && field[0].files && field[0].files.length ) {
                         var file = field[0].files[0];
                         if(file && 0 == file.size) {
                             return true; //error
@@ -714,9 +714,9 @@
                 },
                 sizeLimit: function(value, attr) {
                     var field = $('input[name="' + attr + '"]');
-                    if(field.length && field[0].files && field[0].files.length ) {
+                    if (field.length && field[0].files && field[0].files.length ) {
                         var file = field[0].files[0];
-                        if(file && file.size/1024 > 200) {
+                        if (file && file.size/1024 > 200) {
                             return true; //error                            
                         }
                     }                    
@@ -741,7 +741,7 @@
 			        'click .pending-response-btn': 'pendingResponseSettingFormSubmit',
                     'change input[type="checkbox"][name="status"]': 'toggleBusinessHours',
 					'click .uv-btn': 'disableButton',
-                    'change input[type="file"]': 'formChanegd',
+                    'change input[type="file"]': 'formChanged',
                     'change .convertToSlug': 'convertToSlug',
                     'click .uv-btn-tag.btn-add': 'addMoreLink',
                     'click .remove-link': 'removeLink',
@@ -785,7 +785,7 @@
 					$('.business-hours').fadeOut(0);
 					}
 				},
-			    formChanegd: function(e) {
+			    formChanged: function(e) {
                     if(!Backbone.$(e.currentTarget).parents('.links').length) {
                         this.model.set(Backbone.$(e.currentTarget).attr('name'), Backbone.$(e.currentTarget).val())
                         this.model.isValid([Backbone.$(e.currentTarget).attr('name')])
@@ -899,10 +899,10 @@
 			    },
                 broadcastingFormSubmit: function(e) {
 					var form = Backbone.$(e.currentTarget).closest('form')
-                    if(form.attr('id') == 'broadcastingForm') {
+                    if (form.attr('id') == 'broadcastingForm') {
                         data = form.serializeObject();
                         this.model.set(data);
-                        if(this.model.isValid(true)) {
+                        if (this.model.isValid(true)) {
                             Backbone.$(e.currentTarget).attr('disabled', 'disabled');
                             form.submit()
                         }
@@ -928,14 +928,14 @@
                     var data = $('#linksForm').serializeObject();
                     var self = this; var valid = true;
                     $.each(data, function(key, value) {
-                        if(key.indexOf('[url]') != -1 && value && !value.match('^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$')) {
+                        if (key.indexOf('[url]') != -1 && value && !value.match('^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$')) {
     		    			Backbone.Validation.callbacks.invalid(self, key, '{{ "Provide a valid url(with protocol)"|trans }}', 'input');
                             valid = false;
                         } else {
     		    			Backbone.Validation.callbacks.valid(self, key, '{{ "Provide a valid url(with protocol)"|trans }}', 'input');                            
                         }
                     });
-                    if(valid) {
+                    if (valid) {
 						$('.links-btn').attr('disabled', 'disabled');
 			            $("#linksForm").submit();
 			        }

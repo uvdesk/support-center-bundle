@@ -1,4 +1,5 @@
 {% extends "@UVDeskSupportCenter/Templates/layout.html.twig" %}
+
 {% block title %}{{category.name}}{% endblock %}
 {% block ogtitle %}{{category.name}}{% endblock %}
 {% block twtitle %}{{category.name}}{% endblock %}
@@ -9,8 +10,8 @@
 	<div class="uv-paper-article">
 		<div class="uv-paper-section">
 			<section>
-				<h1 class="uv-folder-title" data-count="{{articlesCount}} {{"Articles"|trans}}">{{category.name}}</h1>
-				<p>{{category.description}}</p>
+				<h1 class="uv-folder-title" data-count="{{ articlesCount }} {{"Articles"|trans}}">{{category.name}}</h1>
+				<p>{{ category.description }}</p>
 			</section>
 			<section class="uv-margin-top-30">
 				<h4>{{'ARTICLES'|trans}}</h4>
@@ -28,5 +29,5 @@
 			</section>
 		</div>
 	</div>
-	{{parent()}}
+	{{ parent() }}
 {% endblock %}

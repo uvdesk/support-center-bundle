@@ -66,22 +66,22 @@ class Solutions extends \Doctrine\ORM\EntityRepository
 
         $this->presetting($data);
         foreach ($data as $key => $value) {
-            if (!in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
+            if (! in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
                 if ($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search') {
-                    $qb->Andwhere('a.'.$key.' = :'.$key);
+                    $qb->andWhere('a.'.$key.' = :'.$key);
                     $qb->setParameter($key, $value);
                 } else {
                     if ($key == 'search') {
-                        $qb->orwhere('a.name'.' LIKE :name');
+                        $qb->orWhere('a.name'.' LIKE :name');
                         $qb->setParameter('name', '%'.urldecode(trim($value)).'%');
-                        $qb->orwhere('a.description'.' LIKE :description');
+                        $qb->orWhere('a.description'.' LIKE :description');
                         $qb->setParameter('description', '%'.urldecode(trim($value)).'%');
                     }
                 }
             }
         }
 
-        if (!$allResult) {
+        if (! $allResult) {
             $paginator  = $container->get('knp_paginator');
 
             $results = $paginator->paginate(
@@ -129,7 +129,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         $qb->select('a')->from($this->getEntityName(), 'a');
 
         foreach ($filterArray as $key => $value) {
-            $qb->Andwhere('a.'.$key.' = :'.$key);
+            $qb->andWhere('a.'.$key.' = :'.$key);
             $qb->setParameter($key, $value);
         }
 
@@ -146,8 +146,8 @@ class Solutions extends \Doctrine\ORM\EntityRepository
             ->select('sc.id, sc.name')
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping','ac','WITH', 'ac.solutionId = a.id')
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory','sc','WITH', 'ac.categoryId = sc.id')
-            ->andwhere('ac.solutionId = :solutionId')
-            ->andwhere('sc.status IN (:status)')
+            ->andWhere('ac.solutionId = :solutionId')
+            ->andWhere('sc.status IN (:status)')
             ->setParameters([
                 'solutionId' => $id,
                 'status' => $status,
@@ -176,8 +176,8 @@ class Solutions extends \Doctrine\ORM\EntityRepository
             ->select('COUNT(a.id)')
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping','ac','WITH', 'ac.solutionId = a.id')
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory','sc','WITH', 'ac.categoryId = sc.id')
-            ->andwhere('ac.solutionId = :solutionId')
-            ->andwhere('sc.status IN (:status)')
+            ->andWhere('ac.solutionId = :solutionId')
+            ->andWhere('sc.status IN (:status)')
             ->setParameters([
                 'solutionId' => $id ,
                 'status' => $status,
@@ -198,8 +198,8 @@ class Solutions extends \Doctrine\ORM\EntityRepository
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory','ac','WITH', 'sac.categoryId = ac.categoryId')
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\Article','aa','WITH', 'ac.articleId = aa.id')
             ->where('sac.solutionId = :solutionId')
-            ->andwhere('ac.id IS NOT NULL')
-            ->andwhere('aa.status != :status')
+            ->andWhere('ac.id IS NOT NULL')
+            ->andWhere('aa.status != :status')
             ->setParameters([
                 'solutionId' => $id,
                 'status' => 0
@@ -218,7 +218,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         $queryBuilder = $this->createQueryBuilder('ac');
         $queryBuilder
             ->delete(SupportEntites\SolutionCategoryMapping::class,'ac')
-            ->andwhere($where)
+            ->andWhere($where)
             ->setParameters([
                 'id' => $id ,
             ])

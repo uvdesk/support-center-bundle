@@ -252,7 +252,7 @@
         <li class="<% if(sort == 'a.dateAdded') { %>uv-drop-list-active<% } %>">
             <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.dateAdded/<% if(sort == 'a.dateAdded') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.dateAdded">
 				{% trans %}Created At{% endtrans %}
-				<% if(sort == 'a.dateAdded') { %>
+				<% if (sort == 'a.dateAdded') { %>
 					<span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 				<% } %>
 			</a>
@@ -261,7 +261,7 @@
 	    <li class="<% if(sort == 'a.name') { %>uv-drop-list-active<% } %>">
             <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.name/<% if(sort == 'a.name') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.name">
 				{% trans %}Name{% endtrans %}
-				<% if(sort == 'a.name') { %>
+				<% if (sort == 'a.name') { %>
 					<span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 				<% } %>
 			</a>
@@ -270,7 +270,7 @@
 	    <li class="<% if(sort == 'a.viewed') { %>uv-drop-list-active<% } %>">
             <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.viewed/<% if(sort == 'a.viewed') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.viewed">
 				{% trans %}Viewed{% endtrans %}
-				<% if(sort == 'a.viewed') { %>
+				<% if (sort == 'a.viewed') { %>
 					<span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 				<% } %>
 			</a>
@@ -289,9 +289,9 @@
             </label>
         </td>
 		<td data-value="{{ 'popularity'|trans }}" class="uv-text-center">
-			<% if(viewed > 100){ %>
+			<% if (viewed > 100){ %>
 				<span class="uv-icon-popular uv-icon-popular-active"></span>
-			<% }else{ %>
+			<% } else { %>
 				<span class="uv-icon-popular"></span>
 			<% } %>
 		</td>
@@ -302,7 +302,7 @@
 		<td data-value="{{ 'Viewed'|trans }}"><%- viewed ? viewed : 0 %></td>
 		<td data-value="{{ 'Created'|trans }}"><%- dateAdded %></td>
 		<td data-value="{{ 'Status'|trans }}">
-			<% if(status) { %>
+			<% if (status) { %>
             	<span class="uv-text-success">{{ 'Published'|trans }}</span>
             <% } else { %>
             	<span class="uv-text-danger">{{ 'Draft'|trans }}</span>
@@ -351,23 +351,23 @@
 							app.pager.paginationData = response.pagination_data;
 
 							var url = app.pager.paginationData.url;
-							if(articleCollection.length == 0 && app.pager.paginationData.current != "0")
+							if (articleCollection.length == 0 && app.pager.paginationData.current != "0")
 								router.navigate(url.replace('replacePage', app.pager.paginationData.last),{trigger: true});
 							else {
 								app.pager.render();
 							}
-							if(globalMessageResponse)
+							if (globalMessageResponse)
 								app.appView.renderResponseAlert(globalMessageResponse);
 							globalMessageResponse = null;
 						},
 						error: function (model, xhr, options) {
-							if(url = xhr.getResponseHeader('Location'))
+							if (url = xhr.getResponseHeader('Location'))
 								window.location = url;
 						}
 					});
 				},
                 batchOperation : function(data) {
-					if(!data.ids.length) return;
+					if (!data.ids.length) return;
                     var self = this;
                     app.appView.showLoader();
                     $.ajax({
@@ -381,10 +381,10 @@
                             self.syncData();
                         },
                         error: function (xhr) {
-                            if(url = xhr.getResponseHeader('Location'))
+                            if (url = xhr.getResponseHeader('Location'))
                                 window.location = url;
                             var response = warningResponse;
-                            if(xhr.responseJSON)
+                            if (xhr.responseJSON)
                                 response = xhr.responseJSON;
 
                             app.appView.hideLoader();
@@ -400,6 +400,7 @@
 				template : _.template($("#article_list_item_tmp").html()),
 				render : function() {
 					this.$el.html(this.template(this.model.toJSON()));
+
 					return this;
 				},
 				unrender : function(response) {
@@ -421,16 +422,16 @@
                 showBulkOptions : function() {
                     var count = 0;
                     this.$el.find('.mass-action-checkbox').each(function() {
-                        if($(this).is(':checked'))
+                        if ($(this).is(':checked'))
                             count++;
                     });
 
-                    if(count == $('.mass-action-checkbox').length)
+                    if (count == $('.mass-action-checkbox').length)
                         $('.select-all-checkbox').prop('checked', true);
                     else
                         $('.select-all-checkbox').prop('checked', false);
 
-                    if(count) {
+                    if (count) {
                         $('.uv-action-bar-col-lt').eq(0).hide();
                         $('.uv-action-bar-col-lt').eq(1).show();
                         $('.uv-action-bar-col-rt').hide()
@@ -442,7 +443,7 @@
                 },
 				render : function () {
 					this.$el.find("tr").remove();
-					if(articleCollection.length) {
+					if (articleCollection.length) {
 						_.each(articleCollection.models, function (item) {
 							this.renderArticle(item);
 						}, this);
@@ -478,7 +479,7 @@
                 removeItem: function(e) {
                     var data = {};
 
-                    if(Backbone.$(this.currentEvent.currentTarget).is("#mass-delete"))
+                    if (Backbone.$(this.currentEvent.currentTarget).is("#mass-delete"))
                         data['actionType'] = "delete";
 
                     data['ids'] = this.getCheckedIds();
@@ -488,7 +489,7 @@
                 getCheckedIds() {
                     var ids = new Array();
                     $('.mass-action-checkbox').each(function() {
-                        if($(this).is(':checked')) {
+                        if ($(this).is(':checked')) {
                             ids.push($(this).val());
                         }
                     });
@@ -530,14 +531,14 @@
                     this.model.clear();
 			        this.model.set(this.$el.find('form').serializeObject());
                     self = this;
-			        if(this.model.isValid(true)) {
+			        if (this.model.isValid(true)) {
                         app.appView.showLoader();
 						currentElement.attr('disabled', 'disabled');
                         this.model.save({}, {
                             success: function (model, response, options) {
                                 app.appView.hideLoader();
                                 currentElement.removeAttr("disabled");
-                                if(response.alertClass == "success") {
+                                if (response.alertClass == "success") {
                                     app.appView.renderResponseAlert(response);
                                     $('.uv-aside-customer-info .uv-bold').text(self.model.attributes.name);
                                     $('.uv-aside-ticket-brick span').text(self.model.attributes.description);
@@ -602,7 +603,7 @@
                     var uvSelect = currentElement.parents('.uv-aside-select');
                     var field = currentElement.parent().attr('data-action');
                     var value = currentElement.attr('data-index');
-                    if(uvSelect.find('.uv-aside-select-value').attr('data-id') != value) {
+                    if (uvSelect.find('.uv-aside-select-value').attr('data-id') != value) {
                         var name = currentElement.text().trim();
                         app.appView.showLoader();
                         this.model.save({editType: field, value: value, id: this.model.id}, {
@@ -613,10 +614,10 @@
                                 app.appView.renderResponseAlert(response);
                             },
                             error: function (model, xhr, options) {
-                                if(url = xhr.getResponseHeader('Location'))
+                                if (url = xhr.getResponseHeader('Location'))
                                     window.location = url;
                                 var response = warningResponse;
-                                if(xhr.responseJSON)
+                                if (xhr.responseJSON)
                                     response = xhr.responseJSON;
 
                                 app.appView.hideLoader();
@@ -626,14 +627,14 @@
                     }
                 },
                 selectAll : function(e) {
-                    if(Backbone.$(e.currentTarget).is(':checked')) {
-						if($('.mass-action-checkbox').length){
+                    if (Backbone.$(e.currentTarget).is(':checked')) {
+						if ($('.mass-action-checkbox').length){
 							$('.mass-action-checkbox').prop('checked', true);
 
 							$('.uv-action-bar-col-lt').eq(0).hide();
 							$('.uv-action-bar-col-lt').eq(1).show();
 							$('.uv-action-bar-col-rt').hide()
-						}else
+						} else
 							Backbone.$(e.currentTarget).prop('checked', false)
                     } else {
                         var count = 0;
@@ -641,9 +642,9 @@
                             if($(this).is(':checked'))
                                 count++;
                         });
-                        if(count == $('.mass-action-checkbox').length) {
+						
+                        if (count == $('.mass-action-checkbox').length) {
                             $('.mass-action-checkbox').prop('checked', false);
-
 							$('.uv-action-bar-col-lt').eq(1).hide();
 							$('.uv-action-bar-col-lt').eq(0).show();
 							$('.uv-action-bar-col-rt').show()

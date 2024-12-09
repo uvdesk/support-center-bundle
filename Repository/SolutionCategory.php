@@ -77,7 +77,7 @@ class SolutionCategory extends EntityRepository
 
         foreach ($data as $key => $value) {
             if (!in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
-                if($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search') {
+                if ($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search') {
                         $qb->Andwhere('a.'.$key.' = :'.$key);
                         $qb->setParameter($key, $value);
                 } else {

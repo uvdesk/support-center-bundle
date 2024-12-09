@@ -1,9 +1,7 @@
 {% extends "@UVDeskSupportCenter/Templates/layout.html.twig" %}
 
-
 {% block canonical %} {% if article.slug %} {{ url('helpdesk_knowledgebase_read_slug_article', {'slug':article.slug }) }} {% endif %} {% endblock %}
 {% block ogcanonical %} {% if article.slug %} {{ url('helpdesk_knowledgebase_read_slug_article', {'slug':article.slug }) }} {% endif %} {% endblock %}
-
 
 {% block title %}{{ article.metaTitle ? article.metaTitle : article.name }}{% endblock %}
 {% block ogtitle %}{{ article.metaTitle ? article.metaTitle : article.name }}{% endblock %}
@@ -31,8 +29,6 @@
 							<p><span>{{"Published on"|trans}} -</span> {{dateAdded}}</p>
 						</div>
 					{% endif %}
-
-
 				</div>
 			</section>
 
@@ -44,28 +40,6 @@
 					{% endif %}
 				</section>
 			{% endif %}
-
-			{# {% set companyDisqus = application_service.getCompanyDisqus() %}
-			{% if companyDisqus is defined and companyDisqus is not empty %}
-				{% if companyDisqus.ticketConversion is defined and companyDisqus.ticketConversion == true %}
-					<section class="disqus-thread">
-						{{ knp_disqus_render(companyDisqus.website, {'id': "article-{{ article.id }}", 'limit': 10, 'newCommentCallbackFunctionName': 'disqusCommentCallback'}) }}
-					</section>
-
-					<script type="text/javascript">
-						function disqusCommentCallback() {
-							// Set delay for disqus to update comments
-							setTimeout(function() {
-								$.get("{{ url('app_webhook_callback', {'applicationRouteName': 'disqus-engage'}) }}");
-							}, 2000);
-						}
-					</script>
-				{% else %}
-					<section class="disqus-thread">
-						{{ knp_disqus_render(companyDisqus.website, {'id': "article-{{ article.id }}", 'limit': 10}) }}
-					</section>
-				{% endif %}
-			{% endif %} #}
 		</div>
 
 		{% include "@UVDeskSupportCenter/Templates/sidepanel.html.twig" %}

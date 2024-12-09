@@ -104,7 +104,7 @@ class MarketingModuleRepository extends ServiceEntityRepository
         if ($request->attributes->get('id')) {
             $marketingModule = $this->findOneBy([
                                     'company' => ($company->getId()),
-                                    'id' => $request->attributes->get('id'),
+                                    'id'      => $request->attributes->get('id'),
                                 ]);
                                 
             if ($marketingModule) {
@@ -155,6 +155,7 @@ class MarketingModuleRepository extends ServiceEntityRepository
             $hexColor = $color;
             $shorthand = (strlen($hexColor) == 4);
             list($r, $g, $b) = $shorthand ? sscanf($hexColor, "#%1s%1s%1s") : sscanf($hexColor, "#%2s%2s%2s");
+            
             return 'rgb('.hexdec($shorthand ? "$r$r" : $r).','.
                         hexdec($shorthand ? "$g$g" : $g).','.
                         hexdec($shorthand ? "$b$b" : $b).')';
@@ -173,12 +174,12 @@ class MarketingModuleRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
 
             $json = [
-                'alertClass' => 'success',
+                'alertClass'   => 'success',
                 'alertMessage' => 'Marketing Module deleted successfully!',
             ];
         } else {
             $json = [
-                'alertClass' => 'warning',
+                'alertClass'   => 'warning',
                 'alertMessage' => 'Marketing Module not found!',
             ];
         }
@@ -190,11 +191,11 @@ class MarketingModuleRepository extends ServiceEntityRepository
     {
         $order = array_rand(array(
             'DESC' => 'DESC',
-            'ASC' => 'ASC'
+            'ASC'  => 'ASC'
         ));
     
         $column = array_rand(array(
-            'mm.id' => 'mm.id',
+            'mm.id'        => 'mm.id',
             'mm.createdAt' => 'mm.createdAt'
         ));
 
@@ -224,8 +225,8 @@ class MarketingModuleRepository extends ServiceEntityRepository
         );
 
         $paginationData = $results->getPaginationData();
-        $ignoredFileds = array('company','groups','teamleads', 'users');
-        $threadContext = $container->get('default.service')->objectSerializer($results, $ignoredFileds);
+        $ignoredFields = array('company','groups','teamleads', 'users');
+        $threadContext = $container->get('default.service')->objectSerializer($results, $ignoredFields);
         
         $json['modules'] = json_decode($threadContext);
         $json['pagination_data'] = $paginationData;

@@ -576,9 +576,9 @@ class Article extends EntityRepository
             '{ARTICLE_ID}' => $article->getId(),
         ]);
 
-        $preparedDBStatment = $this->getEntityManager()->getConnection()->prepare($nativeQuery);
-        $preparedDBStatment->execute();
-        $feedbackCollection = $preparedDBStatment->fetchAll();
+        $preparedDBStatement = $this->getEntityManager()->getConnection()->prepare($nativeQuery);
+        $preparedDBStatement->execute();
+        $feedbackCollection = $preparedDBStatement->fetchAll();
 
         if (!empty($feedbackCollection)) {
             $response['collection'] = array_map(function($feedback) {

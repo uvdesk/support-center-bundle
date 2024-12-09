@@ -153,7 +153,6 @@
 	</div>
 {% endblock %}
 
-
 {% block footer %}
 	{{ parent() }}
 	<!-- Sorting Template -->
@@ -270,7 +269,7 @@
 
                             app.pager.paginationData = response.pagination;
 							app.pager.url = response.pagination.url;
-							if(ticketCollection.length == 0 && app.pager.paginationData.current != "0")
+							if (ticketCollection.length == 0 && app.pager.paginationData.current != "0")
 								router.navigate(url.replace('replacePage', app.pager.paginationData.last),{trigger: true});
 							else {
 								app.pager.render();
@@ -291,7 +290,7 @@
 					this.model.set({path:ticketPath.replace('replaceId', this.model.attributes.id)})
 					this.$el.html(this.template(this.model.toJSON()));
 
-					if(this.model.attributes.isCustomerView != true)
+					if (this.model.attributes.isCustomerView != true)
 						this.$el.addClass('unread')
 
 					return this;
@@ -305,7 +304,7 @@
 				},
 				render : function () {
 					this.$el.html('');
-					if(ticketCollection.length) {
+					if (ticketCollection.length) {
 						_.each(ticketCollection.models, function (item) {
 							this.renderTicket(item);
 						}, this);
@@ -361,14 +360,14 @@
                 	this.fetch(number, sortField, order);
                 },
                 filterByQuery : function(query, number, sortField, order) {
-                	if(query != null)
+                	if (query != null)
                 		query = query.replace(/\+/g,' ');
 
                 	this.resetParams(query, '');
                 	this.fetch(number, sortField, order);
                 },
                 filterByStatus : function(status, query, number, sortField, order) {
-                	if(query != null)
+                	if (query != null)
                 		query = query.replace(/\+/g,' ');
 
                 	this.resetParams(query, status);

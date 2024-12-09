@@ -35,7 +35,6 @@
 
 	{% set isTicketViewPage = (app.user.id is defined ? true : false) %}
 	
-
 	<div class="uv-paper-article uv-paper-form">
 		<div class="uv-paper-section">
 			<section>
@@ -244,7 +243,7 @@
             ],
 			toolbar: '| undo redo | bold italic forecolor ',
 		});
-			{% if(removeMe is defined) %}
+			{% if (removeMe is defined) %}
 				$.each({{ removeMe | json_encode |raw }}, function(key, value){
 					$('label[for="' + value + '"]').parent().hide();
 				});
@@ -269,11 +268,10 @@
 							required : true,
 							msg : '{{ "This field is mandatory"|trans }}'
 						},
-						'from' :
-						[{
+						'from' :[{
 							required : true,
 							msg : '{{ "This field is mandatory"|trans }}'
-						},{
+						}, {
 							pattern : 'email',
 							msg : '{{ "Email address is invalid"|trans }}'
 						}],
@@ -312,7 +310,7 @@
 					{% if recaptchaDetail and recaptchaDetail.isActive == true %}
                         'g-recaptcha-response' : {
                             fn: function(value) {
-                                if(grecaptcha.getResponse().length > 0)
+                                if (grecaptcha.getResponse().length > 0)
                                     return false;
                                 else
                                     return true;
@@ -334,10 +332,10 @@
 				events : {
 					'click #create-ticket-btn' : "saveTicket",
 					'change #type' : "updateCustomFields",
-					'blur input:not(input[type=file]), textarea, select, checkbox': 'formChanegd',
-					'change input[type=file]': 'formChanegd',
+					'blur input:not(input[type=file]), textarea, select, checkbox': 'formChanged',
+					'change input[type=file]': 'formChanged',
 				},
-				formChanegd: function(e) {
+				formChanged: function(e) {
 					this.model.set(Backbone.$(e.currentTarget).attr('name'), Backbone.$(e.currentTarget).val())
 					this.model.isValid([Backbone.$(e.currentTarget).attr('name')])
 				},
@@ -346,7 +344,7 @@
 					var currentElement = Backbone.$(e.currentTarget);
 					var data = currentElement.closest('form').serializeObject();
 					this.model.set(data);
-					if(this.model.isValid(true)) {
+					if (this.model.isValid(true)) {
 						$('#create-ticket-form').submit();
 						$('form').find('#create-ticket-btn').attr('disabled', 'disabled');
 					}

@@ -488,18 +488,18 @@
                     {{ 'replied'|trans }}
                 </span>
             </span>
-            <% if(cc || bcc) { %>
+            <% if (cc || bcc) { %>
                 <div class="uv-ticket-strip">
-                    <% if(cc) { %>
+                    <% if (cc) { %>
                         <span><span class="uv-ticket-strip-label">{{ 'CC'|trans }} -</span> <%- cc %></span>
-                    <% } if(bcc) { %>
+                    <% } if (bcc) { %>
                         <span><span class="uv-ticket-strip-label">{{ 'BCC'|trans }} -</span> <%- bcc %></span>
                     <% } %>
                 </div>
             <% } %>
         </div>
         <div class="uv-ticket-main-lt">
-            <% if(user && smallThumbnail != null) { %>
+            <% if (user && smallThumbnail != null) { %>
                 <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}<%= smallThumbnail.slice(1) %>" />
             <% } else { %>
                 <img src="<% if(userType == 'agent') { %> {{ asset(default_agent_image_path) }} <% } else { %> {{ asset(default_customer_image_path) }} <% } %>" />
@@ -552,7 +552,7 @@
                     'email': [{
                         required: true,
                         msg: '{{ "This field is mandatory"|trans }}'
-                    },{
+                    }, {
                         pattern: 'email',
                         msg: '{{ "Please enter a valid email"|trans }}'
                     }],
@@ -632,7 +632,7 @@
                         var collaboratorContainer = $('.uv-element-block.collaborators');
                     }
 
-                    if(!collaboratorContainer.find('.uv-btn-tag').length)
+                    if (! collaboratorContainer.find('.uv-btn-tag').length)
                         collaboratorContainer.hide()
                 },
                 showCcBccBlock: function(e) {
@@ -652,7 +652,7 @@
                     if (e.which === 13 && email) {
                         e.preventDefault()
                         type = currentTab.find('.cc-bcc-select option:selected').text()
-                        if(!this.model.preValidate({name: 'email', email: email})) {
+                        if (!this.model.preValidate({name: 'email', email: email})) {
                             inputName = $('.cc-bcc-select').val()
                             inputElement.val('').trigger('input')
                             inputElement.removeClass('uv-dropdown-btn-active')
@@ -675,7 +675,7 @@
                     form.find('.uv-field-message').remove()
 
                     var html = tinyMCE.get("reply-area").getContent();
-                    if(app.appView.htmlText(html) != '' || -1 != html.indexOf('<img')) {
+                    if (app.appView.htmlText(html) != '' || -1 != html.indexOf('<img')) {
                         this.stopDraftSaveFlag = 1;
 
 						app.appView.showLoader();
@@ -718,7 +718,7 @@
                         },
                         error: function (model, xhr, options) {
                             app.appView.hideLoader()
-                            if(url = xhr.getResponseHeader('Location'))
+                            if (url = xhr.getResponseHeader('Location'))
                                 window.location = url;
                         }
                     });
@@ -746,12 +746,11 @@
                     var threadItem = new ThreadItem({
                         model: item
                     });
-                    if(item.id < threadCollection.fullCollection.at(0).id)
+                    if (item.id < threadCollection.fullCollection.at(0).id)
                         this.$el.prepend(threadItem.render().el);
                     else
                         this.$el.append(threadItem.render().el);
                     threadItem.$el.find('.helpdesk_blockquote').eq(0).before("<span class='uv-icon-ellipsis uv-ellipsis-mirror'></span>").hide();
-                    //emojifyRun();
                     this.$el.find('img').removeAttr('crossorigin');
                     //viewerImages();
                     //convertForImages(this.$el);
@@ -779,7 +778,7 @@
                 }
             });
 
-            //Collaborator Code starts here
+            // Collaborator Code starts here
             _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
             var CollaboratorModel = Backbone.Model.extend({
                 idAttribute : "id",
@@ -787,7 +786,7 @@
                     'email': [{
                         required: true,
                         msg: '{{ "This field is mandatory"|trans }}'
-                    },{
+                    }, {
                         pattern: 'email',
                         msg: '{{ "Please enter a valid email"|trans }}'
                     }]
@@ -818,7 +817,7 @@
                     return this;
                 },
                 unrender : function(response) {
-                    if(response.alertMessage != undefined) {
+                    if (response.alertMessage != undefined) {
                         collaboratorListView.render();
                         app.appView.renderResponseAlert(response);
                     }
@@ -834,10 +833,10 @@
                             self.unrender(response);
                         },
                         error: function (model, xhr, options) {
-                            if(url = xhr.getResponseHeader('Location'))
+                            if (url = xhr.getResponseHeader('Location'))
                                 window.location = url;
                             var response = warningResponse;
-                            if(xhr.responseJSON)
+                            if (xhr.responseJSON)
                                 response = xhr.responseJSON;
 
                             app.appView.hideLoader();
@@ -860,7 +859,7 @@
                     this.$el.find(".collaborator-list").html('');
                     var self = this;
                     collaboratorOptionHtml = '';
-                    if(collaboratorCollection.length) {
+                    if (collaboratorCollection.length) {
                         _.each(collaboratorCollection.models, function (item) {
                             this.renderCollaborator(item);
                         }, this);
@@ -889,12 +888,12 @@
                         self = this;
                         this.model.set({email: text})
 
-                        if(this.model.isValid(true)) {
+                        if (this.model.isValid(true)) {
                             app.appView.showLoader();
                             this.model.save({},{
                                 success : function (model, response, options) {
                                     inputElement.val('');
-                                    if(response.alertClass == "success") {
+                                    if (response.alertClass == "success") {
                                         collaboratorCollection.add(model);
                                     }
                                     self.render();
@@ -902,10 +901,10 @@
                                     app.appView.renderResponseAlert(response);
                                 },
                                 error: function (model, xhr, options) {
-                                    if(url = xhr.getResponseHeader('Location'))
+                                    if (url = xhr.getResponseHeader('Location'))
                                         window.location = url;
                                     var response = warningResponse;
-                                    if(xhr.responseJSON)
+                                    if (xhr.responseJSON)
                                         response = xhr.responseJSON;
 
                                     app.appView.hideLoader();
@@ -914,13 +913,13 @@
                             });
                         } else {
                             inputElement.addClass('uv-field-error');
-                            if(text)
+                            if (text)
                                 inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Email address is invalid'|trans }}</span>");
                         }
                     }
                 }
             });
-            //Collaborator Code ends here
+            // Collaborator Code ends here
 
             ticketModel = new TicketModel({
                 id : "{{ ticket.id }}",

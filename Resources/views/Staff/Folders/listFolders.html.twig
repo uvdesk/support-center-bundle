@@ -142,19 +142,19 @@
 	<!-- Folder list item template -->
 	<script id="entity_list_item_tmp" type="text/template">
 		<a href="<%- path.replace('replaceId', id) %>">
-			<% if(solutionImage) { %>
+			<% if (solutionImage) { %>
 				<div class="uv-app-list-brick-lt">
 					<img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}<%= solutionImage %>"/>					
 				</div>
-			<% }else{ %>
+			<% } else { %>
 				<div class="uv-app-list-brick-lt uv-without-img"><div></div></div>
 			<% } %>
 		</a>
         <div class="uv-app-list-brick-rt">
-            <p><a href="<%- path.replace('replaceId', id) %>" data-target="uv-task-view" <% if(name.length > 20){ %> data-toggle="tooltip" data-placement="top" title="<%- app.appView.sanitize(name) %>" <% } %> ><%- name %></a></p>
+            <p><a href="<%- path.replace('replaceId', id) %>" data-target="uv-task-view" <% if (name.length > 20) { %> data-toggle="tooltip" data-placement="top" title="<%- app.appView.sanitize(name) %>" <% } %> ><%- name %></a></p>
 		    <p>
-			<% if(parseInt(categoriesCount)){ %><a href="<%- pathCategory.replace('replaceId', id) %>">
-			<%- categoriesCount %> {{ 'Categories'|trans }}</a> <% }else{ %> <a href="<%- pathCategory.replace('replaceId', id) %>">
+			<% if (parseInt(categoriesCount)) { %><a href="<%- pathCategory.replace('replaceId', id) %>">
+			<%- categoriesCount %> {{ 'Categories'|trans }}</a> <% } else { %> <a href="<%- pathCategory.replace('replaceId', id) %>">
 			<%- categoriesCount %> {{ 'Categories'|trans }}</a><% } %> </p>
 		    <p>
 				<% if(parseInt(articleCount)){ %><a href="<%- pathArticle.replace('replaceId', id) %>"><%- articleCount %> {{ 'Articles'|trans }}</a> <% }else{ %>
@@ -169,7 +169,7 @@
         <div class="uv-app-screen">
 			<div class="uv-app-splash" style="text-align: center;">
 				<img class="uv-app-splash-image" src="{{ asset('bundles/uvdesksupportcenter/images/splash/knowledgebase-splash.png') }}" alt="Folders">
-				<% if(!window.location.hash) { %>
+				<% if (!window.location.hash) { %>
 					<h2 class="uv-margin-top-10">{{"Create Knowledgebase Folder"|trans}}</h2>
 					<p>{{"You did not add any folder to your Knowledgebase yet, Create your first Folder and start adding Categories/Articles to make your customers help themselves."|trans}}</p>
 				<% } else { %>
@@ -215,17 +215,17 @@
 							app.pager.paginationData = response.pagination_data;
 
 							var url = app.pager.paginationData.url;
-							if(folderCollection.length == 0 && app.pager.paginationData.current != "0")
+							if (folderCollection.length == 0 && app.pager.paginationData.current != "0")
 								router.navigate(url.replace('replacePage', app.pager.paginationData.last),{trigger: true});
 							else {
 								app.pager.render();
 							}
-							if(globalMessageResponse)
+							if (globalMessageResponse)
 								app.appView.renderResponseAlert(globalMessageResponse);
 							globalMessageResponse = null;
 						},
 						error: function (model, xhr, options) {
-							if(url = xhr.getResponseHeader('Location'))
+							if (url = xhr.getResponseHeader('Location'))
 								window.location = url;
 						}
 					});
@@ -242,10 +242,11 @@
 				render : function() {
 					console.log(this.model.toJSON());
 					this.$el.html(this.template(this.model.toJSON()));
+
 					return this;
 				},
 				unrender : function(response) {
-					if(response.alertMessage != undefined) {
+					if (response.alertMessage != undefined) {
 						folderCollection.syncData();
 						app.appView.renderResponseAlert(response)
 					}
@@ -264,16 +265,16 @@
 							app.appView.hideLoader();
 							app.appView.renderResponseAlert(response);
 							folderCollection.syncData();
-							if(typeof(response.allowedToAdd) != 'undefined' && response.allowedToAdd) {
+							if (typeof(response.allowedToAdd) != 'undefined' && response.allowedToAdd) {
 								$('#upgrade-plan-message').hide();
 								$('#uv-add-folder').show();
 							}
 						},
 						error: function (model, xhr, options) {
-							if(url = xhr.getResponseHeader('Location'))
+							if (url = xhr.getResponseHeader('Location'))
 								window.location = url;
 							var response = warningResponse;
-							if(xhr.responseJSON)
+							if (xhr.responseJSON)
 								response = xhr.responseJSON;
 							app.appView.hideLoader();
 							app.appView.renderResponseAlert(response);
@@ -292,14 +293,14 @@
 					this.$el.html('');
 					this.$el.find(".uv-app-list-brick").remove();
 					var isEmptyFlag = 0;
-					if(folderCollection.length) {
+					if (folderCollection.length) {
 						isEmptyFlag++;
 						_.each(folderCollection.models, function (item) {
 							this.renderFolder(item);
 						}, this);
 					}
 
-                    if(!isEmptyFlag) {
+                    if (!isEmptyFlag) {
                         this.$el.append(this.noResultTemplate())
                     }
 				},
@@ -347,10 +348,10 @@
 							app.appView.renderResponseAlert(response);
 						},
 						error: function (model, xhr, options) {
-							if(url = xhr.getResponseHeader('Location'))
+							if (url = xhr.getResponseHeader('Location'))
 								window.location = url;
 							var response = warningResponse;
-							if(xhr.responseJSON)
+							if (xhr.responseJSON)
 								response = xhr.responseJSON;
 							app.appView.hideLoader();
 							app.appView.renderResponseAlert(response);

@@ -1,6 +1,5 @@
 {% extends "@UVDeskCoreFramework//Templates//layout.html.twig" %}
 
-
 {% block title %}
 	{{ 'Categories'|trans }}
 {% endblock %}
@@ -254,10 +253,10 @@
 
 	<!-- Sorting Template -->
 	<script id="category_list_sorting_tmp" type="text/template">
-        <li class="<% if(sort == 'a.dateAdded') { %>uv-drop-list-active<% } %>">
-            <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.dateAdded/<% if(sort == 'a.dateAdded') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.dateAdded">
+        <li class="<% if (sort == 'a.dateAdded') { %>uv-drop-list-active<% } %>">
+            <a href="#<% if (queryString != '') { %><%- queryString %>/<% } %><% if (page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.dateAdded/<% if(sort == 'a.dateAdded') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.dateAdded">
 				{% trans %}Created At{% endtrans %}
-				<% if(sort == 'a.dateAdded') { %>
+				<% if (sort == 'a.dateAdded') { %>
 					<span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 				<% } %>
 			</a>
@@ -266,7 +265,7 @@
 	    <li class="<% if(sort == 'a.name') { %>uv-drop-list-active<% } %>">
             <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.name/<% if(sort == 'a.name') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.name">
 				{% trans %}Name{% endtrans %}
-				<% if(sort == 'a.name') { %>
+				<% if (sort == 'a.name') { %>
 					<span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 				<% } %>
 			</a>
@@ -275,7 +274,7 @@
 	    <li class="<% if(sort == 'a.sortOrder') { %>uv-drop-list-active<% } %>">
             <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.sortOrder/<% if(sort == 'a.sortOrder') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.sortOrder">
 				{% trans %}Sort Order{% endtrans %}
-				<% if(sort == 'a.sortOrder') { %>
+				<% if (sort == 'a.sortOrder') { %>
 					<span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 				<% } %>
 			</a>
@@ -308,7 +307,7 @@
 		<td data-value="{{ 'Articles'|trans }}"><%- articleCount %></td>
 		<td data-value="{{ 'Created'|trans }}"><%- dateAdded %></td>
 		<td data-value="{{ 'Status'|trans }}">
-			<% if(status) { %>
+			<% if (status) { %>
             	<span class="uv-text-success">{{ 'Published'|trans }}</span>
             <% } else { %>
             	<span class="uv-text-danger">{{ 'Draft'|trans }}</span>
@@ -330,13 +329,11 @@
     	var pathPreview = "{{ path('helpdesk_knowledgebase_category', {'category': 'replaceId' }) }}";
 
 		$(function () {
-		
-
-			$('.uv-table.uv-list-view tbody').on("sortupdate", function(event, ui){
+			$('.uv-table.uv-list-view tbody').on("sortupdate", function(event, ui) {
 				var data = {'ids': new Array()};
 				$('.uv-table.uv-list-view tbody tr').each(function(key, value){
 					var modelKey = $(value).find('.edit-category').attr('data-value');
-					if(modelKey){
+					if (modelKey) {
 						//data.ids[modelKey] = key+1;
 						data.ids[parseInt(key)+1] = modelKey;
 					}
@@ -373,23 +370,23 @@
 							app.pager.paginationData = response.pagination_data;
 
 							var url = app.pager.paginationData.url;
-							if(categoryCollection.length == 0 && app.pager.paginationData.current != "0")
+							if (categoryCollection.length == 0 && app.pager.paginationData.current != "0")
 								router.navigate(url.replace('replacePage', app.pager.paginationData.last),{trigger: true});
 							else {
 								app.pager.render();
 							}
-							if(globalMessageResponse)
+							if (globalMessageResponse)
 								app.appView.renderResponseAlert(globalMessageResponse);
 							globalMessageResponse = null;
 						},
 						error: function (model, xhr, options) {
-							if(url = xhr.getResponseHeader('Location'))
+							if (url = xhr.getResponseHeader('Location'))
 								window.location = url;
 						}
 					});
 				},
                 batchOperation : function(data, callSyncData = true) {
-					if(!data.ids.length) return;
+					if (!data.ids.length) return;
                     var self = this;
                     app.appView.showLoader();
                     $.ajax({
@@ -400,14 +397,14 @@
                         success : function(response) {
                             app.appView.hideLoader();
                             app.appView.renderResponseAlert(response);
-							if(callSyncData)
+							if (callSyncData)
                             	self.syncData();
                         },
                         error: function (xhr) {
-                            if(url = xhr.getResponseHeader('Location'))
+                            if (url = xhr.getResponseHeader('Location'))
                                 window.location = url;
                             var response = warningResponse;
-                            if(xhr.responseJSON)
+                            if (xhr.responseJSON)
                                 response = xhr.responseJSON;
 
                             app.appView.hideLoader();
@@ -423,10 +420,11 @@
 				template : _.template($("#category_list_item_tmp").html()),
 				render : function() {
 					this.$el.html(this.template(this.model.toJSON()));
+
 					return this;
 				},
 				unrender : function(response) {
-					if(response.alertMessage != undefined) {
+					if (response.alertMessage != undefined) {
 						categoryCollection.syncData();
 						app.appView.renderResponseAlert(response)
 					}
@@ -444,16 +442,16 @@
                 showBulkOptions : function() {
                     var count = 0;
                     this.$el.find('.mass-action-checkbox').each(function() {
-                        if($(this).is(':checked'))
+                        if ($(this).is(':checked'))
                             count++;
                     });
 
-                    if(count == $('.mass-action-checkbox').length)
+                    if (count == $('.mass-action-checkbox').length)
                         $('.select-all-checkbox').prop('checked', true);
                     else
                         $('.select-all-checkbox').prop('checked', false);
 
-                    if(count) {
+                    if (count) {
                         $('.uv-action-bar-col-lt').eq(0).hide();
                         $('.uv-action-bar-col-lt').eq(1).show();
                         $('.uv-action-bar-col-rt').hide()
@@ -465,7 +463,7 @@
                 },
 				render : function () {
 					this.$el.find("tr").remove();
-					if(categoryCollection.length) {
+					if (categoryCollection.length) {
 						_.each(categoryCollection.models, function (item) {
 							this.renderCategory(item);
 						}, this);
@@ -500,7 +498,7 @@
                 },
                 removeItem: function(e) {
                     var data = {};
-                    if(Backbone.$(this.currentEvent.currentTarget).is("#mass-delete"))
+                    if (Backbone.$(this.currentEvent.currentTarget).is("#mass-delete"))
                         data['actionType'] = "delete";
 
                     data['ids'] = this.getCheckedIds();
@@ -510,7 +508,7 @@
                 getCheckedIds() {
                     var ids = new Array();
                     $('.mass-action-checkbox').each(function() {
-                        if($(this).is(':checked')) {
+                        if ($(this).is(':checked')) {
                             ids.push($(this).val());
                         }
                     });
@@ -533,14 +531,14 @@
 			var FolderForm = Backbone.View.extend({
 				events : {
 					'click .uv-btn.update-btn' : "saveFolder",
-					'blur input': 'formChanegd',
+					'blur input': 'formChanged',
                     'click .cancel-btn': 'backToInfo',
                     'click .uv-aside-back': 'backToInfo'
 				},
 				initialize : function() {
 					Backbone.Validation.bind(this);
 				},
-				formChanegd: function(e) {
+				formChanged: function(e) {
 			    	this.model.set(Backbone.$(e.currentTarget).attr('name'), Backbone.$(e.currentTarget).val())
 			    	this.model.isValid([Backbone.$(e.currentTarget).attr('name')])
 			    },
@@ -557,7 +555,7 @@
                             success: function (model, response, options) {
                                 app.appView.hideLoader();
                                 currentElement.removeAttr("disabled");
-                                if(response.alertClass == "success") {
+                                if (response.alertClass == "success") {
                                     app.appView.renderResponseAlert(response);
                                     $('.uv-aside-customer-info .uv-bold').text(self.model.attributes.name);
                                     $('.uv-aside-ticket-brick span').text(self.model.attributes.description);
@@ -642,7 +640,7 @@
                     var uvSelect = currentElement.parents('.uv-aside-select');
                     var field = currentElement.parent().attr('data-action');
                     var value = currentElement.attr('data-index');
-                    if(uvSelect.find('.uv-aside-select-value').attr('data-id') != value) {
+                    if (uvSelect.find('.uv-aside-select-value').attr('data-id') != value) {
                         var name = currentElement.text().trim();
                         app.appView.showLoader();
                         this.model.save({editType: field, value: value, id: this.model.id}, {
@@ -653,10 +651,10 @@
                                 app.appView.renderResponseAlert(response);
                             },
                             error: function (model, xhr, options) {
-                                if(url = xhr.getResponseHeader('Location'))
+                                if (url = xhr.getResponseHeader('Location'))
                                     window.location = url;
                                 var response = warningResponse;
-                                if(xhr.responseJSON)
+                                if (xhr.responseJSON)
                                     response = xhr.responseJSON;
 
                                 app.appView.hideLoader();
@@ -666,24 +664,24 @@
                     }
                 },
                 selectAll : function(e) {
-                    if(Backbone.$(e.currentTarget).is(':checked')) {
-						if($('.mass-action-checkbox').length){
+                    if (Backbone.$(e.currentTarget).is(':checked')) {
+						if ($('.mass-action-checkbox').length){
 							$('.mass-action-checkbox').prop('checked', true);
 
 							$('.uv-action-bar-col-lt').eq(0).hide();
 							$('.uv-action-bar-col-lt').eq(1).show();
 							$('.uv-action-bar-col-rt').hide()
-						}else
+						} else
 							Backbone.$(e.currentTarget).prop('checked', false)
                     } else {
                         var count = 0;
                         $('.mass-action-checkbox').each(function() {
-                            if($(this).is(':checked'))
+                            if ($(this).is(':checked'))
                                 count++;
                         });
-                        if(count == $('.mass-action-checkbox').length) {
-                            $('.mass-action-checkbox').prop('checked', false);
 
+                        if (count == $('.mass-action-checkbox').length) {
+                            $('.mass-action-checkbox').prop('checked', false);
 							$('.uv-action-bar-col-lt').eq(1).hide();
 							$('.uv-action-bar-col-lt').eq(0).show();
 							$('.uv-action-bar-col-rt').show()
@@ -746,7 +744,7 @@
 					categoryCollection.syncData();
 				},
 				resetParams : function(status, query) {
-					if(query != null)
+					if (query != null)
 						query = query.replace(/\+/g,' ');
 					categoryCollection.filterParameters.isActive = status;
 					var statusText = status ? $(".filter-by-status a[data-id='" + status + "']").text() : "{% trans %}All{% endtrans %}";
@@ -757,7 +755,7 @@
 			});
 
 			router = new Router();
-			Backbone.history.start({push_state:true});
+			Backbone.history.start({ push_state: true });
 		});
 	</script>
 {% endblock %}
