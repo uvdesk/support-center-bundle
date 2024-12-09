@@ -170,15 +170,15 @@ helpdesk_member_knowledgebase_marketing_module_xhr:
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\MarketingModule::listModulesXHR
 
 helpdesk_member_knowledgebase_create_marketing_module:
-    path:     /knowledgebase/module/new
+    path:     /knowledgebase/marketing/module/new
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\MarketingModule::updateModule
 
 helpdesk_member_knowledgebase_update_marketing_module:
-    path:     /knowledgebase/module/update/{announcementId}
+    path:     /knowledgebase/marketing/module/{id}
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\MarketingModule::updateModule
-    defaults: { announcementId: 0 }
+    defaults: { id: 0 }
 
 helpdesk_member_knowledgebase_remove_marketing_module_xhr:
-    path:     /knowledgebase/module/remove/{announcementId}
+    path:     /knowledgebase/marketing/module/xhr/delete/{id}
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\MarketingModule::removeModuleXHR
-    defaults: { announcementId: 0 }
+    defaults: { id: 0 }

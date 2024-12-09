@@ -159,8 +159,62 @@
             margin-right: 0.05em;
             vertical-align: -0.4em;
         }
-        blockquote p {
+        blockquote p {                                                                                                   
             display: inline;
+        }
+        #item-list-modules{
+            margin-top: 20px;
+        }
+        .uv-marketing-modules-wrapper {
+            display: flex;
+            align-items: center;
+            border-radius: 3px;
+            padding: 12px;
+            position: relative;
+        }
+        .uv-marketing-modules-text {
+            padding-left: 0.7rem;
+            width: 100%;
+        }
+        .uv-marketing-modules-text-description {
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 18.86px;
+            font-family: 'Source Sans Pro';
+            max-height: 57px;
+            text-transform: capitalize;
+            overflow: hidden;
+        }
+        .uv-marketing-modules-img img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .uv-marketing-modules-text {
+            padding-left: 0.7rem;
+            width: 100%;
+        }
+        .uv-marketing-modules-text-heading {
+            font-family: 'Source Sans Pro';
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 21.37px;
+            text-transform: capitalize;
+        }
+        .uv-marketing-modules-text-description {
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 18.86px;
+            font-family: 'Source Sans Pro';
+            max-height: 57px;
+            text-transform: capitalize;
+            overflow: hidden;
+        }
+        .uv-marketing-modules {
+            padding: 0 !important;
+            margin-top: 7px;
+            border: none !important;
         }
     </style>
 
@@ -224,12 +278,14 @@
                     </div>
                 {% endif %}
             </aside>
-            
+
             {% if user_service.isfileExists('apps/uvdesk/form-component') %}
                 {{ user_service.getCustomFieldTemplateCustomer() | raw }}
             {% elseif user_service.isfileExists('apps/uvdesk/custom-fields') %}
                 {{ user_service.getCustomFieldTemplateCustomer() | raw }}
             {% endif %}
+
+            <div id="item-list-modules"></div>
         </div>
         <div class="uv-thread-rt">
             <section>
@@ -940,6 +996,88 @@
                 collaboratorListView.render();
             {% endif %}
         });
+    </script>
+
+    <script id="marketing_module_list_tmp" type="text/template">
+        <a class="uv-marketing-modules-ancor" href="<%- linkURL %>" target="_blank">
+            <aside class="uv-marketing-modules" style="border: 1px solid <%- borderColor %> !important; background-color: rgba(<%- borderColor.substr(4, borderColor.length-5) %>, 0.1) !important;">
+                <div class="uv-marketing-modules-wrapper" >
+                    <div class="uv-marketing-modules-img">
+                        <img src="<%- image %>" alt="module image">
+                    </div>
+                    <div class="uv-marketing-modules-text">
+                        <p class="uv-marketing-modules-text-heading"><%- title %></p>
+                        <p class="uv-marketing-modules-text-description"><%- description %></p>
+                    </div>
+
+                </div>
+            </aside>
+        </a>
+    </script>
+
+    <script type="text/javascript">
+        $(function() {
+            // Model definition
+            var ModuleModel = Backbone.Model.extend({
+                idAttribute: "id",
+            });
+
+            // Collection definition
+            var ModuleModelCollection = Backbone.Collection.extend({
+                model: ModuleModel,
+                url: '{{ path("helpdesk_member_knowledgebase_front_marketing_modules_xhr") }}',
+                page: 1,
+                limit: 3,
+                ticketId: "{{ ticket.id }}",
+                parse: function(response) {
+                    return response.modules;
+                }
+            });
+
+            // Individual item view
+            var ItemViewModule = Backbone.View.extend({
+                template: _.template($("#marketing_module_list_tmp").html()),
+                render: function() {
+                    this.$el.html(this.template(this.model.toJSON()));
+                    return this;
+                }
+            });
+
+            // List view
+            var ItemListViewModule = Backbone.View.extend({
+                el: '#item-list-modules',
+                initialize: function() {
+                    console.log('Initializing ItemListViewModule');
+                    // Ensure collection is defined
+                    if (!this.collection) {
+                        console.error("Collection is not defined");
+                        return;
+                    }
+                    this.collection.on('sync', this.render, this);
+                    this.collection.fetch({
+                        data: { page: this.collection.page, limit: this.collection.limit, ticketId: this.collection.ticketId },
+                    });
+                },
+                render: function() {
+                    if (this.collection.length > 0) {
+                        this.$el.empty(); // Clear previous content
+                        this.collection.each(function(item) {
+                            var ItemModule = new ItemViewModule({ model: item });
+                            this.$el.append(ItemModule.render().el);
+                        }, this);
+                    }
+                }
+            });
+
+            // Instantiate the collection
+            var moduleCollection = new ModuleModelCollection();
+
+            // Pass the collection to the view
+            var itemsView = new ItemListViewModule({
+                collection: moduleCollection
+            });
+        });
+
     </script>
 
     {{ include("@UVDeskCoreFramework/Templates/tinyMCE.html.twig") }}

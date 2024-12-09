@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\FileUploadService;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -19,13 +21,17 @@ Class MarketingModule extends AbstractController
     private $userService;
     public $container;
     public $entityManager;
+    public $fileUplaodService;
+    public $uvdeskService;
 
-    public function __construct(TranslatorInterface $translator, UserService $userService, ContainerInterface $container, EntityManagerInterface $entityManager)
+    public function __construct(TranslatorInterface $translator, UserService $userService, ContainerInterface $container, EntityManagerInterface $entityManager, FileUploadService $fileUplaodService, UVDeskService $uvdeskService)
     {
         $this->translator = $translator;
         $this->userService = $userService;
         $this->container = $container;
         $this->entityManager = $entityManager;
+        $this->fileUplaodService = $fileUplaodService;
+        $this->uvdeskService = $uvdeskService;
     }
 
     public function listModules(Request $request)
@@ -41,7 +47,8 @@ Class MarketingModule extends AbstractController
     {
         $json = array();
         $repository = $this->getDoctrine()->getRepository(SupportEntites\MarketingModule::class);
-        $json =  $repository->getAllAnnouncements($request->query, $container);
+        $json =  $repository->getAllMarketingModules($request->query, $container);
+
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
 
@@ -50,26 +57,23 @@ Class MarketingModule extends AbstractController
 
     public function updateModule(Request $request)
     {
+        $prefix = 'marketing/module/';
+
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_MARKETING_MODULE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         if ($request->attributes->get('id')) {
-            $marketingModule = $this->findOneBy([
+            $marketingModule = $this->entityManager->getRepository(SupportEntites\MarketingModule::class)->findOneBy([
                                     'id' => $request->attributes->get('id'),
                                 ]);
-
-            if ($marketingModule) {
-                $marketingModule->setCreatedAt(new \DateTime('now'));
-            }
         } else {
             $marketingModule = new SupportEntites\MarketingModule;
             $marketingModule->setCreatedAt(new \DateTime('now'));
         }
 
         if ($request->getMethod() == "POST") {
-            $previousImage = $marketingModule->getImage();
-            $image = $request->files->get('marketingModule_image');
+            $uploadImage = $request->files->get('marketingModule_image');
             $request = $request->request->get('marketingModule_form');
 
             $group = $this->entityManager->getRepository(CoreEntites\SupportGroup::class)->find($request['group']);
@@ -80,27 +84,33 @@ Class MarketingModule extends AbstractController
             $marketingModule->setGroup($group);
             $marketingModule->setBorderColor($this->hex2rgb($request['borderColor']));
             $marketingModule->setLinkURL($request['linkURL']);
-            $marketingModule->setImage($previousImage);
+
+            try {
+                if ($uploadImage) {
+                    $uploadedFileAttributes = $this->fileUplaodService->uploadFile($uploadImage, $prefix);
+
+                    if ($uploadedFileAttributes) {
+                        $marketingModule->setImage($this->uvdeskService->generateCompleteLocalResourcePathUri($uploadedFileAttributes['path']));
+                    }
+                }
+            } catch (\Exception $e) {
+                return $this->render('@UVDeskSupportCenter/Staff/MarketingModule/marketingModuleForm.html.twig', [
+                    'marketingModule' => $marketingModule,
+                    'errors'          => $e->getMessage()
+                ]);
+            }
 
             $this->entityManager->persist($marketingModule);
             $this->entityManager->flush();
 
-            if ($image) {
-                $prefix = 'marketing/module' . $marketingModule->getId();
-                $uploadManager = $this->container->get('uvdesk.core.file_system.service')->getUploadManager();
+            $this->addFlash('success', 'Success! Marketing Module data saved successfully.');
 
-                $uploadedFileAttributes = $uploadManager->uploadFile($attachment, $prefix);
-
-                $marketingModule->upload($image, $marketingModule->getId(), $this->container);
-
-                $this->entityManager->persist($marketingModule);
-                $this->entityManager->flush();
-            }
+            return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_marketing_module'));
         }
 
         return $this->render('@UVDeskSupportCenter/Staff/MarketingModule/marketingModuleForm.html.twig', [
                 'marketingModule' => $marketingModule,
-                'errors'       => ''
+                'errors'          => ''
         ]);
     }
 
@@ -128,29 +138,40 @@ Class MarketingModule extends AbstractController
         }
 
         $entityManager = $this->getDoctrine()->getManager();
-        $knowledgebaseAnnouncementId = $request->attributes->get('announcementId');
 
-        $knowledgebaseAnnouncement = $this->getDoctrine()->getRepository(SupportEntites\Announcement::class)
+        $marketingAnnouncement = $this->getDoctrine()->getRepository(SupportEntites\MarketingModule::class)
             ->findOneBy([
-                'id' => $request->attributes->get('announcementId')
+                'id' => $request->attributes->get('id')
             ]);
 
-        if ($knowledgebaseAnnouncement) {
-            $entityManager->remove($knowledgebaseAnnouncement);
+        if ($marketingAnnouncement) {
+            $entityManager->remove($marketingAnnouncement);
             $entityManager->flush();
 
             $json = [
                 'alertClass'   => 'success',
-                'alertMessage' => 'Announcement deleted successfully!',
+                'alertMessage' => 'Marketing Module deleted successfully!',
             ];
             $responseCode = 200;
         } else {
             $json = [
                 'alertClass'   => 'warning',
-                'alertMessage' => 'Announcement not found!',
+                'alertMessage' => 'Marketing Module not found!',
             ];
         }
 
+        $response = new Response(json_encode($json));
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
+    }
+
+    public function marketingModuleCustomerListXHR(Request $request, ContainerInterface $container )
+    {
+        $json = array();
+        $customer = $this->userService->getCurrentUser();
+        $repository = $this->entityManager->getRepository(SupportEntites\MarketingModule::class);
+        $json = $repository->getAllMarketingModulesForCustomer($request->query, $container, $customer);
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
 

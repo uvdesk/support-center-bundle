@@ -20,7 +20,7 @@ SVG;
 
     public static function getTitle() : string
     {
-        return "Marketing Module";
+        return "Marketing Modules";
     }
 
     public static function getRoles() : array

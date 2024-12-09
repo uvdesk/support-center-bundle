@@ -9,7 +9,7 @@ class MarketingModule implements PanelSidebarItemInterface
 {
     public static function getTitle() : string
     {
-        return "MarketingModule";
+        return "Marketing Modules";
     }
 
     public static function getRouteName() : string

@@ -132,6 +132,7 @@
         </div>
     </td>
 </script>
+
 <script type="text/javascript">
 	var path = "{{ path('helpdesk_member_knowledgebase_update_marketing_module', {'id': 'replaceId' }) }}";
     $(function () {
@@ -144,7 +145,7 @@
 
 		var AnnouncementCollection = AppCollection.extend({
 			model : TeamModel,
-			url : "{{ path('helpdesk_member_knowledgebase_marketing_module') }}",
+			url : "{{ path('helpdesk_member_knowledgebase_marketing_module_xhr') }}",
 			filterParameters : {
 				"isActive" : "",
 				"search" : ""
@@ -222,7 +223,7 @@
 						}
 					});
 				}
-			});
+		});
 
         var marketingModuleList = Backbone.View.extend({
             el : $(".uv-list-view table tbody"),
@@ -246,7 +247,6 @@
                 this.$el.append(teamItem.render().el);
             }
         });
-
 
 		var Filter = app.Filter.extend({
 			defaultSortIndex: 'a.createdAt',
