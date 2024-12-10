@@ -85,3 +85,11 @@ helpdesk_customer_front_article_search:
 helpdesk_member_knowledgebase_front_marketing_modules_xhr:
     path:     /customer/marketing/modules/xhr
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\MarketingModule::marketingModuleCustomerListXHR
+
+helpdesk_member_knowledgebase_front_customer_login_otp_generate:
+    path:     /customer/login/genrate/otp
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Customer::genrateOtp
+
+helpdesk_member_knowledgebase_front_customer_verify_otp_login:
+    path:     /customer/login/otp/verify
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Customer::loginOtpVerify

@@ -9,29 +9,40 @@ use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
 use Webkul\UVDesk\CoreFrameworkBundle\Form\UserProfile;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Webkul\UVDesk\CoreFrameworkBundle\Utils\TokenGenerator;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Webkul\UVDesk\CoreFrameworkBundle\Services\FileUploadService;
 use Symfony\Component\Filesystem\Filesystem as Fileservice;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Webkul\UVDesk\CoreFrameworkBundle\Services as CoreServices;
+use Webkul\UVDesk\CoreFrameworkBundle\Providers\UserProvider;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+
 Class Customer extends AbstractController
 {
     private $translator;
     private $fileSystem;
     private $passwordEncoder;
     private $fileUploadService;
+    private $uvdeskService;
+    private $userProvider;
 
-    public function __construct(TranslatorInterface $translator, UserPasswordEncoderInterface $passwordEncoder, FileSystem $fileSystem, FileUploadService $fileUploadService)
+    public function __construct(TranslatorInterface $translator, UserPasswordEncoderInterface $passwordEncoder, FileSystem $fileSystem, CoreServices\FileUploadService $fileUploadService, CoreServices\EmailService $emailService, CoreServices\UVDeskService $uvdeskService, UserProvider $userProvider)
     {
         $this->translator = $translator;
         $this->fileSystem = $fileSystem;
         $this->passwordEncoder = $passwordEncoder;
         $this->fileUploadService = $fileUploadService;
+        $this->emailService = $emailService;
+        $this->uvdeskService = $uvdeskService;
+        $this->userProvider = $userProvider;
     }
 
     protected function redirectUserToLogin()
     {
         $authChecker = $this->container->get('security.authorization_checker');
+
         if ($authChecker->isGranted('ROLE_CUSTOMER'))
             return true;
     }
@@ -76,6 +87,133 @@ Class Customer extends AbstractController
         return false;
     }
 
+    public function loginOtpVerify(Request $request) {
+        $params = $request->request->all();
+        $entityManager = $this->getDoctrine()->getManager();
+
+        if (empty($params['_username'])) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "No user details provided. Please try again later.",
+            ], 403);
+        }
+
+        $user = $entityManager->getRepository(CoreEntites\User::class)->findOneByEmail($params['_username']);
+
+        if (empty($user) || empty($params['otp'])) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "No associated user account details were found. Please try again later.",
+            ], 403);
+        } else if ($user->getVerificationCode() != $params['otp']) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Invalid OTP provided. Please try again later.",
+            ], 403);
+        }
+
+        $currentTimestamp = new \DateTime('now');
+        $lastOtpGeneratedAtTimestamp = $user->getLastOtpGeneratedAt();
+
+        $lastOtpGeneratedAtTimestamp->modify('+5 minutes');
+        $interval = $lastOtpGeneratedAtTimestamp->diff($currentTimestamp);
+
+        $isTimePeriodElapsed = (bool) $interval->invert ? false : true;
+
+        if ($isTimePeriodElapsed == true) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "The provided OTP has expired. Please try again later.",
+            ], 403);
+        }
+
+        $user = $this->userProvider->refreshUser($user);
+
+        try {
+            $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+            $this->container->get('security.token_storage')->setToken($token);
+
+            // Regenerate the session
+            $request->getSession()->migrate();
+
+            $this->addFlash('success', $this->translator->trans('Success ! Logged in successfully.'));
+
+            return new JsonResponse([
+                'success' => true,
+                'message' => "Successfully logged in.",
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Failed to login " . $e->getMessage() ,
+            ], 403);
+        }
+    }
+
+    public function genrateOtp(Request $request) {
+        $params = $request->request->all();
+        $entityManager = $this->getDoctrine()->getManager();
+        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneByCode('helpdesk');
+        $knowledgebase = $entityManager->getRepository(CoreEntites\Website::class)->findOneByCode('knowledgebase');
+
+        $user = $entityManager->getRepository(CoreEntites\User::class)->retrieveHelpdeskCustomerInstances($params['_username']);
+
+        if (empty($user)) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "No associated user accounts were found with the email '{$params['_username']}'.",
+            ], 403);
+        } else if ($this->isLoginDisabled()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => "Login has been disabled for this helpdesk.",
+            ], 403);
+        }
+
+        $currentTimestamp = new \DateTime('now');
+        $lastOtpGeneratedAtTimestamp = $user->getLastOtpGeneratedAt();
+
+        if (!empty($lastOtpGeneratedAtTimestamp)) {
+            $lastOtpGeneratedAtTimestamp->modify('+1 minute');
+            $interval = $lastOtpGeneratedAtTimestamp->diff($currentTimestamp);
+
+            $isTimePeriodElapsed = (bool) $interval->invert ? false : true;
+
+            if ($isTimePeriodElapsed == false) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => "Please wait for upto 1 minute before requesting a new OTP.",
+                ]);
+            }
+        }
+
+        $user->setVerificationCode(TokenGenerator::generateToken(6, $range = '0123456789'))
+            ->setLastOtpGeneratedAt(new \DateTime('now'))
+        ;
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        $name = ucwords(trim(implode(' ', [$user->getFirstName(), $user->getLastName()])));
+
+        // Generate email content
+        $subject = "Login OTP from Uvdesk";
+        $content = $this->renderView('@UVDeskSupportCenter/CustomerLogin/customer-login-otp-verification-email.html.twig', [
+            'name'             => $name,
+            'verificationCode' => $user->getVerificationCode(),
+            'helpdeskName'     => $website->getName(),
+            'helpdeskMail'     => $this->getParameter('uvdesk.support_email.id'),
+            'helpdeskLogo'     => $this->uvdeskService->generateCompleteLocalResourcePathUri($knowledgebase->getLogo()),
+        ]);
+
+        $this->emailService->sendMail($subject, $content, $user->getEmail());
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Please check your email for a OTP verification code.",
+        ]);
+    }
+
     public function login(Request $request)
     {
         $this->isWebsiteActive();
@@ -95,7 +233,11 @@ Class Customer extends AbstractController
         $error = $session->get(Security::AUTHENTICATION_ERROR);
         $session->remove(Security::AUTHENTICATION_ERROR);
 
-        return $this->render('@UVDeskSupportCenter/Knowledgebase/login.html.twig', [
+        if ($error) {
+            $this->addFlash('warning', $this->translator->trans('Warning ! ' . $error->getMessage()) );
+        }
+
+        return $this->render('@UVDeskSupportCenter/CustomerLogin/customer-login.html.twig', [
             'searchDisable' => true,
             'last_username' => $session->get(Security::LAST_USERNAME),
             'error'         => $error,
