@@ -150,7 +150,7 @@ Class Customer extends AbstractController
         }
     }
 
-    public function genrateOtp(Request $request) {
+    public function generateOtp(Request $request) {
         $params = $request->request->all();
         $entityManager = $this->getDoctrine()->getManager();
         $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneByCode('helpdesk');
@@ -197,13 +197,13 @@ Class Customer extends AbstractController
         $name = ucwords(trim(implode(' ', [$user->getFirstName(), $user->getLastName()])));
 
         // Generate email content
-        $subject = "Login OTP from Uvdesk";
+        $subject = "Login OTP from ".$website->getName();
         $content = $this->renderView('@UVDeskSupportCenter/CustomerLogin/customer-login-otp-verification-email.html.twig', [
             'name'             => $name,
             'verificationCode' => $user->getVerificationCode(),
             'helpdeskName'     => $website->getName(),
             'helpdeskMail'     => $this->getParameter('uvdesk.support_email.id'),
-            'helpdeskLogo'     => $this->uvdeskService->generateCompleteLocalResourcePathUri($knowledgebase->getLogo()),
+            'helpdeskLogo'     => $knowledgebase->getLogo() ? $this->uvdeskService->generateCompleteLocalResourcePathUri($knowledgebase->getLogo()) : "",
         ]);
 
         $this->emailService->sendMail($subject, $content, $user->getEmail());

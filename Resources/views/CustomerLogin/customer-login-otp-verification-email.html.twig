@@ -2,8 +2,10 @@
 <html>
     <body style="font-family: sans-serif; line-height:24px; background-image: none;">
         <div style="background-color:#887bf6; height:6px; "></div>
-        <img src= {{ helpdeskLogo }} style="margin:20px 0;" alt="header-image">
-        
+        {% if helpdeskLogo %}
+            <img src= {{ helpdeskLogo }} style="margin:20px 0;" alt="header-image">
+        {% endif %}
+
         <p>Hello {{ name }}, you're almost there! To login into your account, please use the OTP below:</p>
 
         <p>
@@ -15,7 +17,10 @@
         </p>
 
         <p>
-            With Regards, </br><strong>{{ helpdeskName }} Support Team</strong>
+            With Regards, 
+        </p>
+        <p>
+            <strong>{{ helpdeskName }}</strong>
         </p>
     </body>
 </html>

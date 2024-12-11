@@ -88,7 +88,7 @@ helpdesk_member_knowledgebase_front_marketing_modules_xhr:
 
 helpdesk_member_knowledgebase_front_customer_login_otp_generate:
     path:     /customer/login/genrate/otp
-    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Customer::genrateOtp
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Customer::generateOtp
 
 helpdesk_member_knowledgebase_front_customer_verify_otp_login:
     path:     /customer/login/otp/verify
