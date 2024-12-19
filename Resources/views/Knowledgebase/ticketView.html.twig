@@ -279,9 +279,9 @@
                 {% endif %}
             </aside>
 
-            {% if user_service.isfileExists('apps/uvdesk/form-component') %}
+            {% if user_service.isFileExists('apps/uvdesk/form-component') %}
                 {{ user_service.getCustomFieldTemplateCustomer() | raw }}
-            {% elseif user_service.isfileExists('apps/uvdesk/custom-fields') %}
+            {% elseif user_service.isFileExists('apps/uvdesk/custom-fields') %}
                 {{ user_service.getCustomFieldTemplateCustomer() | raw }}
             {% endif %}
 

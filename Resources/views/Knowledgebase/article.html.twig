@@ -7,7 +7,7 @@
 {% block ogtitle %}{{ article.metaTitle ? article.metaTitle : article.name }}{% endblock %}
 {% block twtitle %}{{ article.metaTitle ? article.metaTitle : article.name }}{% endblock %}
 {% block metaDescription %}{{ article.metaDescription ? article.metaDescription : uvdesk_service.createConentToKeywords(article.content, 255, true)|join(' ') }}{% endblock %}
-{% block metaKeywords %}{{ article.keywords ? : uvdesk_service.createConentToKeywords(article.content) }}{% endblock %}
+{% block metaKeywords %}{{ article.keywords ?? uvdesk_service.createConentToKeywords(article.content) }}{% endblock %}
 
 {% block body %}
 	<div class="uv-paper-article">

@@ -63,7 +63,7 @@
 					<li for="knowledgebase" {% if type == 'knowledgebase' %} class="uv-tab-active"{% endif %}>{{ 'Knowledgebase'|trans }}</li>
                     <li for="time" {% if type == 'time' %}class="uv-tab-active"{% endif %}>{{ 'Time'|trans }}</li>
 					<li for="seo" {% if type == 'seo' %}class="uv-tab-active"{% endif %}>{{ 'SEO'|trans }}</li>
-                    {% if user_service.isfileExists('apps/uvdesk/sla') %}
+                    {% if user_service.isFileExists('apps/uvdesk/sla') %}
                         <li for="business-hours" {% if type == 'business-hours' %}class="uv-tab-active"{% endif %}>{{ 'Business Hours'|trans }}</li>
                     {% endif %}
 					<li for="links" {% if type == 'links' %}class="uv-tab-active"{% endif %}>{{ 'Links'|trans }}</li>

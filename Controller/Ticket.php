@@ -99,9 +99,9 @@ class Ticket extends AbstractController
                         try {
                             $customFieldsService = null;
                             
-                            if ($this->userService->isfileExists('apps/uvdesk/custom-fields')) {
+                            if ($this->userService->isFileExists('apps/uvdesk/custom-fields')) {
                                 $customFieldsService = $this->get('uvdesk_package_custom_fields.service');
-                            } else if ($this->userService->isfileExists('apps/uvdesk/form-component')) {
+                            } else if ($this->userService->isFileExists('apps/uvdesk/form-component')) {
                                 $customFieldsService = $this->get('uvdesk_package_form_component.service');
                             }
 

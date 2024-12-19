@@ -210,9 +210,9 @@
 		</div>
 	</div>
 
-	{% if user_service.isfileExists('apps/uvdesk/form-component') %}
+	{% if user_service.isFileExists('apps/uvdesk/form-component') %}
 		{{ include('@_uvdesk_extension_uvdesk_form_component/CustomFields/customFieldValidation.html.twig') }} 
-	{% elseif user_service.isfileExists('apps/uvdesk/custom-fields') %}
+	{% elseif user_service.isFileExists('apps/uvdesk/custom-fields') %}
 		{{ include('@_uvdesk_extension_uvdesk_custom_fields/CustomFields/customFieldValidation.html.twig') }} 
 	{% endif %}
 {% endblock %}
@@ -229,7 +229,7 @@
 	{{ include('@UVDeskCoreFramework/Templates/attachment.html.twig') }}
 
 	<script type="text/javascript">
-	{% if user_service.isfileExists('apps/uvdesk/form-component') == false %}
+	{% if user_service.isFileExists('apps/uvdesk/form-component') == false %}
 	customFieldValidation = {};
 	{% endif %}
 		$(function () {
