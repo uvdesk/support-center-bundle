@@ -8,6 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+
 /**
  * @method Announcement|null find($id, $lockMode = null, $lockVersion = null)
  * @method Announcement|null findOneBy(array $criteria, array $orderBy = null)
@@ -33,12 +34,12 @@ class AnnouncementRepository extends ServiceEntityRepository
         $data = $obj->all();
         $data = array_reverse($data);
         foreach ($data as $key => $value) {
-            if (!in_array($key,$this->safeFields)) {
+            if (! in_array($key, $this->safeFields)) {
                 if ($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search') {
                     $qb->andWhere('a.'.$key.' = :'.$key);
                     $qb->setParameter($key, $value);
                 } else {
-                    if($key == 'search') {
+                    if ($key == 'search') {
                         $qb->orWhere('a.title'.' LIKE :name');
                         $qb->setParameter('name', '%'.urldecode($value).'%');
                         $qb->orWhere('a.promoText'.' LIKE :promoText');
@@ -48,7 +49,7 @@ class AnnouncementRepository extends ServiceEntityRepository
             }
         }
 
-        if (!isset($data['sort'])) {
+        if (! isset($data['sort'])) {
             $qb->orderBy('a.id',Criteria::DESC);
         }
 

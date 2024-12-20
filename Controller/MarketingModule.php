@@ -4,13 +4,13 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\FileUploadService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,7 +36,7 @@ Class MarketingModule extends AbstractController
 
     public function listModules(Request $request)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_MARKETING_MODULE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_MARKETING_MODULE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -46,7 +46,7 @@ Class MarketingModule extends AbstractController
     public function listModulesXHR(Request $request, ContainerInterface $container)
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository(SupportEntites\MarketingModule::class);
+        $repository = $this->getDoctrine()->getRepository(SupportEntities\MarketingModule::class);
         $json =  $repository->getAllMarketingModules($request->query, $container);
 
         $response = new Response(json_encode($json));
@@ -64,11 +64,11 @@ Class MarketingModule extends AbstractController
         }
 
         if ($request->attributes->get('id')) {
-            $marketingModule = $this->entityManager->getRepository(SupportEntites\MarketingModule::class)->findOneBy([
+            $marketingModule = $this->entityManager->getRepository(SupportEntities\MarketingModule::class)->findOneBy([
                                     'id' => $request->attributes->get('id'),
                                 ]);
         } else {
-            $marketingModule = new SupportEntites\MarketingModule;
+            $marketingModule = new SupportEntities\MarketingModule;
             $marketingModule->setCreatedAt(new \DateTime('now'));
         }
 
@@ -76,7 +76,7 @@ Class MarketingModule extends AbstractController
             $uploadImage = $request->files->get('marketingModule_image');
             $request = $request->request->get('marketingModule_form');
 
-            $group = $this->entityManager->getRepository(CoreEntites\SupportGroup::class)->find($request['group']);
+            $group = $this->entityManager->getRepository(CoreEntities\SupportGroup::class)->find($request['group']);
 
             $marketingModule->setTitle($request['title']);
             $marketingModule->setDescription($request['description']);
@@ -133,13 +133,13 @@ Class MarketingModule extends AbstractController
 
     public function removeModuleXHR(Request $request)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_MARKETING_MODULE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_MARKETING_MODULE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $entityManager = $this->getDoctrine()->getManager();
 
-        $marketingAnnouncement = $this->getDoctrine()->getRepository(SupportEntites\MarketingModule::class)
+        $marketingAnnouncement = $this->getDoctrine()->getRepository(SupportEntities\MarketingModule::class)
             ->findOneBy([
                 'id' => $request->attributes->get('id')
             ]);
@@ -170,7 +170,7 @@ Class MarketingModule extends AbstractController
     {
         $json = array();
         $customer = $this->userService->getCurrentUser();
-        $repository = $this->entityManager->getRepository(SupportEntites\MarketingModule::class);
+        $repository = $this->entityManager->getRepository(SupportEntities\MarketingModule::class);
         $json = $repository->getAllMarketingModulesForCustomer($request->query, $container, $customer);
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');

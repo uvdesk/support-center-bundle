@@ -4,13 +4,14 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+
 Class Announcement extends AbstractController
 {
     private $translator;
@@ -24,7 +25,7 @@ Class Announcement extends AbstractController
 
     public function listAnnouncement(Request $request)    
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -34,7 +35,7 @@ Class Announcement extends AbstractController
     public function listAnnouncementXHR(Request $request, ContainerInterface $container)    
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository(SupportEntites\Announcement::class);
+        $repository = $this->getDoctrine()->getRepository(SupportEntities\Announcement::class);
         $json =  $repository->getAllAnnouncements($request->query, $container);
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
@@ -44,29 +45,29 @@ Class Announcement extends AbstractController
 
     public function updateAnnouncement(Request $request)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
         
         $em = $this->getDoctrine()->getManager();
         
         if ($request->attributes->get('announcementId')) {
-            $announcement = $this->getDoctrine()->getRepository(SupportEntites\Announcement::class)
+            $announcement = $this->getDoctrine()->getRepository(SupportEntities\Announcement::class)
                         ->findOneBy([
                                 'id' => $request->attributes->get('announcementId')
                             ]);
             $announcement->setCreatedAt(new \DateTime('now'));
 
-            if (!$announcement)
+            if (! $announcement)
                 $this->noResultFound();
         } else {
-            $announcement = new SupportEntites\Announcement();
+            $announcement = new SupportEntities\Announcement();
             $announcement->setCreatedAt(new \DateTime('now'));
         }
         
         if ($request->getMethod() == "POST") {
             $request = $request->request->get('announcement_form');
-            $group = $em->getRepository(CoreEntites\SupportGroup::class)->find($request['group']);
+            $group = $em->getRepository(CoreEntities\SupportGroup::class)->find($request['group']);
 
             $announcement->setTitle($request['title']);
             $announcement->setPromoText($request['promotext']);
@@ -99,7 +100,7 @@ Class Announcement extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $knowledgebaseAnnouncementId = $request->attributes->get('announcementId');
 
-        $knowledgebaseAnnouncement = $this->getDoctrine()->getRepository(SupportEntites\Announcement::class)
+        $knowledgebaseAnnouncement = $this->getDoctrine()->getRepository(SupportEntities\Announcement::class)
             ->findOneBy([
                 'id' => $request->attributes->get('announcementId')
             ]);

@@ -161,7 +161,7 @@
             text: '{{ "Translate"|trans }}',
             onselect: function (e) {
                 this.text('{{ "Translate"|trans }}');
-                if(editor.selection.getContent({format : 'html'})) {
+                if (editor.selection.getContent({format : 'html'})) {
                     ajaxData = {
                         'lang': this.value(),
                         'content': editor.selection.getContent({format : 'html'}),

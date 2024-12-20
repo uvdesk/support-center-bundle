@@ -11,7 +11,8 @@ use Webkul\UVDesk\SupportCenterBundle\Form\Category as CategoryForm;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
+
 class Category extends AbstractController
 {
     const LIMIT = 10;
@@ -27,12 +28,12 @@ class Category extends AbstractController
 
     public function CategoryList(Request $request, ContainerInterface $container)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $solutions = $this->getDoctrine()
-            ->getRepository(SupportEntites\Solutions::class)
+            ->getRepository(SupportEntities\Solutions::class)
             ->getAllSolutions(null, $container, 'a.id, a.name');
 
         $solutions = array_map(function($solution){
@@ -40,7 +41,7 @@ class Category extends AbstractController
                 'id'              => $solution['id'],
                 'name'            =>  $solution['name'],
                 'categoriesCount' => $this->getDoctrine()
-                    ->getRepository(SupportEntites\Solutions::class)
+                    ->getRepository(SupportEntities\Solutions::class)
                     ->getCategoriesCountBySolution($solution['id'])
             ];
         }, $solutions);
@@ -52,21 +53,21 @@ class Category extends AbstractController
 
     public function CategoryListBySolution(Request $request)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $solution = $this->getDoctrine()
-            ->getRepository(SupportEntites\Solutions::class)
+            ->getRepository(SupportEntities\Solutions::class)
             ->findSolutionById(['id' => $request->attributes->get('solution')]);
-        if($solution){
+        if ($solution) {
             $solution_category = [
                 'solution'              => $solution,
                 'solutionArticleCount'  => $this->getDoctrine()
-                    ->getRepository(SupportEntites\Solutions::class)
+                    ->getRepository(SupportEntities\Solutions::class)
                     ->getArticlesCountBySolution($request->attributes->get('solution')),
                 'solutionCategoryCount' => $this->getDoctrine()
-                    ->getRepository(SupportEntites\Solutions::class)
+                    ->getRepository(SupportEntities\Solutions::class)
                     ->getCategoriesCountBySolution($request->attributes->get('solution')),
             ];
             return $this->render('@UVDeskSupportCenter/Staff/Category/categoryListBySolution.html.twig',$solution_category);
@@ -76,12 +77,12 @@ class Category extends AbstractController
 
     public function CategoryListXhr(Request $request, ContainerInterface $container)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $json = array();
-        $repository = $this->getDoctrine()->getRepository(SupportEntites\SolutionCategory::class);
+        $repository = $this->getDoctrine()->getRepository(SupportEntities\SolutionCategory::class);
 
         if ($request->attributes->get('solution'))
             $request->query->set('solutionId', $request->attributes->get('solution'));
@@ -96,24 +97,24 @@ class Category extends AbstractController
 
     public function Category(Request $request, ContainerInterface $container)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         if ($request->attributes->get('id')) {
-            $category = $this->getDoctrine()->getRepository(SupportEntites\SolutionCategory::class)->findOneById($request->attributes->get('id'));
+            $category = $this->getDoctrine()->getRepository(SupportEntities\SolutionCategory::class)->findOneById($request->attributes->get('id'));
 
-            if (!$category) {
+            if (! $category) {
                 $this->noResultFound();
             }
         } else {
-            $category = new SupportEntites\SolutionCategory;
+            $category = new SupportEntities\SolutionCategory;
         }
 
         $categorySolutions = [];
         if ($category->getId())
             $categorySolutions = $this->getDoctrine()
-                ->getRepository(SupportEntites\SolutionCategory::class)
+                ->getRepository(SupportEntities\SolutionCategory::class)
                 ->getSolutionsByCategory($category->getId());
 
         $errors = [];
@@ -144,7 +145,7 @@ class Category extends AbstractController
 
                 if ($oldSolutions) {
                     $this->getDoctrine()
-                        ->getRepository(SupportEntites\SolutionCategory::class)
+                        ->getRepository(SupportEntities\SolutionCategory::class)
                         ->removeSolutionsByCategory($category->getId(), $oldSolutions);
                 }
             }
@@ -152,7 +153,7 @@ class Category extends AbstractController
             if ($tempSolutions) {
                 foreach ($tempSolutions as $solution) {
                     if ($solution) {
-                        $solutionCategoryMapping = new SupportEntites\SolutionCategoryMapping();
+                        $solutionCategoryMapping = new SupportEntities\SolutionCategoryMapping();
                         $solutionCategoryMapping->setSolutionId($solution);
                         $solutionCategoryMapping->setCategoryId($category->getId());
                         $em->persist($solutionCategoryMapping);
@@ -169,7 +170,7 @@ class Category extends AbstractController
         }
 
         $solutions = $this->getDoctrine()
-            ->getRepository(SupportEntites\Solutions::class)
+            ->getRepository(SupportEntities\Solutions::class)
             ->getAllSolutions(null, $container, 'a.id, a.name');
 
         return $this->render('@UVDeskSupportCenter/Staff/Category/categoryForm.html.twig', [
@@ -182,13 +183,13 @@ class Category extends AbstractController
 
     public function CategoryXhr(Request $request, ContainerInterface $container)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $json = array();
 
-        if($request->getMethod() == "POST") {
+        if ($request->getMethod() == "POST") {
             $em = $this->getDoctrine()->getManager();
 
             $data = $request->request->get("data");
@@ -197,26 +198,26 @@ class Category extends AbstractController
             switch($data['actionType']) {
                 case 'sortUpdate':
                     foreach ($dataIds as $sort => $id) {
-                        $em->getRepository(SupportEntites\SolutionCategory::class)->categorySortingUpdate($id, $sort);
+                        $em->getRepository(SupportEntities\SolutionCategory::class)->categorySortingUpdate($id, $sort);
                     }
                     $json['alertClass'] = 'success';
                     $json['alertMessage'] = $this->translator->trans('Success ! Category sort  order updated successfully.');
                     break;
                 case 'status':
-                    $em->getRepository(SupportEntites\SolutionCategory::class)->bulkCategoryStatusUpdate($dataIds, $data['targetId']);
+                    $em->getRepository(SupportEntities\SolutionCategory::class)->bulkCategoryStatusUpdate($dataIds, $data['targetId']);
                     $json['alertClass'] = 'success';
                     $json['alertMessage'] = $this->translator->trans('Success ! Category status updated successfully.');
                     break;
                 case 'solutionUpdate':
                     if ($data['action'] == 'remove') {
                         $this->getDoctrine()
-                            ->getRepository(SupportEntites\SolutionCategory::class)
+                            ->getRepository(SupportEntities\SolutionCategory::class)
                             ->removeSolutionsByCategory($data['ids'][0], [$data['solutionId']]);
 
                     } elseif ($data['action'] == 'add') {
                         $company = $this->userService->getCurrentCompany();
 
-                        $solutionCategoryMapping = new SupportEntites\SolutionCategoryMapping();
+                        $solutionCategoryMapping = new SupportEntities\SolutionCategoryMapping();
                         $solutionCategoryMapping->setSolutionId($data['solutionId']);
                         $solutionCategoryMapping->setCategoryId($data['ids'][0]);
                         $solutionCategoryMapping->setCompanyId($company->getId());
@@ -227,9 +228,9 @@ class Category extends AbstractController
                     $json['alertMessage'] = $this->translator->trans('Success ! Folders updated successfully.');
                     break;
                 case 'delete':
-                    if($dataIds){
+                    if ($dataIds) {
                         foreach ($dataIds as $id) {
-                            $category = $em->getRepository(SupportEntites\SolutionCategory::class)->find($id);
+                            $category = $em->getRepository(SupportEntities\SolutionCategory::class)->find($id);
                             if ($category) {
                                 // $this->get('event.manager')->trigger([
                                 //         'event' => 'category.deleted',
@@ -252,7 +253,7 @@ class Category extends AbstractController
             $em = $this->getDoctrine()->getManager();
             $content = json_decode($request->getContent(), true);
             $id = $content['id'];
-            $category = $em->getRepository(SupportEntites\SolutionCategory::class)->find($id);
+            $category = $em->getRepository(SupportEntities\SolutionCategory::class)->find($id);
             if ($category) {
                 $form = $this->createFormBuilder($category, [
                     'data_class' => 'Webkul\UVDeskSupportCenterBundle\Entity\SolutionCategory',
@@ -279,11 +280,11 @@ class Category extends AbstractController
                 $json['alertClass'] = 'danger';
                 $json['alertMessage'] =  $this->translator->trans('Error ! Category does not exist.');
             }
-        } elseif($request->getMethod() == "PATCH") { //UPDATE STATUS
+        } elseif ($request->getMethod() == "PATCH") { //UPDATE STATUS
             $em = $this->getDoctrine()->getManager();
             $content = json_decode($request->getContent(), true);
             $id = $content['id'];
-            $category = $em->getRepository(SupportEntites\SolutionCategory::class)->find($id);
+            $category = $em->getRepository(SupportEntities\SolutionCategory::class)->find($id);
             if ($category) {
                 switch($content['editType']){
                     case 'status':
@@ -305,17 +306,18 @@ class Category extends AbstractController
 
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 
     private function removeCategory($category)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $this->getDoctrine()
-            ->getRepository(SupportEntites\SolutionCategory::class)
+            ->getRepository(SupportEntities\SolutionCategory::class)
             ->removeEntryByCategory($category);
     }
 

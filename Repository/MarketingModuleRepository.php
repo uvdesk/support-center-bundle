@@ -8,7 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class MarketingModuleRepository extends ServiceEntityRepository
@@ -33,13 +33,13 @@ class MarketingModuleRepository extends ServiceEntityRepository
         foreach ($data as $key => $value) {
             if (! in_array($key, $this->safeFields)) {
                 if ($key != 'dateUpdated' AND $key != 'dateAdded' AND $key != 'search') {
-                    $qb->Andwhere('a.'.$key.' = :'.$key);
+                    $qb->andWhere('a.'.$key.' = :'.$key);
                     $qb->setParameter($key, $value);
                 } else {
                     if ($key == 'search') {
-                        $qb->orwhere('a.title'.' LIKE :name');
+                        $qb->orWhere('a.title'.' LIKE :name');
                         $qb->setParameter('name', '%'.urldecode(trim($value)).'%');
-                        $qb->orwhere('a.description'.' LIKE :description');
+                        $qb->orWhere('a.description'.' LIKE :description');
                         $qb->setParameter('description', '%'.urldecode(trim($value)).'%');
                     }
                 }

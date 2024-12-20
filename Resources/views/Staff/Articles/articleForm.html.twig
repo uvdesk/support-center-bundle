@@ -385,7 +385,7 @@
 					<a href="#" type="button" class="uv-btn-small history-preview" data-id="<%= id %>">
 						{{ "Preview"|trans }}
 					</a>
-					<a href="#" type="button" class="uv-btn-small <% if(hasContent && !isCurrent){ %>history-restore<% } %>"  <% if(isCurrent || !hasContent){ %>disabled="disabled" <% } %>>
+					<a href="#" type="button" class="uv-btn-small <% if (hasContent && !isCurrent){ %>history-restore<% } %>"  <% if (isCurrent || !hasContent){ %>disabled="disabled" <% } %>>
 						<% if (isCurrent) { %>
 							{{ "Restored"|trans }}
 						<% } else { %>
@@ -683,11 +683,11 @@
 						var elSlugValue = '';
 						elSlug.val(elSlugValue = app.appView.convertToSlug(val))
 					
-						if(elSlugValue.trim() == ''){
+						if (elSlugValue.trim() == ''){
 							return '{{ "This field is mandatory"|trans }}';
 						}
 						
-						if(elSlugValue.length > 100) {
+						if (elSlugValue.length > 100) {
 							return '{{ "This field slug contains maximum 100 characters only."|trans }}';
 						}
 					}
@@ -858,7 +858,7 @@
 							globalMessageResponse = null;
 						},
 						error: function (model, xhr, options) {
-							if(url = xhr.getResponseHeader('Location'))
+							if (url = xhr.getResponseHeader('Location'))
 								window.location = url;
 						}
 					});
@@ -931,7 +931,7 @@
 								if (text.length <= 25) {
 								let existed = false;
 								$('.uv-filtered-tags .uv-tag').each(function(key, el){
-									if($(el).text().toLowerCase() == text.toLowerCase())
+									if ($(el).text().toLowerCase() == text.toLowerCase())
 										existed = true;
 								})
 								
@@ -1119,7 +1119,7 @@
 										});
 									}
 								} else {
-									if(response.results.length == 0) {
+									if (response.results.length == 0) {
 										parent.find('.press-enter-to-add').hide()
 										parent.find('.uv-no-results').show()
 									}

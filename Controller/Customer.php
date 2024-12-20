@@ -4,8 +4,8 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 use Webkul\UVDesk\CoreFrameworkBundle\Form\UserProfile;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -50,12 +50,12 @@ Class Customer extends AbstractController
     protected function isWebsiteActive()
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneByCode('knowledgebase');
+        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
   
-        if (!empty($website)) {
-            $knowledgebaseWebsite = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => 1]);
+        if (! empty($website)) {
+            $knowledgebaseWebsite = $entityManager->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => 1]);
             
-            if (!empty($knowledgebaseWebsite) && true == $knowledgebaseWebsite->getIsActive()) {
+            if (! empty($knowledgebaseWebsite) && true == $knowledgebaseWebsite->getIsActive()) {
                 return true;
             }
         }
@@ -71,15 +71,18 @@ Class Customer extends AbstractController
     protected function isLoginDisabled()
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneByCode('knowledgebase');
+        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
 
-        if (!empty($website)) {
-            $configuration = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy([
+        if (! empty($website)) {
+            $configuration = $entityManager->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy([
                 'website' => $website->getId(),
                 'isActive' => 1,
             ]);
 
-            if (!empty($configuration) && $configuration->getDisableCustomerLogin()) {
+            if (
+                ! empty($configuration) 
+                && $configuration->getDisableCustomerLogin()
+            ) {
                 return true;
             }
         }
@@ -98,7 +101,7 @@ Class Customer extends AbstractController
             ], 403);
         }
 
-        $user = $entityManager->getRepository(CoreEntites\User::class)->findOneByEmail($params['_username']);
+        $user = $entityManager->getRepository(CoreEntities\User::class)->findOneByEmail($params['_username']);
 
         if (empty($user) || empty($params['otp'])) {
             return new JsonResponse([
@@ -153,10 +156,10 @@ Class Customer extends AbstractController
     public function generateOtp(Request $request) {
         $params = $request->request->all();
         $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneByCode('helpdesk');
-        $knowledgebase = $entityManager->getRepository(CoreEntites\Website::class)->findOneByCode('knowledgebase');
+        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneByCode('helpdesk');
+        $knowledgebase = $entityManager->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
 
-        $user = $entityManager->getRepository(CoreEntites\User::class)->retrieveHelpdeskCustomerInstances($params['_username']);
+        $user = $entityManager->getRepository(CoreEntities\User::class)->retrieveHelpdeskCustomerInstances($params['_username']);
 
         if (empty($user)) {
             return new JsonResponse([
@@ -173,7 +176,7 @@ Class Customer extends AbstractController
         $currentTimestamp = new \DateTime('now');
         $lastOtpGeneratedAtTimestamp = $user->getLastOtpGeneratedAt();
 
-        if (!empty($lastOtpGeneratedAtTimestamp)) {
+        if (! empty($lastOtpGeneratedAtTimestamp)) {
             $lastOtpGeneratedAtTimestamp->modify('+1 minute');
             $interval = $lastOtpGeneratedAtTimestamp->diff($currentTimestamp);
 
@@ -225,6 +228,7 @@ Class Customer extends AbstractController
         /** check disabled customer login **/
         if ($this->isLoginDisabled()) {
             $this->addFlash('warning', $this->translator->trans('Warning ! Customer Login disabled by admin.') );
+            
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
         }
 
@@ -269,13 +273,14 @@ Class Customer extends AbstractController
             // Profile upload validation
             $validMimeType = ['image/jpeg', 'image/png', 'image/jpg'];
             if (isset($dataFiles['profileImage'])) {
-                if (!in_array($dataFiles['profileImage']->getMimeType(), $validMimeType)) {
+                if (! in_array($dataFiles['profileImage']->getMimeType(), $validMimeType)) {
                     $this->addFlash('warning', $this->translator->trans('Error ! Profile image is not valid, please upload a valid format'));
+                    
                     return $this->redirect($this->generateUrl('helpdesk_customer_account'));
                 }
             }
 
-            $checkUser = $em->getRepository(CoreEntites\User::class)->findOneBy(array('email'=>$data['email']));
+            $checkUser = $em->getRepository(CoreEntities\User::class)->findOneBy(array('email'=>$data['email']));
             $errorFlag = 0;
 
             if ($checkUser) {
@@ -283,7 +288,7 @@ Class Customer extends AbstractController
                     $errorFlag = 1;
             }
 
-            if (!$errorFlag) {
+            if (! $errorFlag) {
                 $password = $user->getPassword();
 
                 $form = $this->createForm(UserProfile::class, $user);
@@ -294,7 +299,7 @@ Class Customer extends AbstractController
                     if ($data != null && (!empty($data['password']['first']))) {
                         $encodedPassword = $this->passwordEncoder->encodePassword($user, $data['password']['first']);
 
-                        if (!empty($encodedPassword) ) {
+                        if (! empty($encodedPassword) ) {
                             $user->setPassword($encodedPassword);
                         }
                     } else {
@@ -310,7 +315,7 @@ Class Customer extends AbstractController
                     $em->persist($user);
                     $em->flush();
 
-                    $userInstance = $em->getRepository(CoreEntites\UserInstance::class)->findOneBy(array('user' => $user->getId()));
+                    $userInstance = $em->getRepository(CoreEntities\UserInstance::class)->findOneBy(array('user' => $user->getId()));
 
                     if (isset($dataFiles['profileImage'])) {
                         $previousImage = $userInstance->getProfileImagePath();
@@ -363,7 +368,7 @@ Class Customer extends AbstractController
             return $this->redirect($this->generateUrl('helpdesk_customer_ticket_collection'));
         }
 
-        $articleCollection = $this->getDoctrine()->getRepository(SupportEntites\Article::class)->getArticleBySearch($request);
+        $articleCollection = $this->getDoctrine()->getRepository(SupportEntities\Article::class)->getArticleBySearch($request);
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/search.html.twig', [
             'search'   => $searchQuery,

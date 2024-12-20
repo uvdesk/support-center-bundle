@@ -4,14 +4,15 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFileservice;
+
 class Branding extends AbstractController
 {
     private $userService;
@@ -29,7 +30,7 @@ class Branding extends AbstractController
 
     public function theme(Request $request)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_ADMIN')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_ADMIN')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -37,14 +38,14 @@ class Branding extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $settingType = $request->attributes->get('type');
         $userService = $this->userService;
-        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneBy(['code'=>"knowledgebase"]);
-        $configuration = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(),'isActive' => 1]);
+        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneBy(['code'=>"knowledgebase"]);
+        $configuration = $entityManager->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(),'isActive' => 1]);
         $currentLocales = $this->uvdeskService->getDefaultLangauge();
 
         if ($request->getMethod() == 'POST') {
             $isValid = 0;
             $params = $request->request->all();
-            $parmsFile = ($request->files->get('website'));
+            $paramsFile = ($request->files->get('website'));
             $selectedLocale = isset($params['defaultLocale']) ? $params['defaultLocale'] : null;
 
             switch($settingType) {
@@ -60,13 +61,13 @@ class Branding extends AbstractController
                     $status = array_key_exists("status",$params['website']) ? 1 : 0;
                     $logo = $website->getLogo();
 
-                    if ($logo != null && isset($parmsFile['logo'])) {
+                    if ($logo != null && isset($paramsFile['logo'])) {
                         $fileService = new SymfonyFileservice;
                         $fileService->remove($this->getParameter('kernel.project_dir').'/public'.$logo);
                     }
 
-                    if (isset($parmsFile['logo'])) {
-                        $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($parmsFile['logo'], 'website');
+                    if (isset($paramsFile['logo'])) {
+                        $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($paramsFile['logo'], 'website');
                         $website->setLogo($assetDetails['path']);
                     }
 
@@ -77,7 +78,7 @@ class Branding extends AbstractController
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
-                    if (!empty($selectedLocale)) {
+                    if (! empty($selectedLocale)) {
                         if (false == $this->uvdeskService->updatesLocales($selectedLocale)) {
                             $this->addFlash('danger', $this->translator->trans('Warning! Locales could not be updated successfully.'));
                         } else {
@@ -99,11 +100,9 @@ class Branding extends AbstractController
                     $configuration->setBannerBackgroundColor($params['website']['bannerBackgroundColor']);
                     $configuration->setHomepageContent($params['website']['homepageContent']);
 
-
                     $removeCustomerLoginButton = array_key_exists("removeCustomerLoginButton",$params['website']) ? $params['website']['removeCustomerLoginButton'] : 0;
                     $removeBrandingContent = array_key_exists("removeBrandingContent",$params['website']) ? $params['website']['removeBrandingContent'] : 0;
                     $disableCustomerLogin = array_key_exists("disableCustomerLogin",$params['website']) ? $params['website']['disableCustomerLogin'] : 0;
-
 
                     $configuration->setRemoveCustomerLoginButton($removeCustomerLoginButton);
                     $configuration->setRemoveBrandingContent($removeBrandingContent);
@@ -134,18 +133,25 @@ class Branding extends AbstractController
                     $headerLinks = isset($params['headerLinks'])? $params['headerLinks']: '';
                     $footerLinks = isset($params['footerLinks']) ? $params['footerLinks']: 0;
 
-                    if (!empty($headerLinks)) {
+                    if (! empty($headerLinks)) {
                         foreach ($headerLinks as $key => $link) {
-                            if($link['label'] == '' || $link['url'] == '' || !filter_var($link['url'], FILTER_VALIDATE_URL)) {
-
+                            if (
+                                $link['label'] == '' 
+                                || $link['url'] == '' 
+                                || !filter_var($link['url'], FILTER_VALIDATE_URL)
+                            ) {
                                 unset($headerLinks[$key]);
                             }
                         }
                     }
 
-                    if (!empty($footerLinks)) {
+                    if (! empty($footerLinks)) {
                         foreach ($footerLinks as $key => $link) {
-                            if($link['label'] == '' || $link['url'] == '' || !filter_var($link['url'], FILTER_VALIDATE_URL)) {
+                            if (
+                                $link['label'] == '' 
+                                || $link['url'] == '' 
+                                || !filter_var($link['url'], FILTER_VALIDATE_URL)
+                            ) {
                                 unset($footerLinks[$key]);
                             }
                         }
@@ -229,24 +235,23 @@ class Branding extends AbstractController
 
     public function spam(Request $request)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_ADMIN')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_ADMIN')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $params = $request->request->all();
         $entityManager = $this->getDoctrine()->getManager();
 
-        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneBy(['code'=>"knowledgebase"]);
+        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneBy(['code'=>"knowledgebase"]);
         
-        if (!$website) {
+        if (! $website) {
             throw new \Exception("No knowledgebase website details were found.");
         }
         
-        $configuration = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
+        $configuration = $entityManager->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
         
-
-        $blacklist = !empty($params['blackList']) ? explode(',', $params['blackList']) : [];
-        $whitelist = !empty($params['whiteList']) ? explode(',', $params['whiteList']) : [];
+        $blacklist = ! empty($params['blackList']) ? explode(',', $params['blackList']) : [];
+        $whitelist = ! empty($params['whiteList']) ? explode(',', $params['whiteList']) : [];
 
         $blacklist = array_values(array_filter(array_map(function ($email) {
             return trim($email);
@@ -284,7 +289,7 @@ class Branding extends AbstractController
         $params = $request->request->all();
         $defaultLocale = isset($params['defaultLocale']) ? $params['defaultLocale'] : null;
 
-        if (!empty($defaultLocale)) {
+        if (! empty($defaultLocale)) {
             $localesStatus = $this->uvdeskService->updatesLocales($defaultLocale);
             $localesStatus == true ? '' : $this->addFlash('danger', $this->translator->trans('Warning ! Locales not updates successfully.'));
         }
@@ -292,9 +297,9 @@ class Branding extends AbstractController
         $json['alertClass'] = 'success';
         $json['alertMessage'] = $this->translator->trans('Success ! Updated.');
 
-
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 }

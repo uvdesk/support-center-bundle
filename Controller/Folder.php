@@ -6,12 +6,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\FileUploadService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Filesystem\Filesystem as Fileservice;
+
 class Folder extends AbstractController
 {
     private $userService;
@@ -29,14 +30,14 @@ class Folder extends AbstractController
 
     public function listFolders(Request $request)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $entityManager = $this->getDoctrine()->getManager();
-        $totalKnowledgebaseFolders = count($entityManager->getRepository(SupportEntites\Solutions::class)->findAll());
-        $totalKnowledgebaseCategories = count($entityManager->getRepository(SupportEntites\SolutionCategory::class)->findAll());
-        $totalKnowledgebaseArticles = count($entityManager->getRepository(SupportEntites\Article::class)->findAll());
+        $totalKnowledgebaseFolders = count($entityManager->getRepository(SupportEntities\Solutions::class)->findAll());
+        $totalKnowledgebaseCategories = count($entityManager->getRepository(SupportEntities\SolutionCategory::class)->findAll());
+        $totalKnowledgebaseArticles = count($entityManager->getRepository(SupportEntities\Article::class)->findAll());
 
         return $this->render('@UVDeskSupportCenter/Staff/Folders/listFolders.html.twig', [
             'articleCount'  => $totalKnowledgebaseArticles,
@@ -47,20 +48,20 @@ class Folder extends AbstractController
 
     public function createFolder(Request $request)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
-        $folder = new SupportEntites\Solutions();
+        $folder = new SupportEntities\Solutions();
         $errors = [];
 
         if ($request->getMethod() == "POST") {
             $entityManager = $this->getDoctrine()->getManager();
             $solutionImage = $request->files->get('solutionImage');
 
-            if ($imageFile = $request->files->get('solutionImage')) { 
+            if ($imageFile = $request->files->get('solutionImage')) {
                 if ($imageFile->getMimeType() == "image/svg+xml" || $imageFile->getMimeType() == "image/svg") {
-                    if (!$this->fileUploadService->svgFileCheck($imageFile)){
+                    if (! $this->fileUploadService->svgFileCheck($imageFile)) {
                         $message = $this->translator->trans('Warning! Not a valid svg. (Recommended: PNG, JPG or GIF Format).');
                         $this->addFlash('warning', $message);
     
@@ -68,7 +69,7 @@ class Folder extends AbstractController
                     }
                 }
 
-                if (!preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
+                if (! preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
 
                     $message = $this->translator->trans('Warning! Provide valid image file. (Recommended: PNG, JPG or GIF Format).');
                     $this->addFlash('warning', $message);
@@ -78,9 +79,9 @@ class Folder extends AbstractController
 
                 if (strpos($imageFile->getClientOriginalName(), '.php') !== false) {
                     $message = $this->translator->trans('Warning! Provide valid image file. (Recommended: PNG, JPG or GIF Format).');
-                        $this->addFlash('warning', $message);
+                    $this->addFlash('warning', $message);
     
-                        return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
+                    return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
                 }
             }
 
@@ -88,7 +89,7 @@ class Folder extends AbstractController
             $folder->setName($data['name']);
             $folder->setDescription($data['description']);
             $folder->setvisibility($data['visibility']);
-            if (isset($solutionImage)){
+            if (isset($solutionImage)) {
                 $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($solutionImage, 'knowledgebase');
                 $folder->setSolutionImage($assetDetails['path']);
             }
@@ -112,13 +113,13 @@ class Folder extends AbstractController
 
     public function updateFolder($folderId)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $entityManager = $this->getDoctrine()->getManager();
         $request = $this->container->get('request_stack')->getCurrentRequest();
-        $knowledgebaseFolder = $entityManager->getRepository(SupportEntites\Solutions::class)->findSolutionById(['id' => $folderId]);
+        $knowledgebaseFolder = $entityManager->getRepository(SupportEntities\Solutions::class)->findSolutionById(['id' => $folderId]);
 
         if (empty($knowledgebaseFolder)) {
             $this->noResultFound();
@@ -130,7 +131,7 @@ class Folder extends AbstractController
 
             if ($imageFile = $request->files->get('solutionImage')) {
                 if ($imageFile->getMimeType() == "image/svg+xml" || $imageFile->getMimeType() == "image/svg") {
-                    if (!$this->fileUploadService->svgFileCheck($imageFile)){
+                    if (! $this->fileUploadService->svgFileCheck($imageFile)) {
                         $message = $this->translator->trans('Warning! Not a valid svg. (Recommended: PNG, JPG or GIF Format).');
                         $this->addFlash('warning', $message);
     
@@ -138,7 +139,7 @@ class Folder extends AbstractController
                     }
                 }
                 
-                if (!preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
+                if (! preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
                     $message = $this->translator->trans('Warning! Provide valid image file. (Recommended: PNG, JPG or GIF Format).');
                     $this->addFlash('warning', $message);
 

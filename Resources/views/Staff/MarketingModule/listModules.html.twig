@@ -85,20 +85,20 @@
 {{ parent() }}
 <!-- Sorting Template -->
 <script id="marketing_module_list_sorting_tmp" type="text/template">
-	<li class="<% if(sort == 'a.createdAt') { %>uv-drop-list-active<% } %>">
-		<a href="#<% if(queryString != '') { %><%= queryString %>/<% } %><% if(page) { %>page/<%= page %><% } else { %>page/1<% } %>/sort/a.createdAt/<% if(sort == 'a.createdAt') { %><% if(direction) { %>direction/<%= direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.createdAt">
+	<li class="<% if (sort == 'a.createdAt') { %>uv-drop-list-active<% } %>">
+		<a href="#<% if (queryString != '') { %><%= queryString %>/<% } %><% if (page) { %>page/<%= page %><% } else { %>page/1<% } %>/sort/a.createdAt/<% if (sort == 'a.createdAt') { %><% if (direction) { %>direction/<%= direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.createdAt">
 			{% trans %}Created At{% endtrans %}
-			<% if(sort == 'a.createdAt') { %>
-				<span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
+			<% if (sort == 'a.createdAt') { %>
+				<span class="uv-sorting <% if (direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 			<% } %>
 		</a>
 	</li>
 
-	<li class="<% if(sort == 'a.title') { %>uv-drop-list-active<% } %>">
-		<a href="#<% if(queryString != '') { %><%= queryString %>/<% } %><% if(page) { %>page/<%= page %><% } else { %>page/1<% } %>/sort/a.title/<% if(sort == 'a.title') { %><% if(direction) { %>direction/<%= direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.title">
+	<li class="<% if (sort == 'a.title') { %>uv-drop-list-active<% } %>">
+		<a href="#<% if (queryString != '') { %><%= queryString %>/<% } %><% if (page) { %>page/<%= page %><% } else { %>page/1<% } %>/sort/a.title/<% if (sort == 'a.title') { %><% if (direction) { %>direction/<%= direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.title">
 			{% trans %}Name{% endtrans %}
-			<% if(sort == 'a.title') { %>
-				<span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
+			<% if (sort == 'a.title') { %>
+				<span class="uv-sorting <% if (direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 			<% } %>
 		</a>
 	</li>
@@ -117,7 +117,7 @@
         <%- description %>
     </td>
     <td data-value="{{ 'Status'|trans }}">
-        <% if(isActive) { %>
+        <% if (isActive) { %>
             <span class="uv-text-success">{{ 'Active'|trans }}</span>
         <% } else { %>
             <span class="uv-text-danger">{{ 'Disabled'|trans }}</span>
@@ -164,17 +164,17 @@
 						app.pager.paginationData = response.pagination_data;
 
 						var url = app.pager.paginationData.url;
-						if(teamCollection.length == 0 && app.pager.paginationData.current != "0")
+						if (teamCollection.length == 0 && app.pager.paginationData.current != "0")
 							router.navigate(url.replace('replacePage', app.pager.paginationData.last),{trigger: true});
 						else {
 							app.pager.render();
 						}
-						if(globalMessageResponse)
+						if (globalMessageResponse)
 							app.appView.renderResponseAlert(globalMessageResponse);
 						globalMessageResponse = null;
 					},
 					error: function (model, xhr, options) {
-						if(url = xhr.getResponseHeader('Location'))
+						if (url = xhr.getResponseHeader('Location'))
 							window.location = url;
 					}
 				});
@@ -192,7 +192,7 @@
 					return this;
 				},
 				unrender : function(response) {
-					if(response.alertMessage != undefined) {
+					if (response.alertMessage != undefined) {
 						teamCollection.syncData();
 						app.appView.renderResponseAlert(response)
 					}
@@ -212,10 +212,10 @@
 							teamCollection.syncData();
 						},
 						error: function (model, xhr, options) {
-							if(url = xhr.getResponseHeader('Location'))
+							if (url = xhr.getResponseHeader('Location'))
 								window.location = url;
 							var response = warningResponse;
-							if(xhr.responseJSON)
+							if (xhr.responseJSON)
 								response = xhr.responseJSON;
 
 							app.appView.hideLoader();
@@ -232,7 +232,7 @@
             },
             render : function () {
                 this.$el.find("tr").remove();
-                if(teamCollection.length) {
+                if (teamCollection.length) {
                     _.each(teamCollection.models, function (item) {
                         this.renderTeam(item);
                     }, this);
@@ -293,7 +293,7 @@
 					teamCollection.syncData();
 				},
 				resetParams : function(status, query) {
-					if(query != null)
+					if (query != null)
 						query = query.replace(/\+/g,' ');
 					teamCollection.filterParameters.isActive = status;
 					var statusText = status ? $(".filter-by-status a[data-id='" + status + "']").text() : "{% trans %}All{% endtrans %}";

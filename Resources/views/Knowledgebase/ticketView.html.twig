@@ -558,7 +558,7 @@
             <% if (user && smallThumbnail != null) { %>
                 <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}<%= smallThumbnail.slice(1) %>" />
             <% } else { %>
-                <img src="<% if(userType == 'agent') { %> {{ asset(default_agent_image_path) }} <% } else { %> {{ asset(default_customer_image_path) }} <% } %>" />
+                <img src="<% if (userType == 'agent') { %> {{ asset(default_agent_image_path) }} <% } else { %> {{ asset(default_customer_image_path) }} <% } %>" />
             <% } %>
         </div>
         <div class="uv-ticket-main-rt">
@@ -572,7 +572,7 @@
             <!-- //Message Block -->
 
             <!-- Attachment Block -->
-            <% if(attachments.length) { %>
+            <% if (attachments.length) { %>
                 <div class="uv-ticket-uploads">
                     <h4>{{ 'Uploaded Files'|trans }}</h4>
                     <div class="uv-ticket-uploads-strip uv-viewer-images">
@@ -655,7 +655,7 @@
                         url : "{{ path('helpdesk_customer_rate_ticket', {'id': ticket.id}) }}",
                         success: function (model, response, options) {
                             app.appView.hideLoader()
-                            if(response.alertClass == 'success') {
+                            if (response.alertClass == 'success') {
                                 $('.uv-kudo-response').removeClass('uv-kudo-done');
                                 element.addClass('uv-kudo-done');
                                 $('.uv-kudo-message').text(self.ratingText[count])
@@ -665,13 +665,13 @@
                             }
                         },
                         error: function (model, xhr, options) {
-                            if(url = xhr.getResponseHeader('Location'))
+                            if (url = xhr.getResponseHeader('Location'))
                                 window.location = url;
                         }
                     });
                 },
                 addCCCollaborators: function() {
-                    if(collaboratorCollection.length) {
+                    if (collaboratorCollection.length) {
                         var collaboratorContainer = $('.uv-element-block.collaborators');
                         collaboratorContainer.find('.uv-field-block').html('');
                         collaboratorContainer.show()
@@ -694,7 +694,7 @@
                 showCcBccBlock: function(e) {
                     var currentElement = Backbone.$(e.currentTarget);
                     var currentTab = currentElement.parents('.uv-tab-view');
-                    if(currentElement.is(':checked')) {
+                    if (currentElement.is(':checked')) {
                         currentTab.find('.uv-element-block.cc-bcc').find('.uv-field-block').show()
                     } else {
                         currentTab.find('.uv-element-block.cc-bcc').find('.uv-field-block').hide()
@@ -708,12 +708,12 @@
                     if (e.which === 13 && email) {
                         e.preventDefault()
                         type = currentTab.find('.cc-bcc-select option:selected').text()
-                        if (!this.model.preValidate({name: 'email', email: email})) {
+                        if (! this.model.preValidate({name: 'email', email: email})) {
                             inputName = $('.cc-bcc-select').val()
                             inputElement.val('').trigger('input')
                             inputElement.removeClass('uv-dropdown-btn-active')
                             inputElement.siblings('.uv-dropdown-list').hide()
-                            if(!currentTab.find(".cc-bcc-list input[value='" + email + "']." + inputName).length) {
+                            if (!currentTab.find(".cc-bcc-list input[value='" + email + "']." + inputName).length) {
                                 currentTab.find('.cc-bcc-list').append("<span><input type='hidden' name='" + inputName + "[]' value='" + email + "' class='" + inputName + "'/><a class=uv-btn-tag uv-lowercase' href='#'><span class='uv-icon-remove-dark-before'></span>" + email + " : <span class='uv-uppercase'>" + type + "</span></a></span>")
                             }
                         }
@@ -821,7 +821,7 @@
                     'click .uv-ticket-count-stat': 'loadMore',
                 },
                 renderPagination: function(pagination) {
-                    if(pagination.totalCount - pagination.lastItemNumber > 0 && pagination.lastItemNumber > 0) {
+                    if (pagination.totalCount - pagination.lastItemNumber > 0 && pagination.lastItemNumber > 0) {
                         var remain = pagination.totalCount - pagination.lastItemNumber;
                         $('.uv-ticket-count-stat').text(remain)
                         $('.uv-ticket-accordion').removeClass('uv-ticket-accordion-expanded').removeClass('uv-ticket-accordion-no-count')

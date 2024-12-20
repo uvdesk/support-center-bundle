@@ -10,8 +10,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites; 
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities; 
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
 
 class Website extends AbstractController
 {
@@ -33,10 +33,10 @@ class Website extends AbstractController
     private function isKnowledgebaseActive()
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository(CoreEntites\Website::class)->findOneByCode('knowledgebase');
+        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
 
         if (! empty($website)) {
-            $knowledgebaseWebsite = $entityManager->getRepository(SupportEntites\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => true]);
+            $knowledgebaseWebsite = $entityManager->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => true]);
 
             if (! empty($knowledgebaseWebsite) && true == $knowledgebaseWebsite->getIsActive()) {
                 return true;
@@ -56,8 +56,8 @@ class Website extends AbstractController
             'direction'  => 'desc'
         ];
 
-        $articleRepository = $this->getDoctrine()->getRepository(SupportEntites\Article::class);
-        $solutionRepository = $this->getDoctrine()->getRepository(SupportEntites\Solutions::class);
+        $articleRepository = $this->getDoctrine()->getRepository(SupportEntities\Article::class);
+        $solutionRepository = $this->getDoctrine()->getRepository(SupportEntities\Solutions::class);
 
         $twigResponse = [
             'searchDisable' => false,
@@ -107,7 +107,7 @@ class Website extends AbstractController
     {
         $this->isKnowledgebaseActive();
 
-        $solutionRepository = $this->getDoctrine()->getRepository(SupportEntites\Solutions::class);
+        $solutionRepository = $this->getDoctrine()->getRepository(SupportEntities\Solutions::class);
         $categoryCollection = $solutionRepository->getAllCategories(10, 4);
         
         return $this->render('@UVDeskSupportCenter/Knowledgebase/categoryListing.html.twig', [
@@ -126,7 +126,7 @@ class Website extends AbstractController
         $filterArray = ['id' => $request->attributes->get('solution')];
 
         $solution = $this->getDoctrine()
-                    ->getRepository(SupportEntites\Solutions::class)
+                    ->getRepository(SupportEntities\Solutions::class)
                     ->findOneBy($filterArray);
 
         if (! $solution)
@@ -158,10 +158,10 @@ class Website extends AbstractController
         return $this->render('@UVDeskSupportCenter//Knowledgebase//folder.html.twig', [
             'folder'        => $solution,
             'categoryCount' => $this->getDoctrine()
-                ->getRepository(SupportEntites\Solutions::class)
+                ->getRepository(SupportEntities\Solutions::class)
                 ->getCategoriesCountBySolution($solution->getId()),
             'categories'    => $this->getDoctrine()
-                ->getRepository(SupportEntites\Solutions::class)
+                ->getRepository(SupportEntities\Solutions::class)
                 ->getCategoriesWithCountBySolution($solution->getId()),
             'breadcrumbs'   => $breadcrumbs
         ]);
@@ -177,7 +177,7 @@ class Website extends AbstractController
         $filterArray = ['id' => $request->attributes->get('solution')];
 
         $solution = $this->getDoctrine()
-                    ->getRepository(SupportEntites\Solutions::class)
+                    ->getRepository(SupportEntities\Solutions::class)
                     ->findOneBy($filterArray);
 
         if (! $solution)
@@ -206,10 +206,10 @@ class Website extends AbstractController
         $article_data = [
             'folder'        => $solution,
             'articlesCount' => $this->getDoctrine()
-                ->getRepository(SupportEntites\Solutions::class)
+                ->getRepository(SupportEntities\Solutions::class)
                 ->getArticlesCountBySolution($solution->getId(), [1]),
             'articles'      => $this->getDoctrine()
-                ->getRepository(SupportEntites\Article::class)
+                ->getRepository(SupportEntities\Article::class)
                 ->getAllArticles(new ParameterBag($parameterBag), $this->constructContainer, 'a.id, a.name, a.slug, a.stared'),
             'breadcrumbs'   => $breadcrumbs,
         ];
@@ -230,10 +230,10 @@ class Website extends AbstractController
                         );
        
         $category = $this->getDoctrine()
-                    ->getRepository(SupportEntites\SolutionCategory::class)
+                    ->getRepository(SupportEntities\SolutionCategory::class)
                     ->findOneBy($filterArray);
     
-        if(!$category)
+        if (! $category)
             $this->noResultFound();
 
         $breadcrumbs = [
@@ -251,10 +251,10 @@ class Website extends AbstractController
         $category_data=  array(
             'category'      => $category,
             'articlesCount' => $this->getDoctrine()
-                                ->getRepository(SupportEntites\SolutionCategory::class)
+                                ->getRepository(SupportEntities\SolutionCategory::class)
                                 ->getArticlesCountByCategory($category->getId(), [1]),
             'articles'      => $this->getDoctrine()
-                                ->getRepository(SupportEntites\Article::class)
+                                ->getRepository(SupportEntities\Article::class)
                                 ->getAllArticles(new ParameterBag($parameterBag), $this->constructContainer, 'a.id, a.name, a.slug, a.stared'),
             'breadcrumbs'   => $breadcrumbs
         );
@@ -272,7 +272,7 @@ class Website extends AbstractController
 
         $entityManager = $this->getDoctrine()->getManager();
         $user = $this->userService->getCurrentUser();
-        $articleRepository = $entityManager->getRepository(SupportEntites\Article::class);
+        $articleRepository = $entityManager->getRepository(SupportEntities\Article::class);
 
         if ($request->attributes->get('article')) {
             $article = $articleRepository->findOneBy(['status' => 1, 'id' => $request->attributes->get('article')]);
@@ -288,7 +288,7 @@ class Website extends AbstractController
         $article->setViewed((int) $article->getViewed() + 1);
         
         // Log article view
-        $articleViewLog = new SupportEntites\ArticleViewLog();
+        $articleViewLog = new SupportEntities\ArticleViewLog();
         $articleViewLog->setUser(($user != null && $user != 'anon.') ? $user : null);
         
         $articleViewLog->setArticle($article);
@@ -323,7 +323,7 @@ class Website extends AbstractController
             'popArticles'     => $articleRepository->getPopularTranslatedArticles($request->getLocale())
         ];
 
-        return $this->render('@UVDeskSupportCenter/Knowledgebase/article.html.twig',$article_details);
+        return $this->render('@UVDeskSupportCenter/Knowledgebase/article.html.twig', $article_details);
     }
 
     public function searchKnowledgebase(Request $request)
@@ -335,7 +335,7 @@ class Website extends AbstractController
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
         }
 
-        $articleCollection = $this->getDoctrine()->getRepository(SupportEntites\Article::class)->getArticleBySearch($request);
+        $articleCollection = $this->getDoctrine()->getRepository(SupportEntities\Article::class)->getArticleBySearch($request);
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/search.html.twig', [
             'search'   => $searchQuery,
@@ -353,7 +353,7 @@ class Website extends AbstractController
         }
 
         $tagLabel = $request->attributes->get('name');
-        $articleCollection = $this->getDoctrine()->getRepository(SupportEntites\Article::class)->getArticleByTags([$tagLabel]);
+        $articleCollection = $this->getDoctrine()->getRepository(SupportEntities\Article::class)->getArticleByTags([$tagLabel]);
 
         return $this->render('@UVDeskSupportCenter/Knowledgebase/search.html.twig', [
             'articles' => $articleCollection,

@@ -169,29 +169,29 @@
 
 	<!-- Sorting Template -->
 	<script id="category_list_sorting_tmp" type="text/template">
-        <li class="<% if(sort == 'a.dateAdded') { %>uv-drop-list-active<% } %>">
-            <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.dateAdded/<% if(sort == 'a.dateAdded') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.dateAdded">
+        <li class="<% if (sort == 'a.dateAdded') { %>uv-drop-list-active<% } %>">
+            <a href="#<% if (queryString != '') { %><%- queryString %>/<% } %><% if (page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.dateAdded/<% if (sort == 'a.dateAdded') { %><% if (direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.dateAdded">
 				{% trans %}Created At{% endtrans %}
 				<% if (sort == 'a.dateAdded') { %>
-					<span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
+					<span class="uv-sorting <% if (direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 				<% } %>
 			</a>
         </li>
 
-	    <li class="<% if(sort == 'a.name') { %>uv-drop-list-active<% } %>">
-            <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.name/<% if(sort == 'a.name') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.name">
+	    <li class="<% if (sort == 'a.name') { %>uv-drop-list-active<% } %>">
+            <a href="#<% if (queryString != '') { %><%- queryString %>/<% } %><% if (page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.name/<% if (sort == 'a.name') { %><% if (direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.name">
 				{% trans %}Name{% endtrans %}
 				<% if (sort == 'a.name') { %>
-					<span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
+					<span class="uv-sorting <% if (direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 				<% } %>
 			</a>
         </li>
 
-	    <li class="<% if(sort == 'a.sortOrder') { %>uv-drop-list-active<% } %>">
-            <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.sortOrder/<% if(sort == 'a.sortOrder') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.sortOrder">
+	    <li class="<% if (sort == 'a.sortOrder') { %>uv-drop-list-active<% } %>">
+            <a href="#<% if (queryString != '') { %><%- queryString %>/<% } %><% if (page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/a.sortOrder/<% if (sort == 'a.sortOrder') { %><% if (direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="a.sortOrder">
 				{% trans %}Sort Order{% endtrans %}
 				<% if (sort == 'a.sortOrder') { %>
-					<span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
+					<span class="uv-sorting <% if (direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 				<% } %>
 			</a>
         </li>
@@ -214,7 +214,7 @@
 		<td data-value="{{ 'Folder'|trans }}">
 			<% if (solutions) { %>
 				<% _.each(solutions, function(solution, key){ %>
-					<% if(key > 0){ %>
+					<% if (key > 0){ %>
 						/
 					<% } %>
           			<%- solution.name %>
@@ -227,7 +227,7 @@
 		<td data-value="{{ 'Articles'|trans }}"><%- articleCount %></td>
 		<td data-value="{{ 'Created'|trans }}"><%- dateAdded %></td>
 		<td data-value="{{ 'Status'|trans }}">
-			<% if(status) { %>
+			<% if (status) { %>
             	<span class="uv-text-success">{{ 'Published'|trans }}</span>
             <% } else { %>
             	<span class="uv-text-danger">{{ 'Draft'|trans }}</span>
@@ -293,7 +293,7 @@
 					});
 				} ,
                 batchOperation : function(data) {
-					if (!data.ids.length) return;
+					if (! data.ids.length) return;
                     var self = this;
                     app.appView.showLoader();
                     $.ajax({
@@ -302,7 +302,7 @@
                         data : {data : data},
                         dataType : 'json',
                         success : function(response) {
-							if(typeof(response.allowedToAdd) != 'undefined' && response.allowedToAdd) {
+							if (typeof(response.allowedToAdd) != 'undefined' && response.allowedToAdd) {
 								$('#upgrade-plan-message').hide();
 								$('#uv-add-article').show();
 							}
@@ -398,7 +398,7 @@
                 },
                 massAction: function(e) {
                     e.preventDefault();
-                    //if(!parseInt(Backbone.$(e.currentTarget).attr('data-index'))) return;
+                    //if (!parseInt(Backbone.$(e.currentTarget).attr('data-index'))) return;
                     var data = {};
                     data['actionType'] = Backbone.$(e.currentTarget).parents('ul').attr('data-action') ? Backbone.$(e.currentTarget).parents('ul').attr('data-action') : Backbone.$(e.currentTarget).attr('data-action');
                     data['targetId'] = Backbone.$(e.currentTarget).attr('data-index');
@@ -457,7 +457,7 @@
                     } else {
                         var count = 0;
                         $('.mass-action-checkbox').each(function() {
-                            if($(this).is(':checked'))
+                            if ($(this).is(':checked'))
                                 count++;
                         });
 

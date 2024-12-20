@@ -707,7 +707,7 @@
                     var field = $('input[name="' + attr + '"]');
                     if (field.length && field[0].files && field[0].files.length ) {
                         var file = field[0].files[0];
-                        if(file && 0 == file.size) {
+                        if (file && 0 == file.size) {
                             return true; //error
                         }
                     }                    
@@ -786,7 +786,7 @@
 					}
 				},
 			    formChanged: function(e) {
-                    if(!Backbone.$(e.currentTarget).parents('.links').length) {
+                    if (!Backbone.$(e.currentTarget).parents('.links').length) {
                         this.model.set(Backbone.$(e.currentTarget).attr('name'), Backbone.$(e.currentTarget).val())
                         this.model.isValid([Backbone.$(e.currentTarget).attr('name')])
                     }
@@ -796,7 +796,7 @@
 			        this.model.set($('#generalSettingForm').serializeObject());
                         console.log("form_submited fail");
                     
-			        if(this.model.isValid(true)) {
+			        if (this.model.isValid(true)) {
 			           $("#generalSettingForm").submit();
 			        }
 			    },
@@ -805,7 +805,7 @@
 			        this.model.set($('#generalSettingForm').serializeObject());
                         console.log("form_submited fail");
                     
-			        if(this.model.isValid(true)) {
+			        if (this.model.isValid(true)) {
 
                        	$.ajax({
 							url: "{{ url('helpdesk_member_knowledgebase_update_locales') }}",
@@ -824,7 +824,7 @@
 			    pendingResponseSettingFormSubmit: function (e) {
 			        e.preventDefault();
 			        this.model.set($('#pendingResponseSettingForm').serializeObject());
-			        if(this.model.isValid('website[pendingSince]')) {
+			        if (this.model.isValid('website[pendingSince]')) {
 						$('.pending-response-btn').attr('disabled', 'disabled');
 			            $("#pendingResponseSettingForm").submit();
 			        }
@@ -832,7 +832,7 @@
 				disableButton: function(e) {
 					var form = Backbone.$(e.currentTarget).parents('form');
 
-					if(form.attr('id') == 'businessHoursSettingForm' || form.attr('id') == 'seoForm' || form.attr('id') == 'advancedForm' || form.attr('id') == 'knowledgebaseForm') {
+					if (form.attr('id') == 'businessHoursSettingForm' || form.attr('id') == 'seoForm' || form.attr('id') == 'advancedForm' || form.attr('id') == 'knowledgebaseForm') {
 						Backbone.$(e.currentTarget).attr('disabled', 'disabled');
 						form.submit()
 					}
@@ -844,7 +844,7 @@
                     e.preventDefault();
 
                     var currentElement = Backbone.$(e.currentTarget);
-                    if(currentElement.attr('data-type') == 'header') {
+                    if (currentElement.attr('data-type') == 'header') {
                         count = $('.uv-header-link-wrapper .uv-element-block').length + 1;
                         $('.uv-header-link-wrapper .links').append(this.headerLinkTemplate({'count' : count}))
                     } else {
@@ -892,7 +892,7 @@
                     Backbone.Validation.bind(this);
                 },
 			    formChanged: function(e) {
-                    if(!Backbone.$(e.currentTarget).parents('.links').length) {
+                    if (!Backbone.$(e.currentTarget).parents('.links').length) {
                         this.model.set(Backbone.$(e.currentTarget).attr('name'), Backbone.$(e.currentTarget).val())
                         this.model.isValid([Backbone.$(e.currentTarget).attr('name')])
                     }

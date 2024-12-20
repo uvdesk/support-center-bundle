@@ -18,7 +18,7 @@
 						function googleTranslateElementInit() {
 							new google.translate.TranslateElement({layout: google.translate.TranslateElement.InlineLayout.SIMPLE, autoDisplay: false}, 'google_translate_element');
 							$(document).click(function(e) {
-								if($('.goog-te-menu-frame.skiptranslate').is(':visible') ) {
+								if ($('.goog-te-menu-frame.skiptranslate').is(':visible') ) {
 									$('.skiptranslate.goog-te-gadget').addClass('uv-no-pointer-events');
 								} else {
 									$('.skiptranslate.goog-te-gadget').removeClass('uv-no-pointer-events');

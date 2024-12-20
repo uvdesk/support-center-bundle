@@ -5,7 +5,7 @@ namespace Webkul\UVDesk\SupportCenterBundle\Repository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Request;
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
 
 class Solutions extends \Doctrine\ORM\EntityRepository
 {
@@ -48,7 +48,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
     {
         $categoryResponse = [];
         $categoryQB = $this->getEntityManager()->createQueryBuilder()->select('sc.id, sc.name, sc.description')
-            ->from(SupportEntites\SolutionCategory::class, 'sc')
+            ->from(SupportEntities\SolutionCategory::class, 'sc')
             ->andWhere('sc.status = :status')->setParameter('status', true)
             ->orderBy('sc.dateAdded', 'DESC');            
         
@@ -66,8 +66,11 @@ class Solutions extends \Doctrine\ORM\EntityRepository
 
         $this->presetting($data);
         foreach ($data as $key => $value) {
-            if (! in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
-                if ($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search') {
+            if (
+                ! in_array($key,$this->safeFields) 
+                && in_array($key, $this->allowedFormFields)
+            ) {
+                if ($key !='dateUpdated' AND $key != 'dateAdded' AND $key != 'search') {
                     $qb->andWhere('a.'.$key.' = :'.$key);
                     $qb->setParameter($key, $value);
                 } else {
@@ -158,7 +161,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         ;
 
         if ($categories) {
-            $solutionCategoryRepository = $this->getEntityManager()->getRepository(SupportEntites\SolutionCategory::class);
+            $solutionCategoryRepository = $this->getEntityManager()->getRepository(SupportEntities\SolutionCategory::class);
             
             foreach ($categories as $key => $category) {
                 $categories[$key]['articleCount'] = $solutionCategoryRepository->getArticlesCountByCategory($category['id']);
@@ -217,7 +220,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
 
         $queryBuilder = $this->createQueryBuilder('ac');
         $queryBuilder
-            ->delete(SupportEntites\SolutionCategoryMapping::class,'ac')
+            ->delete(SupportEntities\SolutionCategoryMapping::class, 'ac')
             ->andWhere($where)
             ->setParameters([
                 'id' => $id ,

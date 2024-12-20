@@ -131,7 +131,7 @@
                 events: {
                     'submit .login-form': 'submitForm', 
                     'click .uv-continue-with-pass': 'switchToOriginalCredentialsForm',
-                    'blur input': 'formChanegd',
+                    'blur input': 'formChanged',
                     'click #uv-resend-otp': 'resendOTP'
                 },
                 initialize: function () {
@@ -140,7 +140,7 @@
                     this.formEl = $('#login-form');
                     this.render();
                 },
-                formChanegd: function(e) {
+                formChanged: function(e) {
                     this.model.set(Backbone.$(e.currentTarget).attr('name'), Backbone.$(e.currentTarget).val())
                     this.model.isValid([Backbone.$(e.currentTarget).attr('name')])
                 },

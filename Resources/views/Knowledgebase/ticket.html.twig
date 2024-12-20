@@ -218,45 +218,52 @@
 {% endblock %}
 
 {% block footer %}
-    
 	{% set isTicketViewPage = (app.user.id is defined ? true : false) %}
+	
 	{{ parent() }}
 
 	{% if recaptchaDetail and recaptchaDetail.isActive == true %}
         <script src='https://www.google.com/recaptcha/api.js'></script>
     {% endif %}
+
     {{ include("@UVDeskSupportCenter/Templates/tinyMCE.html.twig") }}
 	{{ include('@UVDeskCoreFramework/Templates/attachment.html.twig') }}
 
 	<script type="text/javascript">
-	{% if user_service.isFileExists('apps/uvdesk/form-component') == false %}
-	customFieldValidation = {};
-	{% endif %}
+		{% if user_service.isFileExists('apps/uvdesk/form-component') == false %}
+			customFieldValidation = {};
+		{% endif %}
+
 		$(function () {
-		sfTinyMce.init({
-            height: '155px',
-			selector : '#create-reply',
-			images_upload_url: "",
-            setup: function(editor) {
-            },
-			plugins: [
-            ],
-			toolbar: '| undo redo | bold italic forecolor ',
-		});
+			sfTinyMce.init({
+				height: '155px',
+				selector : '#create-reply',
+				images_upload_url: "",
+				setup: function(editor) {
+				},
+				plugins: [
+				],
+				toolbar: '| undo redo | bold italic forecolor ',
+			});
+
 			{% if (removeMe is defined) %}
 				$.each({{ removeMe | json_encode |raw }}, function(key, value){
 					$('label[for="' + value + '"]').parent().hide();
 				});
 			{% endif %}
+
 			$('.uv-header-date').datetimepicker({
             	format: 'YYYY-MM-DD',
         	});
+
         	$('.uv-header-time').datetimepicker({
             	format: 'LT',
         	});
+
         	$('.uv-header-datetime').datetimepicker({
             	format: 'YYYY-MM-DD H:m:s'
         	});
+
 			var CreateTicketModel = Backbone.Model.extend({
 				idAttribute : "id",
 				defaults : {
