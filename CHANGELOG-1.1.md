@@ -3,7 +3,14 @@ CHANGELOG for 1.1.x
 
 This changelog references any relevant changes introduced in 1.1 minor versions.
 
-* 1.1.3.2 
+* 1.1.3.2 (2024-12-20)
+    Updates:
+    * Customer login using OTP functionality added.
+    * Marketing Module added for marketing purpose.
+    * License and support email related updates.
+    * Code Refactor.
+    
+    Issue Fixes:
     * Issues #538 - Tag line is not translated in other languages except the english.
     * Made required message field in ticket creation form on front end.
     * Issues #228 - front website cookies policy Popup issue if switch language in arabic.
@@ -21,9 +28,6 @@ This changelog references any relevant changes introduced in 1.1 minor versions.
     * Allowing underscore in strong password for spacial characters.
     * setting customer last reply time.
     * Issue #245 - Update in customer dashboard footer content.
-    * Updated License and support email address for repository.
-
-    Refactoring done for repository.
 
 * 1.1.3.1 (2023-07-28)
     * PR #246: Update branding content in knowledgebase (Abhi12-gupta)
