@@ -1,0 +1,293 @@
+{% extends "@UVDeskCoreFramework//Templates//layout.html.twig" %}
+
+{% block title %} 
+    {% if marketingModule.id %}
+		{{ 'Edit Marketing Module'|trans }}
+	{% else %}
+		{{ 'Add Marketing Module'|trans }}
+	{% endif %}
+{% endblock %}
+
+{% block pageContent %}
+	<style>
+		.uv-color-field {
+			color: #fff;
+			width: 100px;
+			text-transform: uppercase;
+		}
+		.colorpicker-saturation, .colorpicker-hue, .colorpicker-alpha{
+			display: none !important;
+		}
+	</style>
+	<div class="uv-inner-section">
+		{# Append Panel Aside #}
+		{% set asideTemplate = 'Webkul\\UVDesk\\CoreFrameworkBundle\\Dashboard\\AsideTemplate' %}
+		{% set asideSidebarReference = 'Webkul\\UVDesk\\SupportCenterBundle\\UIComponents\\Dashboard\\Panel\\Sidebars\\Knowledgebase' %}
+
+		{{ uvdesk_extensibles.getRegisteredComponent(asideTemplate).renderSidebar(asideSidebarReference) | raw }}
+
+		<div class="uv-view {% if app.request.cookies and app.request.cookies.get('uv-asideView') %}uv-aside-view{% endif %}">
+			<h1>
+				{% if marketingModule.id %}
+                    {{ 'Edit Marketing Module'|trans }}
+                {% else %}
+                    {{ 'Add Marketing Module'|trans }}
+                {% endif %}
+			</h1>
+			
+			<!--Form-->
+			<form method="post" action="" id="marketing-module-form" enctype="multipart/form-data">
+				<!-- Field -->
+				<div class="uv-element-block">
+					<label class="uv-field-label">{{ 'Title'|trans }}</label>
+					<div class="uv-field-block">
+						<input type="text" name="marketingModule_form[title]" class="uv-field" value="{{ marketingModule.title }}" />
+					</div>
+					<span class="uv-field-info"></span>
+				</div>
+				<!-- //Field -->
+
+				<!-- Field -->
+				<div class="uv-element-block">
+					<label class="uv-field-label">{{ 'Description'|trans }}</label>
+					<div class="uv-field-block">
+						<textarea name="marketingModule_form[description]" class="uv-field">{{ marketingModule.description }}</textarea>
+					</div>
+					<span class="uv-field-info"></span>
+				</div>
+				<!-- //Field -->
+
+				<!-- Field -->
+				<div class="uv-element-block">
+					<label class="uv-field-label">Border-Color</label>
+					<div class="uv-field-block" id="pickr-container">
+						<button id="pickr-btn" style="background: {{ marketingModule.borderColor }};"></button>
+						<input 
+							type="text"
+							id="color-code-input" 
+							name="marketingModule_form[borderColor]" 
+							class="uv-field uv-color-field" 
+							value="{{ marketingModule.borderColor }}" 
+						/>
+					</div>
+					<span class="uv-field-info">Marketing module border color</span>
+				</div>
+				<!-- //Field -->
+				
+				<!-- Field -->
+				<div class="uv-element-block">
+					<label class="uv-field-label">Link URL</label>
+					<div class="uv-field-block">
+						<input type="text" name="marketingModule_form[linkURL]" class="uv-field" value="{{ marketingModule.linkURL }}" placeholder="https://example.com/" />
+					</div>
+					<span class="uv-field-info"></span>
+				</div>
+				<!-- Field -->
+
+                <div class="uv-element-block uv-no-error-success-icon">
+                    <label class="uv-field-label">{{ 'Marketing Module Image'|trans }}</label>
+                    <!-- Profile image -->
+                    <div class="uv-image-upload-wrapper" style="padding: 10px 0px 10px 0px; border:none;">
+                      {% set isHaveImage =  marketingModule  and marketingModule.image ? 1 : 0 %}
+                      <div class="uv-image-upload-brick {% if isHaveImage %}uv-on-drop-shadow{% endif %}" {% if isHaveImage %}style="border-color: transparent;"{% endif %}>
+                        <input type="file" name="marketingModule_image" id="uv-upload-profile" accept="image/*" size="3000">
+                        <input id="image_exist" type="hidden" name="image_exist" value="{{isHaveImage}}"/>
+                        <div class="uv-image-upload-placeholder">
+                          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48px" height="32px">
+                          <path fill-rule="evenodd" d="M28.026,26.003 L19.964,26.003 L19.964,17.962 L13.964,17.962 L23.995,8.050 L34.025,17.962 L28.026,17.962 L28.026,26.003 ZM33.557,3.421 C30.806,1.146 27.619,0.008 23.995,0.008 C21.182,0.008 18.588,0.756 16.214,2.252 C13.838,3.749 11.996,5.712 10.683,8.143 C7.683,8.456 5.152,9.749 3.090,12.024 C1.027,14.300 -0.004,16.965 -0.004,20.019 C-0.004,23.324 1.168,26.144 3.512,28.481 C5.855,30.819 8.682,31.988 11.996,31.988 L37.963,31.988 C40.712,31.988 43.072,31.006 45.040,29.042 C47.009,27.079 47.993,24.726 47.993,21.983 C47.993,19.364 47.087,17.106 45.275,15.203 C43.461,13.302 41.275,12.258 38.713,12.071 C38.024,8.580 36.306,5.698 33.557,3.421 Z"></path>
+                          </svg>
+                        </div>
+                        <img id="dynamic-image-upload" {% if isHaveImage %}src="{{ marketingModule.image }}"{% endif %}>
+                      </div>
+                    </div>
+                    <span class="uv-field-info">{{ 'An image is worth a thousands words and makes folder more accessible'|trans }}</span>
+                </div>
+
+				<!-- Field -->
+				<div class="uv-element-block">
+					<label class="uv-field-label">Status</label>
+					<div class="uv-field-block">
+						<select name="marketingModule_form[status]" class="uv-select">
+							<option value="1" {% if marketingModule.isActive == "1" %}selected{% endif %}>Publish</option>
+							<option value="0" {% if marketingModule.isActive == "0" %}selected{% endif %}>Draft</option>
+						</select>
+					</div>
+					<span class="uv-field-info">Choose a status</span>
+				</div>
+				<!-- //Field -->
+
+				<!-- Field -->
+				<div class="uv-element-block">
+					<label class="uv-field-label">Groups</label>
+					<div class="uv-field-block">
+						<select name="marketingModule_form[group]" class="uv-select">
+							{% for group in user_service.getSupportGroups() %}
+								{% if marketingModule.id is not null %}
+									<option value="{{group.id}}" 
+									{% if (marketingModule.group.id == group.id) %}selected{% endif %}
+									>{{group.name}}</option>
+								{% else %}
+									<option value="{{group.id}}"
+									>{{group.name}}</option>
+								{% endif %}
+							{% endfor %}
+						</select>
+					</div>
+					<span class="uv-field-info">Choose a group</span>
+				</div>
+				<!-- //Field -->
+
+				<!--CTA-->
+				<input class="uv-btn" href="#" value="{{ 'Save marketing Module'|trans }}" type="submit">
+				<!--//CTA-->
+			</form>
+			<!--//Form-->
+		</div>
+	</div>
+{% endblock %}
+
+{% block footer %}
+	{{ parent() }}
+	
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css" />
+	<script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+
+	<script type="text/javascript">
+		$(function () {
+			var marketingModuleModel = Backbone.Model.extend({
+				validation: {
+					'marketingModule_form[title]':[{
+						required: true,
+						msg: "{{ 'This field is mandatory'|trans }}"
+					},{
+                        maxLength: 25,
+                        msg: '{{ "Maximum character length is 25" | trans}}'
+                    }],
+					'marketingModule_form[description]': [{
+						required: true,
+						msg: "{{ 'This field is mandatory'|trans }}"
+					},{
+                        maxLength: 80,
+                        msg: '{{ "Maximum character length is 80" | trans}}'
+                    }],
+					'marketingModule_form[borderColor]': {
+						required: true,
+						msg: "{{ 'This field is mandatory'|trans }}"
+					},
+					'marketingModule_form[group]': {
+						required: true,
+						msg: "{{ 'This field is mandatory'|trans }}"
+					},
+					'marketingModule_image': {
+						required: true,
+						msg: "{{ 'This field is mandatory'|trans }}"
+					},
+					'marketingModule_form[linkURL]': {
+						required: true,
+						msg: "{{ 'This field is mandatory'|trans }}"
+					}
+				}
+			});
+
+			var AnnouncementForm = Backbone.View.extend({
+				events : {
+					'click .uv-btn': "savePromotion"
+				},
+				initialize : function() {
+					Backbone.Validation.bind(this);
+					var jsonContext = '';
+
+		    		for (var field in jsonContext) {
+		    			Backbone.Validation.callbacks.invalid(this, field, jsonContext[field], 'input');
+					}
+				},
+				savePromotion : function (e) {
+					e.preventDefault();
+					let imageExist = this.$el.find('#image_exist').val();
+					let fileFieldValue = this.$el.find('#uv-upload-profile').val();
+					let serializedObject = this.$el.serializeObject();
+					
+					if (fileFieldValue) {
+						serializedObject.marketingModule_image = fileFieldValue;
+					} else if (imageExist == '1') {
+						serializedObject.marketingModule_image = 'exist';
+					}
+
+					this.model.set(serializedObject);
+
+					if (this.model.isValid(true)) {
+						this.$el.find('.uv-btn').attr('disabled', 'disabled');
+						this.$el.submit();
+			        }
+				},
+                setAddedIds: function(selector) {
+                    var ids = [];
+                    $(selector).find('.uv-filtered-tags .uv-btn-small').each(function() {
+                        ids.push($(this).attr('data-id'))
+                    });
+
+                    $(selector).find("input[type='hidden']").val(ids.join(','))
+
+					return ids;
+                },
+                addEntity: function(e) {
+                    currentElement = Backbone.$(e.currentTarget);
+                    if (id = currentElement.attr("data-id")) {
+                        parent = currentElement.parents(".uv-field-block");
+                        parent.find('input').val('')
+                        parent.find("li:not(.uv-no-results)").show()
+
+                        if (!parent.find(".uv-filtered-tags a[data-id='" + id + "']").length) {
+                            parent.find('.uv-filtered-tags').append("<a class='uv-btn-small default' href='#' data-id='" + id + "'>"+currentElement.text()+"<span class='uv-icon-remove'></span></a>")
+                            this.setAddedIds("#" + parent.attr('id'))
+                        }
+                    }
+                },
+                removeEntity: function(e) {
+                    var parent = Backbone.$(e.currentTarget).parents(".uv-field-block")
+                    Backbone.$(e.currentTarget).remove()
+                    this.setAddedIds("#" + parent.attr('id'))
+                }
+			});
+
+			announcementForm = new AnnouncementForm({
+				el : $("#marketing-module-form"),
+				model : new marketingModuleModel()
+			});	
+		});
+	</script>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			const pickr = Pickr.create({
+				el: "#pickr-btn",
+				theme: "classic",
+				default: "{{ marketingModule.borderColor }}",
+				swatches: ["#FFA500","#0284C7","#16A34A","#E11D48",],
+				components: {
+					preview: true,
+					opacity: false,
+					hue: true,
+					interaction: {
+						hex: true,
+						input: true,
+						save: true
+					}
+				}
+			});
+
+			const colorInput = document.getElementById("color-code-input");
+
+			pickr.on("save", (color) => {
+				const selectedColor = color.toHEXA().toString();
+				colorInput.value = selectedColor;
+				pickr.hide();
+				colorInput.style.background = selectedColor;
+			});
+
+			colorInput.addEventListener("input", () => {
+				pickr.setColor(colorInput.value);
+			});
+		});
+	</script>
+{% endblock %}

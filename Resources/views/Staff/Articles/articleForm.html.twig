@@ -310,31 +310,31 @@
 	</div>
 
 	<style>
-		.uv-revision-parent{
+		.uv-revision-parent {
 			margin-bottom: 20px;
 			width: 100%;
 			overflow: hidden;
 		}
-		.uv-revision-left{
+		.uv-revision-left {
 			display: inline-block;
 			width: 40px;
 			height: 100%;
 			position: absolute;
 		}
-		.uv-revision-right{
+		.uv-revision-right {
 			display: inline-block;
 			width: 100%;
 			margin-left: 40px;
 			border-bottom: solid 1px #D3D3D3;
 			padding-bottom: 20px;
 		}
-		.uv-revision-right div{
+		.uv-revision-right div {
 			margin-bottom: 3px;
 		}
-		.uv-revision-right div:nth-child(1){
+		.uv-revision-right div:nth-child(1) {
 			color: #737373;
 		}
-		.uv-inner-section.uv-article .uv-view .uv-ticket-action-bar{
+		.uv-inner-section.uv-article .uv-view .uv-ticket-action-bar {
 			margin-top: 20px;
 			margin-bottom: 25px;
 		}
@@ -347,7 +347,7 @@
 			padding: 2px 4px;
     		margin-right: 4px;
 		}
-		.uv-pop-up-box{
+		.uv-pop-up-box {
 			overflow: hidden;
 		}
 	</style>
@@ -368,28 +368,28 @@
 	<script id="article_history_list_item_tmp" type="text/template">
 		<div class="uv-revision-parent">
 			<div class="uv-revision-left">
-				<% if(isCurrent){ %>
+				<% if (isCurrent) { %>
 					<span class="uv-icon-history uv-icon-history-active"></span>
-				<% }else{ %>
+				<% } else { %>
 					<span class="uv-icon-history"></span>
 				<% } %>
 			</div>
 			<div class="uv-revision-right">
 				<div>{{ "Revision"|trans }} #<%= id %>
-					<% if(isCurrent){ %>
-						<span>({{"Published"|trans}})</span>
+					<% if (isCurrent) { %>
+						<span>({{ "Published"|trans }})</span>
 					<% } %>
 				</div>
 				<div><%- name %> {{ "updated the article"|trans }} <span class="timeago" data-timestamp="<%= dateAdded.timestamp %>"> {{ "on"|trans }} <%= dateAdded.format %></span></div>
 				<div class="uv-action-buttons">
 					<a href="#" type="button" class="uv-btn-small history-preview" data-id="<%= id %>">
-						{{"Preview"|trans}}
+						{{ "Preview"|trans }}
 					</a>
-					<a href="#" type="button" class="uv-btn-small <% if(hasContent && !isCurrent){ %>history-restore<% } %>"  <% if(isCurrent || !hasContent){ %>disabled="disabled" <% } %>>
-						<% if(isCurrent){ %>
-							{{"Restored"|trans}}
-						<% }else{ %>
-							{{"Restore"|trans}}
+					<a href="#" type="button" class="uv-btn-small <% if (hasContent && !isCurrent){ %>history-restore<% } %>"  <% if (isCurrent || !hasContent){ %>disabled="disabled" <% } %>>
+						<% if (isCurrent) { %>
+							{{ "Restored"|trans }}
+						<% } else { %>
+							{{ "Restore"|trans }}
 						<% } %>
 					</a>
 				</div>
@@ -439,13 +439,14 @@
 					if (!outputCopy.hasOwnProperty(key)) {
 						outputCopy[key] = {};
 					}
-					if(localIndex == keys.length - 1) {
+					if (localIndex == keys.length - 1) {
 						outputCopy[key] = isNaN(item.value)|| item.value == '' || item.value == null  ? item.value : +item.value;
 					}
 					outputCopy = outputCopy[key];
 				});
 				outputCopy = o;
 			});
+
 			return o;
 		};
 
@@ -456,7 +457,6 @@
 				events : {
 					'click .uv-btn-action.update-btn' : "saveArticle",
 					'blur input': 'formChanged',
-
                     'click .uv-dropdown-list li': 'addEntity',
                     'click .uv-filtered-tags .uv-btn-small': 'removeEntity',
                     'click .uv-filtered-tags .uv-btn-tag': 'removeEntity',
@@ -468,15 +468,15 @@
 				},
                 addEntity: function(e) {
                     let currentElement = Backbone.$(e.currentTarget);
-                    if(id = currentElement.attr("data-id")) {
+                    if (id = currentElement.attr("data-id")) {
                     	var coreParent = Backbone.$(e.currentTarget).parents('.uv-element-block');
                     	var parent = coreParent.find(".uv-field-block");
                         parent.find("li:not(.uv-no-results)").show();
 
-                        if(parent.hasClass('related')) {
+                        if (parent.hasClass('related')) {
 							let parentTab = parent.parents('#article-related');
 
-							if(!parentTab.find(".uv-list-view a[data-article-id='" + id + "']").length) {
+							if (!parentTab.find(".uv-list-view a[data-article-id='" + id + "']").length) {
 								var data = {};
 								data['ids'] = [this.articleId];
 								data['actionType'] = 'relatedUpdate'
@@ -484,22 +484,22 @@
 								data['action'] = 'add';
 								this.articleEntityUpdate(data);
 							}
-						}else{
+						} else {
 							var inputElement = Backbone.$('#tag-filter-input');
 							inputElement.removeClass('uv-field-error');
 							inputElement.parents('.uv-element-block').find('.uv-field-message').remove();
 
 							inputElement.val('');
 
-							if(!coreParent.find(".uv-filtered-tags a[data-id='" + id + "']").length) {
+							if (! coreParent.find(".uv-filtered-tags a[data-id='" + id + "']").length) {
 								let html = '';
-								if(parent[0].id == 'tagUpdate'){
+								if (parent[0].id == 'tagUpdate') {
 									html = `
 										<a class="uv-btn-tag" href="#" data-id="${id}">
 											<span class="uv-tag"><span class="uv-icon-remove-dark-before"></span>${currentElement.text()}</span>
 										</a>
 									`;
-								}else{
+								} else {
 									html = "<a class='uv-btn-small default' href='#' data-id='" + id + "'>"+currentElement.text()+"<span class='uv-icon-remove'></span></a>";
 								}
 
@@ -510,7 +510,7 @@
 								data['entityId'] = id;
 								data['action'] = 'add';
 								this.articleEntityUpdate(data);
-							}else {
+							} else {
 								inputElement.addClass('uv-field-error');
 								inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Tag with same name already exist'|trans }}</span>");
 							}
@@ -543,18 +543,18 @@
 								articleRelatedCollection.syncData();
 							}
 
-							if(response.alertClass == "success") {
+							if (response.alertClass == "success") {
 								app.appView.renderResponseAlert(response);
-							} else{
+							} else {
 								app.appView.renderResponseAlert(response);
 								self.addErrors(response.errors);
 							}
                         },
                         error: function (xhr) {
-                            if(url = xhr.getResponseHeader('Location'))
+                            if (url = xhr.getResponseHeader('Location'))
                                 window.location = url;
                             var response = warningResponse;
-                            if(xhr.responseJSON)
+                            if (xhr.responseJSON)
                                 response = xhr.responseJSON;
 
                             app.appView.hideLoader();
@@ -575,7 +575,8 @@
 			        this.model.set(formData);
                     self = this;
 					var contentNotHasError = this.validateForm(e);
-			        if(this.model.isValid(true) && contentNotHasError) {
+
+			        if (this.model.isValid(true) && contentNotHasError) {
 						formData['ids'] = [this.articleId];
 						formData['actionType'] = 'articleUpdate';
 						formData['content'] = tinyMCE.get('content').getContent();
@@ -595,7 +596,7 @@
                     form = $('#article-form');
                     form.find('.uv-field-message').remove()
                     var html = $('.uv-field').text();
-                    if(app.appView.htmlText(html).trim().length != 0) {
+                    if (app.appView.htmlText(html).trim().length != 0) {
 						return true;
                     } else {
                         form.find('.uv-element-block-textarea').append("<span class='uv-field-message'>{{ 'This field is mandatory'|trans }}</span>");
@@ -638,13 +639,13 @@
 					var target = $(e.target).closest('.uv-button-preview');
 					var isDisabled = target.attr('disabled') ? true : false;
 					var lang = $('#article-locale').attr('data-value');
-					if(lang && !isDisabled) {
+					if (lang && !isDisabled) {
 						e.preventDefault();
 						var langSpecificUrl = target.attr('href').replace('{{ app.request.locale }}', lang);
 						window.open(langSpecificUrl);
 					}
 				},
-				renderArticlePreview: function(e){
+				renderArticlePreview: function(e) {
 					e.preventDefault();
 					var article_content = tinyMCE.get('content').getContent();
  					article_content = article_content.replace("<ol>", "<ul>");
@@ -662,32 +663,32 @@
 					'name': [{
 						required: true,
 						msg: '{{ "This field is mandatory"|trans }}'
-					},{
-						maxLength:200,
-						msg: '{{ "This field contain maximum 200 charecters only"|trans }}'
+					}, {
+						maxLength: 200,
+						msg: '{{ "This field contain maximum 200 characters only"|trans }}'
 					}, {
 						pattern: '^((?![$%<]).)*$',
 						msg: '{{ "This field must have valid characters only"|trans }}'
 					}],
 					'metaTitle':[{
-						maxLength:200,
-						msg: '{{ "This field contain mata title maximum 200 charecters only"|trans }}'
+						maxLength: 200,
+						msg: '{{ "This field contain meta title maximum 200 characters only"|trans }}'
 					}],
 					'keywords':[{
-						maxLength:200,
-						msg: '{{ "This field contain keywords maximum 200 charecters only"|trans }}'
+						maxLength: 200,
+						msg: '{{ "This field contain keywords maximum 200 characters only"|trans }}'
 					}],
 					'slug': function(val, attr, computed) {
 						var elSlug = $("[name=" + attr + "]");
 						var elSlugValue = '';
 						elSlug.val(elSlugValue = app.appView.convertToSlug(val))
 					
-						if(elSlugValue.trim() == ''){
+						if (elSlugValue.trim() == ''){
 							return '{{ "This field is mandatory"|trans }}';
 						}
 						
-						if(elSlugValue.length > 100) {
-							return '{{ "This field slug contains maximum 100 charecters only."|trans }}';
+						if (elSlugValue.length > 100) {
+							return '{{ "This field slug contains maximum 100 characters only."|trans }}';
 						}
 					}
 				},
@@ -736,12 +737,12 @@
 							app.appView.hideLoader();
 							var articleHistoryListView = new ArticleHistoryList();
 
-							if(globalMessageResponse)
+							if (globalMessageResponse)
 								app.appView.renderResponseAlert(globalMessageResponse);
 							globalMessageResponse = null;
 						},
 						error: function (model, xhr, options) {
-							if(url = xhr.getResponseHeader('Location'))
+							if (url = xhr.getResponseHeader('Location'))
 								window.location = url;
 						}
 					});
@@ -762,10 +763,11 @@
 						isCurrent: (this.model.attributes.content.trim() == tinymceContent ? true : false),
 						hasContent: (this.model.attributes.content.trim().length ? true : false)
 					}) ));
+
 					return this;
 				},
 				unrender : function(response) {
-					if(response.alertMessage != undefined) {
+					if (response.alertMessage != undefined) {
 						articleHistoryCollection.syncData();
 						app.appView.renderResponseAlert(response)
 					}
@@ -774,9 +776,9 @@
 					e.preventDefault();
 					$('body').append(this.previewTemplate());
 
-					if(this.model.attributes.content.trim().length){
+					if (this.model.attributes.content.trim().length) {
 						$('body').find('#preview-modal .uv-html-preview').html(this.model.attributes.content);
-					}else{
+					} else {
 						$('body').find('#preview-modal .uv-html-preview').html(
 							`
 								<h2>{{'Oops'|trans}}</h2>
@@ -806,7 +808,7 @@
 				},
 				render : function () {
 					this.$el.find("div").remove();
-					if(articleHistoryCollection.length) {
+					if (articleHistoryCollection.length) {
 						_.each(articleHistoryCollection.models, function (item) {
 							this.renderArticle(item);
 						}, this);
@@ -851,12 +853,12 @@
 							app.appView.hideLoader();
 							var articleRelatedListView = new ArticleRelatedList();
 
-							if(globalMessageResponse)
+							if (globalMessageResponse)
 								app.appView.renderResponseAlert(globalMessageResponse);
 							globalMessageResponse = null;
 						},
 						error: function (model, xhr, options) {
-							if(url = xhr.getResponseHeader('Location'))
+							if (url = xhr.getResponseHeader('Location'))
 								window.location = url;
 						}
 					});
@@ -871,6 +873,7 @@
 				},
 				render : function() {
 					this.$el.html(this.template(this.model.toJSON()));
+
 					return this;
 				},
 				remove: function(e){
@@ -893,7 +896,7 @@
 				},
 				render : function () {
 					this.$el.find("div").remove();
-					if(articleRelatedCollection.length) {
+					if (articleRelatedCollection.length) {
 						_.each(articleRelatedCollection.models, function (item) {
 							this.renderArticle(item);
 						}, this);
@@ -925,14 +928,14 @@
 
 					if (e.which === 13 && text) {
 						if ((text.match(/^((?![!@#$%^&*()<_+]).)*$/))) {
-								if(text.length <= 35) {
+								if (text.length <= 25) {
 								let existed = false;
 								$('.uv-filtered-tags .uv-tag').each(function(key, el){
-									if($(el).text().toLowerCase() == text.toLowerCase())
+									if ($(el).text().toLowerCase() == text.toLowerCase())
 										existed = true;
 								})
 								
-								if(!existed) {
+								if (! existed) {
 									let data = {};
 									app.appView.showLoader();
 
@@ -948,7 +951,7 @@
 										data : {data : data},
 										dataType : 'json',
 										success: function (response) {
-											if(response.alertClass == "success") {
+											if (response.alertClass == "success") {
 												let html = `
 													<a class="uv-btn-tag" href="#" data-id="${response.tagId}">
 														<span class="uv-tag"><span class="uv-icon-remove-dark-before"></span>${response.tagName}</span>
@@ -956,15 +959,16 @@
 												`;
 												$('.uv-filtered-tags.tag').append(html);
 											}
+
 											inputElement.val('');
 											app.appView.hideLoader();
 											app.appView.renderResponseAlert(response);
 										},
 										error: function (model, xhr, options) {
-											if(url = xhr.getResponseHeader('Location'))
+											if (url = xhr.getResponseHeader('Location'))
 												window.location = url;
 											var response = warningResponse;
-											if(xhr.responseJSON)
+											if (xhr.responseJSON)
 												response = xhr.responseJSON;
 
 											app.appView.hideLoader();
@@ -977,7 +981,7 @@
 								}
 							} else {
 								inputElement.addClass('uv-field-error');
-								inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Text length should be less than 35 charactors'|trans }}</span>");
+								inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Text length should be less than 25 characters'|trans }}</span>");
 							}
 						} else {
 							inputElement.addClass('uv-field-error');
@@ -1032,14 +1036,15 @@
                     var uvSelect = currentElement.parents('.uv-aside-select');
                     var field = currentElement.parent().attr('data-action');
                     var value = currentElement.attr('data-index');
-					if(field == 'status'){
-						if(value == '1'){
+					if (field == 'status') {
+						if (value == '1') {
 							$('.uv-btn-action.uv-button-preview').removeAttr('disabled');
-						}else{
+						} else {
 							$('.uv-btn-action.uv-button-preview').attr('disabled', 'disabled');
 						}
 					}
-                    if(uvSelect.find('.uv-aside-select-value').attr('data-id') != value) {
+					
+                    if (uvSelect.find('.uv-aside-select-value').attr('data-id') != value) {
                         var name = currentElement.text().trim();
                         app.appView.showLoader();
 						self = this;
@@ -1051,10 +1056,10 @@
                                 app.appView.renderResponseAlert(response);
                             },
                             error: function (model, xhr, options) {
-                                if(url = xhr.getResponseHeader('Location'))
+                                if (url = xhr.getResponseHeader('Location'))
                                     window.location = url;
                                 var response = warningResponse;
-                                if(xhr.responseJSON)
+                                if (xhr.responseJSON)
                                     response = xhr.responseJSON;
 
                                 app.appView.hideLoader();
@@ -1068,22 +1073,24 @@
                     currentElement = Backbone.$(e.currentTarget);
                     dropdown = currentElement.siblings('.uv-dropdown-list');
                     var filterType =  currentElement.attr('data-filter-type');
-                    if(jQuery.inArray(filterType, ['tag', 'related']) !== -1) {
+
+                    if (jQuery.inArray(filterType, ['tag', 'related']) !== -1) {
                         self.searchFilterXhr(currentElement);
                     }
                 },
 				loaderTemplate : _.template($("#loader-tmp").html()),
                 searchFilterXhr: _.debounce(function(currentElement) {
                     var parent = currentElement.parent();
-                    if($('.uv-dropdown-other.uv-dropdown-btn-active').parent().attr('id') != parent.attr('id'))
+                    if ($('.uv-dropdown-other.uv-dropdown-btn-active').parent().attr('id') != parent.attr('id'))
                         return;
 
                     parent.find("li:not(.uv-no-results, .uv-filter-info, .press-enter-to-add)").remove();
                     parent.find(".uv-filter-info").show()
-                    if(currentElement.val().length > 1) {
+                    
+					if (currentElement.val().length > 1) {
                         parent.append(this.loaderTemplate())
                         parent.find('.uv-filter-info').text("{% trans %}Searching{% endtrans %} ...")
-                        if(self.xhrReq)
+                        if (self.xhrReq)
                             self.xhrReq.abort();
 
 						let filterType = currentElement.attr('data-filter-type');
@@ -1096,30 +1103,30 @@
                             success : function(response) {
                                 self.xhrReq = 0;
                                 parent.find('.uv-loader').remove()
-								if(parent.find('.uv-dropdown-list').length) {
+								if (parent.find('.uv-dropdown-list').length) {
 									parent.find('.uv-dropdown-list').show();
 								}
                                 parent.find('.uv-filter-info').text("{{ 'Type atleast 2 letters'|trans }}").hide();
 
-								if(filterType == 'tag'){
-									if(response.length == 0) {
+								if (filterType == 'tag') {
+									if (response.length == 0) {
 										parent.find('.press-enter-to-add').show()
-									}else{
+									} else {
 										parent.find('.press-enter-to-add').hide()
 										parent.find('.uv-no-results').hide();
 										_.each(response, function(item) {
 											parent.find('.uv-dropdown-list ul').append("<li data-id='" + item.id + "'>" + item.name + "</li>")
 										});
 									}
-								}else{
-									if(response.results.length == 0) {
+								} else {
+									if (response.results.length == 0) {
 										parent.find('.press-enter-to-add').hide()
 										parent.find('.uv-no-results').show()
 									}
 									_.each(response.results, function(item) {
 										parent.find('.press-enter-to-add').hide()
 										parent.find('.uv-no-results').hide();
-										if(item.id != {{article.id}})
+										if (item.id != {{article.id}})
 											parent.find('.uv-dropdown-list ul').append("<li data-id='" + item.id + "'>" + item.name + "</li>")
 									});
 								}
@@ -1129,7 +1136,7 @@
                                 parent.find('.uv-loader').remove()
                                 parent.find('.uv-no-results').hide();
                                 parent.find('.uv-filter-info').text("{{ 'Type atleast 2 letters'|trans }}").show();
-                                if(url = xhr.getResponseHeader('Location'))
+                                if (url = xhr.getResponseHeader('Location'))
                                     window.location = url;
                             }
                         });

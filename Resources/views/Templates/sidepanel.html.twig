@@ -29,7 +29,7 @@
             <h3>{{'Tags'|trans}}</h3>
             <div class="uv-tags">
                 {% for tag in articleTags %}
-                    <span><a href="{{path('helpdesk_knowledgebase_tag', {'tag': tag.id, 'name': tag.name})}}">{{tag.name}}</a></span>
+                    <span><a href="{{ path('helpdesk_knowledgebase_tag', {'tag': tag.id, 'name': ''}) }}">{{ tag.name }}</a></span>
                 {% endfor %}
             </div>
         </aside>

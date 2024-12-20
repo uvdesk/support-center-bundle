@@ -1,4 +1,5 @@
 {% extends "@UVDeskSupportCenter/Templates/layout.html.twig" %}
+
 {% block title %}{{folder.name}}{% endblock %}
 {% block ogtitle %}{{folder.name}}{% endblock %}
 {% block twtitle %}{{folder.name}}{% endblock %}
@@ -17,7 +18,7 @@
 				{% if categories %}
 					<ul>
 						{% for category in categories %}
-							<li><a href="{{path('helpdesk_knowledgebase_category', {'category': category.id})}}">{{category.name}}</a></li>
+							<li><a href="{{ path('helpdesk_knowledgebase_category', {'category': category.id}) }}">{{ category.name }}</a></li>
 						{% endfor %}
 					</ul>
 				{% else %}

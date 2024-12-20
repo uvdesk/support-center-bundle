@@ -129,7 +129,6 @@
 				events : {
 					'click .uv-btn-action.update-btn' : "saveArticle",
 					'blur input': 'formChanged',
-
 				},
 				initialize : function() {
 					this.articleId = "{{app.request.attributes.get('id')}}";
@@ -150,7 +149,7 @@
 
 					var contentNotHasError = this.validateForm(e);
                  
-			        if(this.model.isValid(true) && contentNotHasError) {
+			        if (this.model.isValid(true) && contentNotHasError) {
 						formData['ids'] = [this.articleId];
 						formData['actionType'] = 'articleSave';
 						formData['content'] = tinyMCE.get('content').getContent();
@@ -175,7 +174,7 @@
 
 					console.log("message value : ",html);
 
-                    if(app.appView.htmlText(html).trim().length != 0) {
+                    if (app.appView.htmlText(html).trim().length != 0) {
 						return true;
                     } else {
                         form.find('.uv-element-block-textarea').append("<span class='uv-field-message'>{{ 'This field is mandatory'|trans }}</span>");
@@ -197,20 +196,20 @@
                         success : function(response) {
                             app.appView.hideLoader();
 
-							if(response.alertClass == "success") {
+							if (response.alertClass == "success") {
 								app.appView.renderResponseAlert(response);
-								if(response.redirect)
+								if (response.redirect)
 									window.location = response.redirect;
-							} else{
+							} else {
 								app.appView.renderResponseAlert(response);
 								self.addErrors(response.errors);
 							}
                         },
                         error: function (xhr) {
-                            if(url = xhr.getResponseHeader('Location'))
+                            if (url = xhr.getResponseHeader('Location'))
                                 window.location = url;
                             var response = warningResponse;
-                            if(xhr.responseJSON)
+                            if (xhr.responseJSON)
                                 response = xhr.responseJSON;
 
                             app.appView.hideLoader();
@@ -225,46 +224,46 @@
 					'name': [{
 						required: true,
 						msg: '{{ "This field is mandatory"|trans }}'
-					},{
-						maxLength:200,
-						msg: '{{ "This field contain maximum 200 charecters only"|trans }}'
+					}, {
+						maxLength: 200,
+						msg: '{{ "This field contain maximum 200 characters only"|trans }}'
 					}, {
 						pattern: '^((?![$%<]).)*$',
 						msg: '{{ "This field must have valid characters only"|trans }}'
 					}],
-					'metaTitle':[{
-						maxLength:200,
-						msg: '{{ "This field contain mata title maximum 200 charecters only"|trans }}'
+					'metaTitle': [{
+						maxLength: 200,
+						msg: '{{ "This field contain mata title maximum 200 characters only"|trans }}'
 					}],
-					'keywords':[{
+					'keywords': [{
 						maxLength:200,
-						msg: '{{ "This field contain keywords maximum 200 charecters only"|trans }}'
+						msg: '{{ "This field contain keywords maximum 200 characters only"|trans }}'
 					}],
 					'slug': function(val, attr, computed) {
 						var elSlug = $("[name=" + attr + "]");
 						var elSlugValue = '';
 						elSlug.val(elSlugValue = app.appView.convertToSlug(val))
 					 
-						if(elSlugValue.trim() == ''){
+						if (elSlugValue.trim() == '') {
 							return '{{ "This field is mandatory"|trans }}';
 						}
 						
-						if(elSlugValue.length > 100) {
-							return '{{ "This field slug contains maximum 100 charecters only."|trans }}';
+						if (elSlugValue.length > 100) {
+							return '{{ "This field slug contains maximum 100 characters only."|trans }}';
 						}
 					}
 				},
                 urlRoot : "{{ path('helpdesk_member_knowledgebase_update_article_xhr') }}"
 			});
 
-			var articlemodel = new ArticleModel({
+			var articleModel = new ArticleModel({
                 id : "",
                 name : "",
 			})
 
 			articleForm = new ArticleForm({
                 el: '.uv-paper',
-				model : articlemodel
+				model : articleModel
 			});
 		});
 	</script>

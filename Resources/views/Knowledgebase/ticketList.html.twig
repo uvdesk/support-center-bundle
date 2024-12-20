@@ -153,35 +153,34 @@
 	</div>
 {% endblock %}
 
-
 {% block footer %}
 	{{ parent() }}
 	<!-- Sorting Template -->
 	<script id="ticket_list_sorting_tmp" type="text/template">
-        <li class="<% if(sort == 't.id') { %>uv-drop-list-active<% } %>">
-            <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/t.id/<% if(sort == 't.id') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="t.id">
+        <li class="<% if (sort == 't.id') { %>uv-drop-list-active<% } %>">
+            <a href="#<% if (queryString != '') { %><%- queryString %>/<% } %><% if (page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/t.id/<% if (sort == 't.id') { %><% if (direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="t.id">
                 {{ 'Ticket Id'|trans }}
             </a>
-            <% if(sort == 't.id') { %>
-                <span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
+            <% if (sort == 't.id') { %>
+                <span class="uv-sorting <% if (direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 
             <% } %>
         </li>
-        <li class="<% if(sort == 'name') { %>uv-drop-list-active<% } %>">
-            <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/name/<% if(sort == 'name') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="name">
+        <li class="<% if (sort == 'name') { %>uv-drop-list-active<% } %>">
+            <a href="#<% if (queryString != '') { %><%- queryString %>/<% } %><% if (page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/name/<% if (sort == 'name') { %><% if (direction) { %>direction/<%- direction %><% } else { %>direction/desc<% } %><% } else { %>direction/asc<% } %>" data-field="name">
                 {{ 'Agent Name'|trans }}
             </a>
-            <% if(sort == 'name') { %>
-                <span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
+            <% if (sort == 'name') { %>
+                <span class="uv-sorting <% if (direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 
             <% } %>
         </li>
-		<li class="<% if(sort == 't.updatedAt') { %>uv-drop-list-active<% } %>">
-            <a href="#<% if(queryString != '') { %><%- queryString %>/<% } %><% if(page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/t.updatedAt/<% if(sort == 't.updatedAt') { %><% if(direction) { %>direction/<%- direction %><% } else { %>direction/asc<% } %><% } else { %>direction/desc<% } %>" data-field="t.updatedAt">
+		<li class="<% if (sort == 't.updatedAt') { %>uv-drop-list-active<% } %>">
+            <a href="#<% if (queryString != '') { %><%- queryString %>/<% } %><% if (page) { %>page/<%- page %><% } else { %>page/1<% } %>/sort/t.updatedAt/<% if (sort == 't.updatedAt') { %><% if (direction) { %>direction/<%- direction %><% } else { %>direction/asc<% } %><% } else { %>direction/desc<% } %>" data-field="t.updatedAt">
                 {{ 'Last Updated'|trans }}
             </a>
-            <% if(sort == 't.updatedAt') { %>
-                <span class="uv-sorting <% if(direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
+            <% if (sort == 't.updatedAt') { %>
+                <span class="uv-sorting <% if (direction == 'asc') { %> descend <% } else { %> ascend <% } %>"></span>
 
             <% } %>
         </li>
@@ -209,11 +208,11 @@
 						{{ 'Pending'|trans }}
 				<% } else if (status.description == 'Answered') { %>
 						{{ 'Answered'|trans }}
-				<% } else if(status.description == 'Resolved') { %>
+				<% } else if (status.description == 'Resolved') { %>
 						{{ 'Resolved'|trans }}
-				<% } else if(status.description == 'UnAnswered') { %>
+				<% } else if (status.description == 'UnAnswered') { %>
 						{{ 'UnAnswered'|trans }}
-				<% } else if(status.description == 'UnAssigned') { %>
+				<% } else if (status.description == 'UnAssigned') { %>
 						{{ 'UnAssigned'|trans }}
 				<% } %>
 	    	</a>
@@ -225,8 +224,8 @@
         </td>
         <td data-value="{{ 'Agent'|trans }}">
         	<a class="not-shiny" href="<%- path %>">
-				<%  if(agent) { %>
-                    <% if(agent.smallThumbnail != null) { %>
+				<%  if (agent) { %>
+                    <% if (agent.smallThumbnail != null) { %>
                         <img class="uv-table-agent" src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}<%- agent.smallThumbnail %>" alt=""/>
                     <% } else { %>
                         <img class="uv-table-agent" src="{{ asset(default_agent_image_path) }}" alt=""/>
@@ -270,14 +269,14 @@
 
                             app.pager.paginationData = response.pagination;
 							app.pager.url = response.pagination.url;
-							if(ticketCollection.length == 0 && app.pager.paginationData.current != "0")
+							if (ticketCollection.length == 0 && app.pager.paginationData.current != "0")
 								router.navigate(url.replace('replacePage', app.pager.paginationData.last),{trigger: true});
 							else {
 								app.pager.render();
 							}
 						},
 						error: function (model, xhr, options) {
-							if(url = xhr.getResponseHeader('Location'))
+							if (url = xhr.getResponseHeader('Location'))
 								window.location = url;
 						}
 					});
@@ -291,7 +290,7 @@
 					this.model.set({path:ticketPath.replace('replaceId', this.model.attributes.id)})
 					this.$el.html(this.template(this.model.toJSON()));
 
-					if(this.model.attributes.isCustomerView != true)
+					if (this.model.attributes.isCustomerView != true)
 						this.$el.addClass('unread')
 
 					return this;
@@ -305,7 +304,7 @@
 				},
 				render : function () {
 					this.$el.html('');
-					if(ticketCollection.length) {
+					if (ticketCollection.length) {
 						_.each(ticketCollection.models, function (item) {
 							this.renderTicket(item);
 						}, this);
@@ -361,14 +360,14 @@
                 	this.fetch(number, sortField, order);
                 },
                 filterByQuery : function(query, number, sortField, order) {
-                	if(query != null)
+                	if (query != null)
                 		query = query.replace(/\+/g,' ');
 
                 	this.resetParams(query, '');
                 	this.fetch(number, sortField, order);
                 },
                 filterByStatus : function(status, query, number, sortField, order) {
-                	if(query != null)
+                	if (query != null)
                 		query = query.replace(/\+/g,' ');
 
                 	this.resetParams(query, status);

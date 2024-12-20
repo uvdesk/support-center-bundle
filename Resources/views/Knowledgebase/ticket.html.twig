@@ -35,7 +35,6 @@
 
 	{% set isTicketViewPage = (app.user.id is defined ? true : false) %}
 	
-
 	<div class="uv-paper-article uv-paper-form">
 		<div class="uv-paper-section">
 			<section>
@@ -211,53 +210,60 @@
 		</div>
 	</div>
 
-	{% if user_service.isfileExists('apps/uvdesk/form-component') %}
+	{% if user_service.isFileExists('apps/uvdesk/form-component') %}
 		{{ include('@_uvdesk_extension_uvdesk_form_component/CustomFields/customFieldValidation.html.twig') }} 
-	{% elseif user_service.isfileExists('apps/uvdesk/custom-fields') %}
+	{% elseif user_service.isFileExists('apps/uvdesk/custom-fields') %}
 		{{ include('@_uvdesk_extension_uvdesk_custom_fields/CustomFields/customFieldValidation.html.twig') }} 
 	{% endif %}
 {% endblock %}
 
 {% block footer %}
-    
 	{% set isTicketViewPage = (app.user.id is defined ? true : false) %}
+	
 	{{ parent() }}
 
 	{% if recaptchaDetail and recaptchaDetail.isActive == true %}
         <script src='https://www.google.com/recaptcha/api.js'></script>
     {% endif %}
+
     {{ include("@UVDeskSupportCenter/Templates/tinyMCE.html.twig") }}
 	{{ include('@UVDeskCoreFramework/Templates/attachment.html.twig') }}
 
 	<script type="text/javascript">
-	{% if user_service.isfileExists('apps/uvdesk/form-component') == false %}
-	customFieldValidation = {};
-	{% endif %}
+		{% if user_service.isFileExists('apps/uvdesk/form-component') == false %}
+			customFieldValidation = {};
+		{% endif %}
+
 		$(function () {
-		sfTinyMce.init({
-            height: '155px',
-			selector : '#create-reply',
-			images_upload_url: "",
-            setup: function(editor) {
-            },
-			plugins: [
-            ],
-			toolbar: '| undo redo | bold italic forecolor ',
-		});
-			{% if(removeMe is defined) %}
+			sfTinyMce.init({
+				height: '155px',
+				selector : '#create-reply',
+				images_upload_url: "",
+				setup: function(editor) {
+				},
+				plugins: [
+				],
+				toolbar: '| undo redo | bold italic forecolor ',
+			});
+
+			{% if (removeMe is defined) %}
 				$.each({{ removeMe | json_encode |raw }}, function(key, value){
 					$('label[for="' + value + '"]').parent().hide();
 				});
 			{% endif %}
+
 			$('.uv-header-date').datetimepicker({
             	format: 'YYYY-MM-DD',
         	});
+
         	$('.uv-header-time').datetimepicker({
             	format: 'LT',
         	});
+
         	$('.uv-header-datetime').datetimepicker({
             	format: 'YYYY-MM-DD H:m:s'
         	});
+
 			var CreateTicketModel = Backbone.Model.extend({
 				idAttribute : "id",
 				defaults : {
@@ -269,11 +275,10 @@
 							required : true,
 							msg : '{{ "This field is mandatory"|trans }}'
 						},
-						'from' :
-						[{
+						'from' :[{
 							required : true,
 							msg : '{{ "This field is mandatory"|trans }}'
-						},{
+						}, {
 							pattern : 'email',
 							msg : '{{ "Email address is invalid"|trans }}'
 						}],
@@ -288,12 +293,23 @@
 					},
 					'reply' : {
 						fn: function(value) {
-                            if(!tinyMCE.get("uv-edit-create-thread"))
+							var content = tinyMCE.activeEditor.getContent();
+							content = content.replace(/&nbsp;/g, '').replace(/<[^>]*>/g, '');
+
+							if (content.trim() == '') {
+								return true;
+							} else {
+								return false;
+							}
+
+                            if (! tinyMCE.get("uv-edit-create-thread"))
                                 return false;
+								
                             var html = tinyMCE.get("uv-edit-create-thread").getContent();
-                            if(app.appView.stripHTML(html) != '') {
+                            if (app.appView.stripHTML(html) != '') {
                                 return false;
                             }
+
                             return true;
                         },
 						msg : '{{ "This field is mandatory"|trans }}'
@@ -301,7 +317,7 @@
 					{% if recaptchaDetail and recaptchaDetail.isActive == true %}
                         'g-recaptcha-response' : {
                             fn: function(value) {
-                                if(grecaptcha.getResponse().length > 0)
+                                if (grecaptcha.getResponse().length > 0)
                                     return false;
                                 else
                                     return true;
@@ -323,10 +339,10 @@
 				events : {
 					'click #create-ticket-btn' : "saveTicket",
 					'change #type' : "updateCustomFields",
-					'blur input:not(input[type=file]), textarea, select, checkbox': 'formChanegd',
-					'change input[type=file]': 'formChanegd',
+					'blur input:not(input[type=file]), textarea, select, checkbox': 'formChanged',
+					'change input[type=file]': 'formChanged',
 				},
-				formChanegd: function(e) {
+				formChanged: function(e) {
 					this.model.set(Backbone.$(e.currentTarget).attr('name'), Backbone.$(e.currentTarget).val())
 					this.model.isValid([Backbone.$(e.currentTarget).attr('name')])
 				},
@@ -335,7 +351,7 @@
 					var currentElement = Backbone.$(e.currentTarget);
 					var data = currentElement.closest('form').serializeObject();
 					this.model.set(data);
-					if(this.model.isValid(true)) {
+					if (this.model.isValid(true)) {
 						$('#create-ticket-form').submit();
 						$('form').find('#create-ticket-btn').attr('disabled', 'disabled');
 					}

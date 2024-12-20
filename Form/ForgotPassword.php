@@ -16,8 +16,8 @@ class ForgotPassword extends AbstractType
     {     
         $builder->add('email', 'email', array('label' => 'Email Address'));
         $builder->add('save', 'submit',array(
-                                            'label'=>'Send Mail',
-                                            'attr'=> array(
+                                            'label' =>'Send Mail',
+                                            'attr'  => array(
                                                         'class' => 'btn btn-info btn-md'
                                                         )
                                             )

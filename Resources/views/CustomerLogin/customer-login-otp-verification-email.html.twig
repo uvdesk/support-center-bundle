@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/1999/REC-html401-19991224/strict.dtd">
+<html>
+    <body style="font-family: sans-serif; line-height:24px; background-image: none;">
+        <div style="background-color:#887bf6; height:6px; "></div>
+        {% if helpdeskLogo %}
+            <img src= {{ helpdeskLogo }} style="margin:20px 0;" alt="header-image">
+        {% endif %}
+
+        <p>Hello {{ name }}, you're almost there! To login into your account, please use the OTP below:</p>
+
+        <p>
+            <span style="font-size: 24px; letter-spacing: 6px;">{{ verificationCode }}</span>
+        </p>
+        
+        <p style="margin-top: 30px;">
+            If you have any concerns regarding this e-mail, feel free to reach out to us <a href="mailto:{{ helpdeskMail }}" target="_blank" style="text-decoration:none; color:#7c70f4">{{ helpdeskName }}</a>.
+        </p>
+
+        <p>
+            With Regards, 
+        </p>
+        <p>
+            <strong>{{ helpdeskName }}</strong>
+        </p>
+    </body>
+</html>

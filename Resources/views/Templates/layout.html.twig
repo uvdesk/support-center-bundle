@@ -119,7 +119,6 @@
 
 
         {% block header %}
-         
             {% include "@UVDeskSupportCenter/Templates/header.html.twig" %}
         {% endblock %}
 
@@ -185,7 +184,7 @@
 
             <!-- Notification Template -->
             <script type="text/template" id="notification-template">
-                <div class="uv-notification <% if(alertClass == 'danger') { %>uv-error<% } else { %> <%= 'uv-' + alertClass %> <% } %>">
+                <div class="uv-notification <% if (alertClass == 'danger') { %>uv-error<% } else { %> <%= 'uv-' + alertClass %> <% } %>">
                     <span class="uv-notification-close"></span>
                     <p><%= alertMessage %> </p>
                 </div>

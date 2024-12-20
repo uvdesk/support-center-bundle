@@ -138,7 +138,7 @@
 					}, {
 						pattern: '^((?![$%<]).)*$',
 						msg: "{{ 'This field must have valid characters only'|trans }}"
-					},{
+					}, {
 						maxLength:50,
 						msg: "{{ 'This field contain maximum 50 characters.'|trans }}"
 					}],
@@ -148,7 +148,7 @@
 					}, {
 						pattern: '^((?![$%<]).)*$',
 						msg: "{{ 'This field must have valid characters only'|trans }}"
-					},{
+					}, {
 						maxLength:60,
 						msg: "{{ 'This field contain maximum 60 characters.'|trans }}"
 					}],
@@ -162,7 +162,7 @@
 			var EntityForm = Backbone.View.extend({
 				events : {
 					'click .uv-btn': "saveEntity",
-					'blur input, textarea': 'formChanegd',
+					'blur input, textarea': 'formChanged',
                     'click .uv-dropdown-list li': 'addEntity',
                     'click .uv-filtered-tags .uv-btn-small': 'removeEntity'
 				},
@@ -175,8 +175,8 @@
 		    			Backbone.Validation.callbacks.invalid(this, field, jsonContext[field], 'input');
 					}
 				},
-				formChanegd: function(e) {
-					if(e.target.name != 'solutionImage'){
+				formChanged: function(e) {
+					if (e.target.name != 'solutionImage'){
 			    		this.model.set(Backbone.$(e.currentTarget).attr('name'), Backbone.$(e.currentTarget).val())
 			    		this.model.isValid([Backbone.$(e.currentTarget).attr('name')])
 					}
@@ -184,7 +184,7 @@
 				saveEntity : function (e) {
 					e.preventDefault();
 			        this.model.set(this.$el.serializeObject());
-			        if(this.model.isValid(true)) {
+			        if (this.model.isValid(true)) {
 						this.$el.find('.uv-btn').attr('disabled', 'disabled');
 			            this.$el.submit();
 			        }
@@ -199,11 +199,11 @@
                 },
                 addEntity: function(e) {
                     currentElement = Backbone.$(e.currentTarget);
-                    if(id = currentElement.attr("data-id")) {
+                    if (id = currentElement.attr("data-id")) {
                         parent = currentElement.parents(".uv-field-block");
                         parent.find('input').val('')
                         parent.find("li:not(.uv-no-results)").show()
-                        if(!parent.find(".uv-filtered-tags a[data-id='" + id + "']").length) {
+                        if (!parent.find(".uv-filtered-tags a[data-id='" + id + "']").length) {
                             parent.find('.uv-filtered-tags').append("<a class='uv-btn-small default' href='#' data-id='" + id + "'>"+currentElement.text()+"<span class='uv-icon-remove'></span></a>")
                             this.setAddedIds("#" + parent.attr('id'))
                         }

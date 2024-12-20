@@ -9,7 +9,7 @@
 	
 	{% set themeTemplate = themeTemplate ? themeTemplate : 'masonryView' %}
 	{% include "@UVDeskSupportCenter/Themes/" ~ themeTemplate ~ ".html.twig" %}
-	{{parent()}}
+	{{ parent() }}
 {% endblock %}
 
 {% block footer %}

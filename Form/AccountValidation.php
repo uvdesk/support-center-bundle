@@ -14,10 +14,10 @@ class AccountValidation extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('password', 'repeated', array(
-                            'type' => 'password',
+                            'type'            => 'password',
                             'invalid_message' => 'The password fields must match.',
-                            'required' => false,
-                            'first_options'  => array(
+                            'required'        => false,
+                            'first_options'   => array(
                                 'label' => 'Password',
                             ),
                             'second_options' => array(
@@ -33,8 +33,8 @@ class AccountValidation extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Webkul\UserBundle\Entity\User',
-            'csrf_protection' => false, 
+            'data_class'        => 'Webkul\UserBundle\Entity\User',
+            'csrf_protection'   => false, 
             'validation_groups' => 'userValidation',
         ));
     }

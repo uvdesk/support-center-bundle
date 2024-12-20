@@ -80,7 +80,7 @@
 						msg: "{{ 'This field must have valid characters only'|trans }}"
 					},
 					{
-						maxLength:18,
+						maxLength: 18,
 						msg: "{{ 'This field contain maximum 18 characters.'|trans }}"
 					}],
 					'description': [{
@@ -88,8 +88,8 @@
 						msg: "{{ 'This field is mandatory'|trans }}"
 					},
 					{
-						maxLength:250,
-						msg: '{{ "This field contain maximum 250 charecters only"|trans }}'
+						maxLength: 250,
+						msg: '{{ "This field contain maximum 250 characters only"|trans }}'
 					}]
 				}
 			});
@@ -97,7 +97,7 @@
 			var EntityForm = Backbone.View.extend({
 				events : {
 					'click .uv-btn': "saveEntity",
-					'blur input, textarea': 'formChanegd',
+					'blur input, textarea': 'formChanged',
 				},
 				initialize : function() {
 					Backbone.Validation.bind(this);
@@ -106,8 +106,8 @@
 		    			Backbone.Validation.callbacks.invalid(this, field, jsonContext[field], 'input');
 					}
 				},
-				formChanegd: function(e) {
-					if(e.target.name != 'solutionImage'){
+				formChanged: function(e) {
+					if (e.target.name != 'solutionImage') {
 			    		this.model.set(Backbone.$(e.currentTarget).attr('name'), Backbone.$(e.currentTarget).val())
 			    		this.model.isValid([Backbone.$(e.currentTarget).attr('name')])
 					}
@@ -115,7 +115,7 @@
 				saveEntity : function (e) {
 					e.preventDefault();
 			        this.model.set(this.$el.serializeObject());
-			        if(this.model.isValid(true)) {
+			        if (this.model.isValid(true)) {
 						this.$el.find('.uv-btn').attr('disabled', 'disabled');
 			            this.$el.submit();
 			        }

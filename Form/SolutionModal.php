@@ -13,20 +13,20 @@ class SolutionModal extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('solutionImage', 'file', array(
-            'label' => 'Folder Image',
-            'required' => false,
+            'label'      => 'Folder Image',
+            'required'   => false,
             'data_class' => null, 
             'attr' => array(
-                'class' => 'col-sm-3',
-                'style' => 'display: none;',
+                'class'   => 'col-sm-3',
+                'style'   => 'display: none;',
                 'isImage' => true,
-                'accept' => 'image/*'
+                'accept'  => 'image/*'
             )
         ));
 
         $builder->add('name', null, array(
                                             'label' => 'solution.name',
-                                            'attr' => array(
+                                            'attr'  => array(
                                                         'parent-div-class' => 'false',
                                                         )
                                         )
@@ -34,8 +34,8 @@ class SolutionModal extends AbstractType
                 ->add('description', 'textarea', array(
                                             'required' => false,
                                             'label' => 'solution.description',
-                                            'attr' => array(
-                                                        'placeholder' => 'solution.description.placeholder',
+                                            'attr'  => array(
+                                                        'placeholder'      => 'solution.description.placeholder',
                                                         'parent-div-class' => 'false',
                                                         )
                                         )
@@ -55,11 +55,11 @@ class SolutionModal extends AbstractType
                 //     )
                 ->add('visibility', 'checkbox', array(
                             'required' => false,
-                            'label' => 'Status',
-                            'attr' => array(
-                                    'class' => 'i-check',
-                                    'brAfterLabel' => true
-                                ),
+                            'label'    => 'Status',
+                            'attr'     => array(
+                                            'class' => 'i-check',
+                                            'brAfterLabel' => true
+                                        ),
                         )
                     )
                 ->add('id', 'hidden')

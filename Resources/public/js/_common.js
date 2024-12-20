@@ -5,18 +5,18 @@ $(function() {
         valid : function (view, attr, selector) {
             var $el = view.$('[name="' + attr + '"]');
             $el = $el.length ? $el : $('[name="'+ attr + '[]' + '"]');
-            if(attr == 'user_form[groups][]' || attr == 'user_form[agentPrivilege][]' || attr == 'privilege_form[privileges][]') {
+            if (attr == 'user_form[groups][]' || attr == 'user_form[agentPrivilege][]' || attr == 'privilege_form[privileges][]') {
                 $el.parents('.uv-scroll-block').parent().find('.uv-field-message').remove();
-            } else if(attr == 'user_form[ticketView]' || attr == 'grant-type[]') {
+            } else if (attr == 'user_form[ticketView]' || attr == 'grant-type[]') {
                 $el.closest('.uv-element-block').parent().find('.uv-field-message').remove();
-            } else if(attr == 'g-recaptcha-response') {
+            } else if (attr == 'g-recaptcha-response') {
                 $el.parents('.g-recaptcha').find(".uv-field-message").remove();
-            } else if(attr != 'user_form[profileImage]' && attr != 'customer_form[profileImage]') {
+            } else if (attr != 'user_form[profileImage]' && attr != 'customer_form[profileImage]') {
                 $el.removeClass('uv-field-error');
-                if(!$el.parent().hasClass('uv-radio') && !$el.parent().hasClass('uv-checkbox')) {
+                if (!$el.parent().hasClass('uv-radio') && !$el.parent().hasClass('uv-checkbox')) {
                     $el.parent().find('.uv-field-error-icon').remove()
                     $el.parent().find('.uv-field-success-icon').remove()
-                    if($el.val()) {
+                    if ($el.val()) {
                         $el.after('<span class="uv-field-success-icon"></span>');
                     }
                 }
@@ -28,18 +28,18 @@ $(function() {
         invalid : function (view, attr, error, selector) {
             var $el = view.$('[name="' + attr + '"]');
             $el = $el.length ? $el : $('[name="'+ attr + '[]' + '"]');
-            if(attr == 'user_form[groups][]' || attr == 'user_form[agentPrivilege][]' || attr == 'privilege_form[privileges][]') {
+            if (attr == 'user_form[groups][]' || attr == 'user_form[agentPrivilege][]' || attr == 'privilege_form[privileges][]') {
                 $el.parents('.uv-scroll-block').parent().find('.uv-field-message').remove();
                 $el.parents('.uv-scroll-block').parent().append("<span class='uv-field-message'>" + error + "</span>")
-            } else if(attr == 'user_form[ticketView]' || attr == 'grant-type[]') {
+            } else if (attr == 'user_form[ticketView]' || attr == 'grant-type[]') {
                 $el.parents('label').parent().parent().find('.uv-field-message').remove();
                 $el.parents('label').parent().parent().append("<span class='uv-field-message'>" + error + "</span>")
-            } else if(attr == 'g-recaptcha-response') {
+            } else if (attr == 'g-recaptcha-response') {
                 $el.parents('.g-recaptcha').find('.uv-field-message').remove();
                 $el.parents('.g-recaptcha').append("<span class='uv-field-message' style='font-size: 15px'>" + error + "</span>")
-            } else if(attr != 'user_form[profileImage]' && attr != 'customer_form[profileImage]') {
+            } else if (attr != 'user_form[profileImage]' && attr != 'customer_form[profileImage]') {
                 $el.addClass('uv-field-error');
-                if(!$el.parent().hasClass('uv-radio') && !$el.parent().hasClass('uv-checkbox')) {
+                if (!$el.parent().hasClass('uv-radio') && !$el.parent().hasClass('uv-checkbox')) {
                     $el.parent().find('.uv-field-success-icon').remove()
                     $el.parent().find('.uv-field-error-icon').remove()
                     $el.after('<span class="uv-field-error-icon"></span>');
@@ -119,11 +119,14 @@ $(function() {
         sortCollection : function(sortField,order) {
             var context = {};
             context['queryString'] = app.appView.buildQuery($.param(this.collection.getValidParameters()));
-            if(typeof sortField != 'undefined' && sortField != null) {
+            if (
+                typeof sortField != 'undefined' 
+                && sortField != null
+            ) {
                 context['page'] = this.collection.state.currentPage;
                 context['sort'] = sortField;
 
-                if(order == 'asc') {
+                if (order == 'asc') {
                     context['direction'] = 'desc';
                     order = -1;
                 } else {
@@ -166,9 +169,9 @@ $(function() {
     	template : _.template($("#pagination_tmp").html()),
         paginationData: {},
         render : function() {
-        	if(typeof this.paginationData.next == 'undefined')
+        	if (typeof this.paginationData.next == 'undefined')
         		this.paginationData.next = 0;
-        	if(typeof this.paginationData.previous == 'undefined')
+        	if (typeof this.paginationData.previous == 'undefined')
         		this.paginationData.previous = 0;
         	this.paginationData.current = parseInt(this.paginationData.current);
 
@@ -230,7 +233,7 @@ $(function() {
         openConfirmModal: function(targetView, functionName) {
             this.openModal("confirm-modal")
             this.targetView = targetView;
-            if(typeof(functionName) == "undefined") {
+            if (typeof(functionName) == "undefined") {
                 functionName = 'removeItem';
             }
             this.functionName = functionName;
@@ -241,12 +244,12 @@ $(function() {
         },
         defLoader: 1,
         removeDefLoader: function(e) {
-            if(this.defLoader) {
+            if (this.defLoader) {
             	$('.uv-loader-view').remove();            
             }
         },
     	showLoader : function() {
-            if(!$('.uv-loader-view').length) {
+            if (! $('.uv-loader-view').length) {
                 this.$el.prepend(this.fullViewLoader());
             } else {
                 this.defLoader = 0;
@@ -267,17 +270,17 @@ $(function() {
         buildQuery: function(query) {
             query = query.replace(/&/g,'/');
             query = query.replace(/=/g,'/');
-            if(query.indexOf("new/1") >= 0)
+            if (query.indexOf("new/1") >= 0)
                 query = query.replace('new/1','new')
-            else if(query.indexOf("unassigned/1") >= 0)
+            else if (query.indexOf("unassigned/1") >= 0)
                 query = query.replace('unassigned/1','unassigned')
-            else if(query.indexOf("notreplied/1") >= 0)
+            else if (query.indexOf("notreplied/1") >= 0)
                 query = query.replace('notreplied/1','notreplied')
-            else if(query.indexOf("mine/1") >= 0)
+            else if (query.indexOf("mine/1") >= 0)
                 query = query.replace('mine/1','mine')
-            else if(query.indexOf("starred/1") >= 0)
+            else if (query.indexOf("starred/1") >= 0)
                 query = query.replace('starred/1','starred')
-            else if(query.indexOf("trashed/1") >= 0)
+            else if (query.indexOf("trashed/1") >= 0)
                 query = query.replace('trashed/1','trashed')
 
             return query;
@@ -331,7 +334,7 @@ $(function() {
                 .replace(/ +/g,'-');
         },
         checkSpecialChras: function(Text) {
-            if(/^[a-zA-Z0-9-]*$/.test(Text) == false)
+            if (/^[a-zA-Z0-9-]*$/.test(Text) == false)
                 return true;
 
             return false;
@@ -348,7 +351,7 @@ $(function() {
             var sDisplay = s > 0 ? s + "s " : "";
 
             time = dDisplay + hDisplay + mDisplay;
-            if(d < 1 && h < 1) {
+            if (d < 1 && h < 1) {
                 time += sDisplay;
             }
 
@@ -356,18 +359,18 @@ $(function() {
 		},
         getTextColorBasedBackground: function(hexCode) {
             hexCode = hexCode.replace('#', '');
-            if(hexCode.length == 3)
+            if (hexCode.length == 3)
                 hexCode += hexCode;
 
             var chars = hexCode.split("");
             a2fCount = 0;
             _.each(chars, function (char, key) {
-                if(jQuery.inArray(key, [0, 2, 4]) !== -1 && jQuery.inArray(char.toUpperCase(), ['A', 'B', 'C', 'D', 'E', 'F']) !== -1) {
+                if (jQuery.inArray(key, [0, 2, 4]) !== -1 && jQuery.inArray(char.toUpperCase(), ['A', 'B', 'C', 'D', 'E', 'F']) !== -1) {
                     a2fCount++;
                 }
             });
 
-            if(a2fCount >= 2) {
+            if (a2fCount >= 2) {
                 return '#333333';
             } else {
                 return '#FFFFFF';
@@ -378,7 +381,7 @@ $(function() {
             // var c_b = parseInt(hexCode.substr(4, 2), 16);
 
             // temp = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
-            // if(temp > 125) {
+            // if (temp > 125) {
             //     return '#333333';
             // } else {
             //     return '#FFFFFF';
@@ -458,7 +461,7 @@ $(function() {
         },
         dropOnImage: function(e) {
             var uvUploadBrick = Backbone.$(e.currentTarget).parents('.uv-image-upload-brick');
-            if(uvUploadBrick.hasClass("uv-on-drag")){
+            if (uvUploadBrick.hasClass("uv-on-drag")){
                 uvUploadBrick.removeClass("uv-on-drag");
             }
             uvUploadBrick.addClass("uv-on-drop-shadow");
@@ -467,8 +470,8 @@ $(function() {
             var currentElement = Backbone.$(e.currentTarget)
             currentElement.attr('data-title', currentElement.attr('title'));
             currentElement.removeAttr('title');
-            if(currentElement.parents('.uv-sidebar').length) {
-                if(!currentElement.parents('.uv-sidebar').hasClass('uv-sidebar-active')) {
+            if (currentElement.parents('.uv-sidebar').length) {
+                if (!currentElement.parents('.uv-sidebar').hasClass('uv-sidebar-active')) {
                     return;
                 }
             }
@@ -484,30 +487,30 @@ $(function() {
             var leftOffset = currentElement.offset().left;
             var rightOffset = ($(window).width() - (leftOffset + currentElement.outerWidth()));
 
-            if(placement == 'left') {
-                if(elementHeight > tooltipHeight)
+            if (placement == 'left') {
+                if (elementHeight > tooltipHeight)
                     var top = topOffset + ((elementHeight / 2) - (tooltipHeight / 2));
                 else
                     var top = topOffset - ((elementHeight / 2) - (elementWidth / 2));
 
                 $('.uv-tooltip').css('top', top)
                 $('.uv-tooltip').css('left', leftOffset - elementWidth - tooltipWidth - 10)
-            } else if(placement == 'right') {
-                if(elementHeight > tooltipHeight)
+            } else if (placement == 'right') {
+                if (elementHeight > tooltipHeight)
                     var top = topOffset + ((elementHeight / 2) - (tooltipHeight / 2));
                 else
                     var top = topOffset - ((elementHeight / 2) - (elementWidth / 2));
 
                 $('.uv-tooltip').css('top', top)
                 $('.uv-tooltip').css('left', leftOffset + elementWidth + 10)
-            } else if(placement == 'bottom') {
+            } else if (placement == 'bottom') {
                 minus = 0;
                 temp = leftOffset + (elementWidth / 2) + (tooltipWidth / 2)
-                if(temp > $(window).outerWidth()) {
+                if (temp > $(window).outerWidth()) {
                     minus = temp - $(window).outerWidth();
                 }
 
-                if(elementWidth > tooltipWidth)
+                if (elementWidth > tooltipWidth)
                     var left = leftOffset + ((elementWidth / 2) - (tooltipWidth / 2));
                 else
                     var left = leftOffset - ((tooltipWidth / 2) - (elementWidth / 2));
@@ -517,11 +520,11 @@ $(function() {
             } else {
                 minus = 0;
                 temp = leftOffset + (elementWidth / 2) + (tooltipWidth / 2)
-                if(temp > $(window).outerWidth()) {
+                if (temp > $(window).outerWidth()) {
                     minus = temp - $(window).outerWidth();
                 }
 
-                if(elementWidth > tooltipWidth)
+                if (elementWidth > tooltipWidth)
                     var left = leftOffset + ((elementWidth / 2) - (tooltipWidth / 2));
                 else
                     var left = leftOffset - ((tooltipWidth / 2) - (elementWidth / 2));
@@ -566,14 +569,14 @@ $(function() {
     });
 
     Backbone.$('.delete-entity').on('click', function() {
-        if(typeof(targetView) != 'undefined')
+        if (typeof(targetView) != 'undefined')
             targetView.removeItem();
 
         Backbone.$('#confirm-modal').modal('hide');
     });
 
     $('.uv-tabs li').on('click', function() {
-        if(!$(this).hasClass('uv-tab-ellipsis') && !$(this).parents('li').hasClass('uv-tab-ellipsis')) {
+        if (!$(this).hasClass('uv-tab-ellipsis') && !$(this).parents('li').hasClass('uv-tab-ellipsis')) {
             $(this).siblings('.uv-tabs li').removeClass('uv-tab-active');
             $(this).addClass('uv-tab-active');
             $(this).siblings('.uv-tab-view').removeClass('uv-tab-view-active')

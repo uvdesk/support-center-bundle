@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\Query;
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
 
 /**
  * Website
@@ -45,7 +45,7 @@ class SolutionCategory extends EntityRepository
 
     private function cleanAllData(&$data)
     {
-        if(isset($data['isActive'])){
+        if (isset($data['isActive'])) {
             $data['status'] = $data['isActive'];
             unset($data['isActive']);
             unset($data['solutionId']);
@@ -63,7 +63,7 @@ class SolutionCategory extends EntityRepository
 
         $categories = [];
 
-        if(isset($data['solutionId'])){
+        if (isset($data['solutionId'])) {
             $qbS = $this->getEntityManager()->createQueryBuilder();
             $qbS->select('a.categoryId')->from('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping', 'a');
             $qbS->where('a.solutionId = :solutionId');
@@ -76,30 +76,30 @@ class SolutionCategory extends EntityRepository
         $this->presetting($data);
 
         foreach ($data as $key => $value) {
-            if(!in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
-                if($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search') {
-                        $qb->Andwhere('a.'.$key.' = :'.$key);
+            if (!in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
+                if ($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search') {
+                        $qb->andWhere('a.'.$key.' = :'.$key);
                         $qb->setParameter($key, $value);
                 } else {
-                    if($key == 'search') {
-                        $qb->orwhere('a.name'.' LIKE :name');
+                    if ($key == 'search') {
+                        $qb->orWhere('a.name'.' LIKE :name');
                         $qb->setParameter('name', '%'.urldecode(trim($value)).'%');
-                        $qb->orwhere('a.description'.' LIKE :description');
+                        $qb->orWhere('a.description'.' LIKE :description');
                         $qb->setParameter('description', '%'.urldecode(trim($value)).'%');
                     }
                 }
             }
         }
 
-        // $qb->Andwhere('a.companyId'.' = :company');
+        // $qb->andWhere('a.companyId'.' = :company');
         // $qb->setParameter('company', $container->get('user.service')->getCurrentCompany()->getId());
 
-        if($categories){
-            $qb->Andwhere('a.id IN (:categories)');
+        if ($categories) {
+            $qb->andWhere('a.id IN (:categories)');
             $qb->setParameter('categories', $categories);
         }
 
-        if(!$allResult){
+        if (!$allResult) {
             $paginator  = $container->get('knp_paginator');
             $results = $paginator->paginate(
                 $qb,
@@ -107,28 +107,25 @@ class SolutionCategory extends EntityRepository
                 isset($data['limit']) ? $data['limit'] : self::LIMIT,
                 array('distinct' => false)
             );
-        }else{
+        } else {
             $qb->select($allResult);
             $results = $qb->getQuery()->getResult();
+
             return $results;
         }
 
         $newResult = [];
         foreach ($results as $key => $result) {
             $newResult[] = array(
-                'id'                   => $result->getId(),
-                'name'                 => $result->getName(),
-                'description'          => $result->getDescription(),
-                'status'               => $result->getStatus(),
-
-                'sorting'              => $result->getSorting(),
-                'sortOrder'            => $result->getSortOrder(),
-
-                'dateAdded'            => date_format($result->getDateAdded(),"d-M h:i A"),
-
-                'articleCount'         => $this->getArticlesCountByCategory($result->getId()),
-
-                'solutions'            => ($categories ? [] : $this->getSolutionsByCategory($result->getId())),
+                'id'           => $result->getId(),
+                'name'         => $result->getName(),
+                'description'  => $result->getDescription(),
+                'status'       => $result->getStatus(),
+                'sorting'      => $result->getSorting(),
+                'sortOrder'    => $result->getSortOrder(),
+                'dateAdded'    => date_format($result->getDateAdded(),"d-M h:i A"),
+                'articleCount' => $this->getArticlesCountByCategory($result->getId()),
+                'solutions'    => ($categories ? [] : $this->getSolutionsByCategory($result->getId())),
             );
         }
 
@@ -141,6 +138,7 @@ class SolutionCategory extends EntityRepository
 
         $json['results'] = $newResult;
         $json['pagination_data'] = $paginationData;
+
         return $json;
     }
 
@@ -151,7 +149,7 @@ class SolutionCategory extends EntityRepository
         $qb->select('a')->from($this->getEntityName(), 'a');
 
         foreach ($filterArray as $key => $value) {
-            $qb->Andwhere('a.'.$key.' = :'.$key);
+            $qb->andWhere('a.'.$key.' = :'.$key);
             $qb->setParameter($key, $value);
         }
 
@@ -166,11 +164,11 @@ class SolutionCategory extends EntityRepository
         $result = $qbS->select('COUNT(DISTINCT ac.id)')
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory','ac','WITH', 'ac.categoryId = a.id')
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\Article','aA','WITH', 'ac.articleId = aA.id')
-            ->andwhere('ac.categoryId = :categoryId')
-            ->andwhere('aA.status IN (:status)')
+            ->andWhere('ac.categoryId = :categoryId')
+            ->andWhere('aA.status IN (:status)')
             ->setParameters([
-                'categoryId' => $categoryId ,
-                'status' => $status ,
+                'categoryId' => $categoryId,
+                'status'     => $status,
             ])
             ->getQuery()
             ->getSingleScalarResult();
@@ -185,7 +183,7 @@ class SolutionCategory extends EntityRepository
         $results = $queryBuilder->select('s.id, s.name')
                  ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping','ac','WITH', 'ac.categoryId = a.id')
                  ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\Solutions','s','WITH', 'ac.solutionId = s.id')
-                 ->andwhere('ac.categoryId = :categoryId')
+                 ->andWhere('ac.categoryId = :categoryId')
                  ->setParameters([
                      'categoryId' => $categoryId
                  ])
@@ -203,7 +201,7 @@ class SolutionCategory extends EntityRepository
         $results = $queryBuilder->select('a.id, a.name, a.slug')
                  ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategery','ac','WITH', 'ac.categoryId = sc.id')
                  ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\Article','a','WITH', 'ac.id = a.id')
-                 ->andwhere('ac.categoryId = :categoryId')
+                 ->andWhere('ac.categoryId = :categoryId')
                  ->setParameters([
                      'categoryId' => $categoryId
                  ])
@@ -217,9 +215,9 @@ class SolutionCategory extends EntityRepository
     public function removeSolutionsByCategory($categoryId, $solutionId)
     {
         $queryBuilder = $this->createQueryBuilder('ac');
-        $queryBuilder->delete(SupportEntites\SolutionCategoryMapping::class,'ac')
-                 ->andwhere('ac.categoryId = :categoryId')
-                 ->andwhere('ac.solutionId IN (:solutionId)')
+        $queryBuilder->delete(SupportEntities\SolutionCategoryMapping::class,'ac')
+                 ->andWhere('ac.categoryId = :categoryId')
+                 ->andWhere('ac.solutionId IN (:solutionId)')
                  ->setParameters([
                      'categoryId' => $categoryId ,
                      'solutionId' => $solutionId ,
@@ -234,8 +232,8 @@ class SolutionCategory extends EntityRepository
         $where = is_array($categoryId) ? 'ac.categoryId IN (:categoryId)' : 'ac.categoryId = :categoryId';
 
         $queryBuilder = $this->createQueryBuilder('ac');
-        $queryBuilder->delete(SupportEntites\SolutionCategoryMapping::class,'ac')
-                 ->andwhere($where)
+        $queryBuilder->delete(SupportEntities\SolutionCategoryMapping::class,'ac')
+                 ->andWhere($where)
                  ->setParameters([
                      'categoryId' => $categoryId ,
                  ])
@@ -243,8 +241,8 @@ class SolutionCategory extends EntityRepository
                  ->execute()
         ;
 
-        $queryBuilder->delete(SupportEntites\ArticleCategory::class,'ac')
-                 ->andwhere($where)
+        $queryBuilder->delete(SupportEntities\ArticleCategory::class,'ac')
+                 ->andWhere($where)
                  ->setParameters([
                      'categoryId' => $categoryId ,
                  ])

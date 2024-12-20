@@ -6,8 +6,8 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Symfony\Component\HttpFoundation\Request;
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 
 class Article extends EntityRepository
 {
@@ -40,10 +40,11 @@ class Article extends EntityRepository
 
     private function cleanAllData(&$data)
     {
-        if(isset($data['isActive'])){
+        if (isset($data['isActive'])) {
             $data['status'] = $data['isActive'];
             unset($data['isActive']);
         }
+
         unset($data['categoryId']);
         unset($data['solutionId']);
     }
@@ -52,7 +53,7 @@ class Article extends EntityRepository
     {
         $result = $this->getEntityManager()->createQueryBuilder()
             ->select('COUNT(articleTags) as totalArticle')
-            ->from(SupportEntites\ArticleTags::class, 'articleTags')
+            ->from(SupportEntities\ArticleTags::class, 'articleTags')
             ->where('articleTags.tagId = :supportTag')->setParameter('supportTag', $supportTag)
             ->getQuery()->getResult();
         
@@ -68,8 +69,8 @@ class Article extends EntityRepository
                         ->leftJoin('Webkul\UVDesk\CoreFrameworkBundle\Entity\User','u','WITH', 'a.userId = u.id')
                         ->leftJoin('u.userInstance', 'ud')
                         ->addSelect("CONCAT(u.firstName,' ',u.lastName) AS name")
-                        ->andwhere('a.articleId = :articleId')
-                        ->andwhere('ud.supportRole IN (:roleId)')
+                        ->andWhere('a.articleId = :articleId')
+                        ->andWhere('ud.supportRole IN (:roleId)')
                         ->orderBy(
                             'a.id',
                             Criteria::DESC
@@ -85,7 +86,7 @@ class Article extends EntityRepository
         return $results;
     }
 
-    public function getAllRelatedyByArticle($params, $status = [0, 1])
+    public function getAllRelatedByArticle($params, $status = [0, 1])
     {
         $qbS = $this->getEntityManager()->createQueryBuilder();
 
@@ -93,18 +94,19 @@ class Article extends EntityRepository
             ->from('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleRelatedArticle', 'a')
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\Article','aR','WITH', 'a.relatedArticleId = aR.id')
             
-            ->andwhere('a.articleId = :articleId')
-            ->andwhere('aR.status IN (:status)')
+            ->andWhere('a.articleId = :articleId')
+            ->andWhere('aR.status IN (:status)')
             ->orderBy(
                 'a.id',
                 Criteria::DESC
             )
             ->setParameters([
                 'articleId' => $params['articleId'],
-                'status' => $status,
+                'status'    => $status,
             ]);
 
         $results = $qbS->getQuery()->getResult();
+
         return $results;
     }
 
@@ -120,8 +122,7 @@ class Article extends EntityRepository
 
         $articles = [];
 
-        if(isset($data['categoryId']))
-        {
+        if (isset($data['categoryId'])) {
             $qbS = $this->getEntityManager()->createQueryBuilder();
             $qbS->select('a.articleId')->from('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory', 'a');
             $qbS->where('a.categoryId = :categoryId');
@@ -142,29 +143,29 @@ class Article extends EntityRepository
             $articles = $articles ? $articles : [0];
         }
 
-        if(isset($data['search'])){
+        if (isset($data['search'])){
             $search = explode(':', $data['search']);
 
-            if(isset($search[0]) && isset($search[1])){
-                if(in_array($search[0], $this->searchAllowed)){
-                    if($search[0] == 'tag'){
+            if (isset($search[0]) && isset($search[1])) {
+                if (in_array($search[0], $this->searchAllowed)){
+                    if ($search[0] == 'tag'){
                         $qbS = $this->getEntityManager()->createQueryBuilder();
                         $qbS->select('at.articleId')->from('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleTags', 'at');
                           
                         $articlesTag = $qbS->getQuery()->getResult();
 
-                        if($articlesTag){
-                            if($articles){
+                        if ($articlesTag) {
+                            if ($articles) {
                                 $oldArticles = $articles;
                                 $articles = [0];
-                                foreach($oldArticles as $article){
-                                    if(in_array($article, $articlesTag)){
+                                foreach ($oldArticles as $article) {
+                                    if (in_array($article, $articlesTag)) {
                                         $articles[] = $article;
                                     }
                                 }
-                            }else
+                            } else
                                 $articles = $articlesTag;
-                        }else
+                        } else
                             $articles = [0];
                     }
                     unset($data['search']);
@@ -176,27 +177,30 @@ class Article extends EntityRepository
 
         
         foreach ($data as $key => $value) {
-            if(!in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
-                if($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search' AND $key!='query') {
-                        $qb->Andwhere('a.'.$key.' = :'.$key);
+            if (
+                ! in_array($key,$this->safeFields)
+                && in_array($key, $this->allowedFormFields)
+            ) {
+                if ($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search' AND $key!='query') {
+                        $qb->andWhere('a.'.$key.' = :'.$key);
                         $qb->setParameter($key, $value);
                 } else {
-                    if($key == 'search' || $key == 'query') {
-                        $qb->orwhere('a.name'.' LIKE :name');
+                    if ($key == 'search' || $key == 'query') {
+                        $qb->orWhere('a.name'.' LIKE :name');
                         $qb->setParameter('name', '%'.urldecode(trim($value)).'%');
-                        $qb->orwhere('a.content'.' LIKE :content'); //can use regexBundle for it so that it can\'t match html
+                        $qb->orWhere('a.content'.' LIKE :content'); //can use regexBundle for it so that it can\'t match html
                         $qb->setParameter('content', '%'.urldecode(trim($value)).'%');
                     }
                 }
             }
         }
 
-        if($articles){
-            $qb->Andwhere('a.id IN (:articles)');
+        if ($articles){
+            $qb->andWhere('a.id IN (:articles)');
             $qb->setParameter('articles', $articles);
         }
-        // dump($qb);die;
-        if(!$allResult){
+
+        if (! $allResult) {
             $paginator  = $container->get('knp_paginator');
 
             $results = $paginator->paginate(
@@ -205,41 +209,38 @@ class Article extends EntityRepository
                 self::LIMIT,
                 array('distinct' => true)
             );
-        }else{
+        } else {
             $qb->select($allResult);
             $results = $qb->getQuery()->getResult();
+
             return $results;
         }
 
         $newResult = [];
-        // dump($results);die;
         foreach ($results as $key => $result) {
-            // dump($result['id']);
             $newResult[] = array(
-                'id'                   => $result->getId(),
-                'name'                 => $result->getName(),
-                'slug'                 => $result->getSlug(),
-                'status'               => $result->getStatus(),
-                'viewed'               => $result->getViewed(),
-                'dateAdded'            => date_format($result->getDateAdded(),'d-M h:i A'),
-                'categories'           => ($articles ? $this->getCategoryByArticle($result->getId()) : $this->getCategoryByArticle($result->getId())),
+                'id'         => $result->getId(),
+                'name'       => $result->getName(),
+                'slug'       => $result->getSlug(),
+                'status'     => $result->getStatus(),
+                'viewed'     => $result->getViewed(),
+                'dateAdded'  => date_format($result->getDateAdded(),'d-M h:i A'),
+                'categories' => ($articles ? $this->getCategoryByArticle($result->getId()) : $this->getCategoryByArticle($result->getId())),
             );
         }
-
-        // die;
 
         $paginationData = $results->getPaginationData();
         $queryParameters = $results->getParams();
        
         unset($queryParameters['solution']);
-        if(isset($queryParameters['category']))
+        if (isset($queryParameters['category']))
             unset($queryParameters['category']);
 
         $paginationData['url'] = '#'.$container->get('uvdesk.service')->buildPaginationQuery($queryParameters);
 
         $json['results'] = $newResult;
         $json['pagination_data'] = $paginationData;
-        // dump($json);die;
+
         return $json;
     }
    
@@ -250,7 +251,7 @@ class Article extends EntityRepository
         $results = $queryBuilder->select('c.id, c.name')
                  ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory','ac','WITH', 'ac.articleId = a.id')
                  ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory','c','WITH', 'ac.categoryId = c.id')
-                 ->andwhere('ac.articleId = :articleId')
+                 ->andWhere('ac.articleId = :articleId')
                  ->setParameters([
                      'articleId' => $id,
                  ])
@@ -268,7 +269,8 @@ class Article extends EntityRepository
         $results = $queryBuilder->select('DISTINCT t.id, t.name')
                 ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleTags','at','WITH', 'at.articleId = a.id')
                 ->leftJoin('Webkul\UVDesk\CoreFrameworkBundle\Entity\Tag','t','WITH', 'at.tagId = t.id')
-                ->andwhere('at.articleId = :articleId')
+                ->andWhere('at.articleId = :articleId')
+                ->andWhere('at.tagId = t.id')
                 ->setParameters([
                     'articleId' => $id,
                 ])
@@ -285,12 +287,12 @@ class Article extends EntityRepository
 
         $queryBuilder = $this->createQueryBuilder('ac');
 
-        $queryBuilder->delete(SupportEntites\ArticleCategory::class,'ac')
-                 ->andwhere('ac.articleId = :articleId')
-                 ->andwhere($where)
+        $queryBuilder->delete(SupportEntities\ArticleCategory::class,'ac')
+                 ->andWhere('ac.articleId = :articleId')
+                 ->andWhere($where)
                  ->setParameters([
                      'articleId' => $articleId,
-                     'id' => $categories ,
+                     'id'        => $categories ,
                  ])
                  ->getQuery()
                  ->execute()
@@ -303,9 +305,9 @@ class Article extends EntityRepository
 
         $queryBuilder = $this->createQueryBuilder('ac');
 
-        $queryBuilder->delete(SupportEntites\ArticleTags::class,'ac')
-            ->andwhere('ac.articleId = :articleId')
-            ->andwhere($where)
+        $queryBuilder->delete(SupportEntities\ArticleTags::class,'ac')
+            ->andWhere('ac.articleId = :articleId')
+            ->andWhere($where)
             ->setParameters(['articleId' => $articleId,'id' => $tags])
             ->getQuery()
             ->execute();
@@ -317,9 +319,9 @@ class Article extends EntityRepository
 
         $queryBuilder = $this->createQueryBuilder('ac');
 
-        $queryBuilder->delete(SupportEntites\ArticleRelatedArticle::class,'ac')
-            ->andwhere('ac.articleId = :articleId')
-            ->andwhere($where)
+        $queryBuilder->delete(SupportEntities\ArticleRelatedArticle::class,'ac')
+            ->andWhere('ac.articleId = :articleId')
+            ->andWhere($where)
             ->setParameters(['articleId' => $articleId,'id' => $ids])
             ->getQuery()
             ->execute();
@@ -331,8 +333,8 @@ class Article extends EntityRepository
 
         $queryBuilder = $this->createQueryBuilder('ac');
 
-        $queryBuilder->delete(SupportEntites\ArticleCategory::class,'ac')
-                 ->andwhere($where)
+        $queryBuilder->delete(SupportEntities\ArticleCategory::class,'ac')
+                 ->andWhere($where)
                  ->setParameters([
                      'id' => $id ,
                  ])
@@ -359,7 +361,7 @@ class Article extends EntityRepository
             case 'popularity':
                 return 'DESC';
                 break;
-            Default:
+            default:
                 return 'DESC';
                 break;
         }
@@ -376,8 +378,8 @@ class Article extends EntityRepository
 
         $results = $queryBuilder->select('a')
                  ->leftJoin('Webkul\SupportCenterBundle\Entity\ArticleCategory','ac','WITH', 'ac.articleId = a.id')
-                 ->andwhere('a.solutionId = :solutionId')
-                 ->andwhere('ac.categoryId = :categoryId')
+                 ->andWhere('a.solutionId = :solutionId')
+                 ->andWhere('ac.categoryId = :categoryId')
                  ->orderBy(
                         $request->query->get('sort') ? 'a.'.$request->query->get('sort') : 'a.id',
                         $request->query->get('direction') ? $request->query->get('direction') : Criteria::DESC
@@ -399,7 +401,7 @@ class Article extends EntityRepository
                     );
 
         $results = $queryBuilder->select('a')
-                 ->andwhere('a.solutionId = :solutionId')
+                 ->andWhere('a.solutionId = :solutionId')
                  ->orderBy(
                         $request->query->get('sort') ? 'a.'.$request->query->get('sort') : 'a.id',
                         $request->query->get('direction') ? $request->query->get('direction') : Criteria::DESC
@@ -423,9 +425,9 @@ class Article extends EntityRepository
 
         $results = $queryBuilder->select('a')
                  ->leftJoin('Webkul\SupportCenterBundle\Entity\ArticleCategory','ac','WITH', 'ac.articleId = a.id')
-                 ->andwhere('a.solutionId = :solutionId')
-                 ->andwhere('ac.categoryId = :categoryId')
-                 ->andwhere('a.status = 1')
+                 ->andWhere('a.solutionId = :solutionId')
+                 ->andWhere('ac.categoryId = :categoryId')
+                 ->andWhere('a.status = 1')
                  ->orderBy(
                         $category->getSorting() == 'popularity' ? 'a.viewed' : 'a.name',
                         $this->getStringToOrder($category->getSorting())
@@ -448,7 +450,7 @@ class Article extends EntityRepository
 
         $results = $queryBuilder->select('ac')
                  ->leftJoin('Webkul\SupportCenterBundle\Entity\ArticleCategory','ac','WITH', 'ac.articleId = a.id')
-                 ->andwhere('ac.articleId = :articleId')
+                 ->andWhere('ac.articleId = :articleId')
                  ->orderBy(
                         $request->query->get('sort') ? 'a.'.$request->query->get('sort') : 'a.id',
                         $request->query->get('direction') ? $request->query->get('direction') : Criteria::DESC
@@ -469,14 +471,14 @@ class Article extends EntityRepository
         $searchTagList = explode(' ', trim($searchQuery));
 
         $params = [
-            'name' => '%' . trim($searchQuery) . '%',
+            'name'   => '%' . trim($searchQuery) . '%',
             'status' => 1,
         ];
 
         $results = $this->createQueryBuilder('a')
                  ->select('a.id, a.name, a.slug, a.content, a.metaDescription, a.keywords, a.metaTitle, a.status, a.viewed, a.stared, a.dateAdded, a.dateUpdated')
-                 ->andwhere('a.name LIKE :name OR a.content LIKE :name')
-                 ->andwhere('a.status = :status')
+                 ->andWhere('a.name LIKE :name OR a.content LIKE :name')
+                 ->andWhere('a.status = :status')
                  ->orderBy((!empty($sort)) ? 'a.' . $sort : 'a.id', (!empty($direction)) ? $direction : Criteria::DESC)
                  ->setParameters($params)
                  ->getQuery()
@@ -487,19 +489,18 @@ class Article extends EntityRepository
 
     public function getArticleByTags(array $tagList = [], $sort = null, $direction = null)
     {
-      
         if (empty($tagList))
             return [];
 
         $queryBuilder = $this->getEntityManager()->createQueryBuilder()
             ->select('a')
-            ->from(SupportEntites\Article::class, 'a')
-            ->leftJoin(SupportEntites\ArticleTags::class, 'at', 'WITH', 'at.articleId = a.id')
-            ->leftJoin(CoreEntites\Tag::class, 't', 'WITH', 't.id = at.tagId')
-            ->andwhere('a.status = :status')->setParameter('status', 1)
+            ->from(SupportEntities\Article::class, 'a')
+            ->leftJoin(SupportEntities\ArticleTags::class, 'at', 'WITH', 'at.articleId = a.id')
+            ->leftJoin(CoreEntities\Tag::class, 't', 'WITH', 't.id = at.tagId')
+            ->andWhere('a.status = :status')->setParameter('status', 1)
             ->orderBy(
-                (!empty($sort)) ? 'a.' . $sort : 'a.id',
-                (!empty($direction)) ? $direction : Criteria::DESC
+                (! empty($sort)) ? 'a.' . $sort : 'a.id',
+                (! empty($direction)) ? $direction : Criteria::DESC
             );
 
         // Build the sub-query
@@ -516,8 +517,6 @@ class Article extends EntityRepository
         return (!empty($articleCollection)) ? $articleCollection : [];
     }
 
-    
-
     public function getArticleAuthorDetails($articleId = null, $companyId = null)
     {
         if (empty($articleId))
@@ -525,8 +524,8 @@ class Article extends EntityRepository
 
         $queryBuilder = $this->getEntityManager()->createQueryBuilder()
             ->select('ud')
-            ->from(CoreEntites\UserInstance::class, 'ud')
-            ->leftJoin(SupportEntites\ArticleHistory::class, 'ah', 'WITH', 'ah.userId = ud.user')
+            ->from(CoreEntities\UserInstance::class, 'ud')
+            ->leftJoin(SupportEntities\ArticleHistory::class, 'ah', 'WITH', 'ah.userId = ud.user')
             ->where('ah.articleId = :articleId')->setParameter('articleId', $articleId)
             // ->andWhere('ud.companyId = :companyId')->setParameter('companyId', $companyId)
             ->andWhere('ud.supportRole != :userRole')->setParameter('userRole', 4)
@@ -534,20 +533,23 @@ class Article extends EntityRepository
             ->setMaxResults(1);
 
         $articleAuthorCollection = $queryBuilder->getQuery()->getResult();
-        if (!empty($articleAuthorCollection) && count($articleAuthorCollection) > 1) {
+        if (
+            ! empty($articleAuthorCollection) 
+            && count($articleAuthorCollection) > 1
+        ) {
             // Parse through the collection and priorotize entity which have the designation field. This case
             // will occur when the user is mapped with more than one userData entity with differing userRoles.
             // If none is found, return the very first element in collection. It doesn't matter then.
             $defaultArticleAuthor = $articleAuthorCollection[0];
             foreach ($articleAuthorCollection as $articleAuthor) {
-                if (!empty($articleAuthor->getJobTitle())) {
+                if (! empty($articleAuthor->getJobTitle())) {
                     $defaultArticleAuthor = $articleAuthor;
                     break;
                 }
             }
-            return (!empty($defaultArticleAuthor)) ? $defaultArticleAuthor : $articleAuthorCollection[0];
+            return (! empty($defaultArticleAuthor)) ? $defaultArticleAuthor : $articleAuthorCollection[0];
         } else {
-            return (!empty($articleAuthorCollection)) ? $articleAuthorCollection[0] : null;
+            return (! empty($articleAuthorCollection)) ? $articleAuthorCollection[0] : null;
         }
     }
     /**
@@ -564,7 +566,7 @@ class Article extends EntityRepository
             ->from('SupportCenterBundle:Article', 'a')
             // ->leftJoin('SupportCenterBundle:ArticleTags', 'at', 'WITH', 'at.articleId = a.id')
             ->where('a.companyId = :companyId')->setParameter('companyId', $company->getId())
-            ->andwhere('a.status = :status')->setParameter('status', 1)
+            ->andWhere('a.status = :status')->setParameter('status', 1)
             ->andWhere('a.name LIKE :keyword OR a.slug LIKE :keyword OR a.content LIKE :keyword')->setParameter('keyword', '%' . $keyword . '%')
             ->orderBy(
                 'a.dateUpdated'
@@ -581,11 +583,11 @@ class Article extends EntityRepository
             '{ARTICLE_ID}' => $article->getId(),
         ]);
 
-        $preparedDBStatment = $this->getEntityManager()->getConnection()->prepare($nativeQuery);
-        $preparedDBStatment->execute();
-        $feedbackCollection = $preparedDBStatment->fetchAll();
+        $preparedDBStatement = $this->getEntityManager()->getConnection()->prepare($nativeQuery);
+        $preparedDBStatement->execute();
+        $feedbackCollection = $preparedDBStatement->fetchAll();
 
-        if (!empty($feedbackCollection)) {
+        if (! empty($feedbackCollection)) {
             $response['collection'] = array_map(function($feedback) {
                 return ['user' => $feedback['user_id'], 'direction' => ((int) $feedback['is_helpful'] === 1) ? 'positive' : 'negative', 'feedbackMessage' => $feedback['description']];
             }, $feedbackCollection);
@@ -603,7 +605,7 @@ class Article extends EntityRepository
         $qb = $this->getEntityManager()->createQueryBuilder()
             ->select('a.id', 'a.name', 'a.slug', 'a.content', 'a.stared')
             ->from($this->getEntityName(), 'a')
-            ->andwhere('a.status = :status')
+            ->andWhere('a.status = :status')
             ->setParameter('status', 1)
             ->addOrderBy('a.viewed', Criteria::DESC)
             ->setMaxResults(10);
