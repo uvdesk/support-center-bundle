@@ -634,6 +634,11 @@ class Ticket extends AbstractController
     public function downloadAttachment(Request $request)
     {
         $attachmentId = $request->attributes->get('attachmentId');
+
+        if ($attachmentId == 0) {
+            $attachmentId = $request->query->get('attachmendId');
+        }
+
         $attachment = $this->getDoctrine()->getManager()->getRepository(CoreEntities\Attachment::class)->findOneById($attachmentId);
 
         $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
@@ -661,16 +666,18 @@ class Ticket extends AbstractController
 
         $path = $this->kernel->getProjectDir() . "/public/". $attachment->getPath();
 
-        $response = new Response();
-        $response->headers->set('Content-type', $attachment->getContentType());
-        $response->headers->set('Content-Disposition', 'attachment; filename='. $attachment->getName());
-        $response->headers->set('Content-Length', $attachment->getSize());
-        
-        $response->setStatusCode(200);
-        $response->sendHeaders();
-       
-        readfile($path);
-        
+        $response = new StreamedResponse(function () use ($path) {
+            // Output the file content
+            $stream = fopen($path, 'rb');
+            fpassthru($stream);
+            fclose($stream);
+        });
+
+        // Set headers
+        $response->headers->set('Content-Type', $attachment->getContentType());
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $attachment->getName() . '"');
+        $response->headers->set('Content-Length', filesize($path));
+
         return $response;
     }
     
