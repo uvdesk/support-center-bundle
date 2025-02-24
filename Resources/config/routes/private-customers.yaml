@@ -64,9 +64,9 @@ helpdesk_customer_create_ticket_success:
     defaults: { email: '', flag: 0 }
 
 helpdesk_customer_download_ticket_attachment:
-    path:     /ticket/download/{attachmentId}
+    path:     /ticket/download/{attachmendId}
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Ticket::downloadAttachment
-    defaults: { attachmentId: 0 }
+    defaults: { attachmendId: 0 }
 
 helpdesk_customer_download_ticket_attachment_zip:
     path:     /ticket/download-ticket-zip/{threadId}
