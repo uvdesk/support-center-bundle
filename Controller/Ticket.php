@@ -5,8 +5,11 @@ namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Webkul\UVDesk\SupportCenterBundle\Form\Ticket as TicketForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
@@ -47,9 +50,9 @@ class Ticket extends AbstractController
 
         if (! empty($website)) {
             $knowledgebaseWebsite = $entityManager->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => 1]);
-
+            
             if (
-                ! empty($knowledgebaseWebsite)
+                ! empty($knowledgebaseWebsite) 
                 && true == $knowledgebaseWebsite->getIsActive()
             ) {
                 return true;
@@ -71,16 +74,16 @@ class Ticket extends AbstractController
     public function ticketadd(Request $request, ContainerInterface $container)
     {
         $this->isWebsiteActive();
-
+        
         $formErrors = $errors = array();
         $em = $this->getDoctrine()->getManager();
         $website = $em->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
         $websiteConfiguration = $this->uvdeskService->getActiveConfiguration($website->getId());
 
         if (
-            ! $websiteConfiguration
-            || ! $websiteConfiguration->getTicketCreateOption()
-            || ($websiteConfiguration->getLoginRequiredToCreate()
+            ! $websiteConfiguration 
+            || ! $websiteConfiguration->getTicketCreateOption() 
+            || ($websiteConfiguration->getLoginRequiredToCreate() 
             && ! $this->getUser())
         ) {
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
@@ -91,8 +94,8 @@ class Ticket extends AbstractController
 
         if ($request->getMethod() == "POST") {
             if (
-                $recaptchaDetails
-                && $recaptchaDetails->getIsActive() == true
+                $recaptchaDetails 
+                && $recaptchaDetails->getIsActive() == true 
                 && $this->recaptchaService->getReCaptchaResponse($request->request->get('g-recaptcha-response'))
             ) {
                 $this->addFlash('warning', $this->translator->trans("Warning ! Please select correct CAPTCHA !"));
@@ -101,11 +104,11 @@ class Ticket extends AbstractController
                     $error = false;
                     $message = '';
                     $ticketType = $em->getRepository(CoreEntities\TicketType::class)->find($request->request->get('type'));
-
+                    
                     try {
                         try {
                             $customFieldsService = null;
-
+                            
                             if ($this->userService->isFileExists('apps/uvdesk/custom-fields')) {
                                 $customFieldsService = $this->get('uvdesk_package_custom_fields.service');
                             } else if ($this->userService->isFileExists('apps/uvdesk/form-component')) {
@@ -130,12 +133,12 @@ class Ticket extends AbstractController
                     } catch (\Exception $e) {
                         // @TODO: Log execption message
                     }
-
+    
                     $ticket = new CoreEntities\Ticket();
                     $loggedUser = $this->get('security.token_storage')->getToken()->getUser();
-
+                    
                     if (! empty($loggedUser) && $loggedUser != 'anon.') {
-
+                        
                         $form = $this->createForm(TicketForm::class, $ticket, [
                             'container'      => $container,
                             'entity_manager' => $em,
@@ -154,20 +157,20 @@ class Ticket extends AbstractController
                         $email = $request->request->get('from');
                         $name = explode(' ', $request->request->get('name'));
                     }
-
+    
                     $website = $em->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
                     if (
-                        ! empty($email)
+                        ! empty($email) 
                         && $this->ticketService->isEmailBlocked($email, $website)
                     ) {
                         $request->getSession()->getFlashBag()->set('warning', $this->translator->trans('Warning ! Cannot create ticket, given email is blocked by admin.'));
-
+                        
                         return $this->redirect($this->generateUrl('helpdesk_customer_create_ticket'));
                     }
-
+    
                     if ($request->request->all())
                         $form->submit($request->request->all());
-
+    
                     if ($form->isValid() && !count($formErrors) && !$error) {
                         $data = array(
                             'from'      => $email, //email$request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
@@ -179,17 +182,17 @@ class Ticket extends AbstractController
                             'role'      => 4,
                             'active'    => true
                         );
-
+    
                         $em = $this->getDoctrine()->getManager();
                         $data['type'] = $em->getRepository(CoreEntities\TicketType::class)->find($request->request->get('type'));
-
+    
                         if (! is_object($data['customer'] = $this->container->get('security.token_storage')->getToken()->getUser()) == "anon.") {
                             $supportRole = $em->getRepository(CoreEntities\SupportRole::class)->findOneByCode("ROLE_CUSTOMER");
-
+    
                             $customerEmail = $params['email'] = $request->request->get('from');
                             $customer = $em->getRepository(CoreEntities\User::class)->findOneBy(array('email' => $customerEmail));
                             $params['flag'] = (!$customer) ? 1 : 0;
-
+    
                             $data['firstName'] = current($nameDetails = explode(' ', $request->request->get('name')));
                             $data['fullname'] = $request->request->get('name');
                             $data['lastName'] = ($data['firstName'] != end($nameDetails)) ? end($nameDetails) : " ";
@@ -211,23 +214,23 @@ class Ticket extends AbstractController
                         $data['message'] = $data['reply'];
                         $data['createdBy'] = 'customer';
                         $data['attachments'] = $request->files->get('attachments');
-
+    
                         if (! empty($request->server->get("HTTP_CF_CONNECTING_IP") )) {
                             $data['ipAddress'] = $request->server->get("HTTP_CF_CONNECTING_IP");
                             if (!empty($request->server->get("HTTP_CF_IPCOUNTRY"))) {
                                 $data['ipAddress'] .= '(' . $request->server->get("HTTP_CF_IPCOUNTRY") . ')';
                             }
                         }
-
+    
                         $thread = $this->ticketService->createTicketBase($data);
-
+                        
                         if (! empty($thread)) {
                             $ticket = $thread->getTicket();
                             if (
-                                $request->request->get('customFields')
+                                $request->request->get('customFields') 
                                 || $request->files->get('customFields')
                             ) {
-                                $this->ticketService->addTicketCustomFields($thread, $request->request->get('customFields'), $request->files->get('customFields'));
+                                $this->ticketService->addTicketCustomFields($thread, $request->request->get('customFields'), $request->files->get('customFields'));                        
                             }
                             $this->addFlash('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
                         } else {
@@ -239,15 +242,15 @@ class Ticket extends AbstractController
                         $event
                             ->setTicket($thread->getTicket())
                         ;
-
+    
                         $this->eventDispatcher->dispatch($event, 'uvdesk.automation.workflow.execute');
-
+    
                         if (null != $this->getUser()) {
                             return $this->redirect($this->generateUrl('helpdesk_customer_ticket_collection'));
                         } else {
                             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
                         }
-
+                        
                     } else {
                         $errors = $this->getFormErrors($form);
                         $errors = array_merge($errors, $formErrors);
@@ -258,9 +261,9 @@ class Ticket extends AbstractController
                         $this->translator->trans("Warning ! Post size can not exceed 25MB")
                     );
                 }
-
+    
                 if (
-                    isset($errors)
+                    isset($errors) 
                     && count($errors)
                 ) {
                     $this->addFlash('warning', key($errors) . ': ' . reset($errors));
@@ -297,14 +300,14 @@ class Ticket extends AbstractController
 
         $currentUser = $this->get('security.token_storage')->getToken()->getUser();
         if (
-            ! $currentUser
+            ! $currentUser 
             || $currentUser == "anon."
         ) {
             //throw error
         }
-
+        
         $tickets = $ticketRepo->getAllCustomerTickets($currentUser);
-
+        
         return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketList.html.twig', array(
             'ticketList' => $tickets,
         ));
@@ -438,7 +441,7 @@ class Ticket extends AbstractController
         $json = array();
         if ($request->isXmlHttpRequest()) {
             $repository = $this->getDoctrine()->getRepository(CoreEntities\Ticket::class);
-
+    
             $json = $repository->getAllCustomerTickets($request->query, $container);
         }
 
@@ -490,9 +493,9 @@ class Ticket extends AbstractController
         }
 
         if (
-            ! empty($ticket)
-            && ( (!empty($user))
-            && $user->getId() != $ticket->getCustomer()->getId())
+            ! empty($ticket) 
+            && ( (!empty($user)) 
+            && $user->getId() != $ticket->getCustomer()->getId()) 
         ) {
             if ($this->isCollaborator($ticket, $user)) {
                 $isConfirmColl = true;
@@ -500,11 +503,11 @@ class Ticket extends AbstractController
 
             if ($isConfirmColl != true) {
                 throw new \Exception('Access Denied', 403);
-            }
+            } 
         }
 
         if (
-            ! empty($user)
+            ! empty($user) 
             && $user->getId() == $ticket->getCustomer()->getId()
         ) {
             $ticket->setIsCustomerViewed(1);
@@ -514,7 +517,7 @@ class Ticket extends AbstractController
         }
 
         $checkTicket = $entityManager->getRepository(CoreEntities\Ticket::class)->isTicketCollaborator($ticket, $user->getEmail());
-
+        
         $twigResponse = [
             'ticket'                => $ticket,
             'searchDisable'         => true,
@@ -585,60 +588,68 @@ class Ticket extends AbstractController
         $threadId = $request->attributes->get('threadId');
         $attachmentRepository = $this->getDoctrine()->getManager()->getRepository(CoreEntities\Attachment::class);
         $threadRepository = $this->getDoctrine()->getManager()->getRepository(CoreEntities\Thread::class);
-
+    
+        // Get thread and attachments
         $thread = $threadRepository->findOneById($threadId);
-
-        $attachment = $attachmentRepository->findByThread($threadId);
-
-        if (! $attachment) {
+        $attachments = $attachmentRepository->findByThread($threadId);
+    
+        if (!$attachments) {
             $this->noResultFound();
         }
-
+    
+        // Access control
         $ticket = $thread->getTicket();
         $user = $this->userService->getSessionUser();
-
-        // process only if access for the resource.
-        if (
-            empty($ticket)
-            || ( (!empty($user))
-            && $user->getId() != $ticket->getCustomer()->getId())
-        ) {
-            if (! $this->isCollaborator($ticket, $user)) {
+        
+        if (empty($ticket) || 
+            (!empty($user) && $user->getId() != $ticket->getCustomer()->getId())) {
+            if (!$this->isCollaborator($ticket, $user)) {
                 throw new \Exception('Access Denied', 403);
             }
         }
+    
+        // Create ZIP file with proper path
+        $zipName = sys_get_temp_dir() . '/attachments_' . $threadId . '.zip';
 
-        $zipName = 'attachments/' .$threadId.'.zip';
-        $zip = new \ZipArchive;
-
-        $zip->open($zipName, \ZipArchive::CREATE);
-        if (count($attachment)) {
-            foreach ($attachment as $attach) {
-                $zip->addFile(substr($attach->getPath(), 1));
+        // Make sure directory exists
+        $zipDir = dirname($zipName);
+        if (!file_exists($zipDir)) {
+            mkdir($zipDir, 0777, true);
+        }
+    
+        // Create new ZIP archive
+        $zip = new \ZipArchive();
+        if ($zip->open($zipName, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
+            throw new \Exception("Cannot create zip file");
+        }
+    
+        // Add files to ZIP
+        foreach ($attachments as $attachment) {
+            $filePath = substr($attachment->getPath(), 1); // Remove leading slash
+            if (file_exists($filePath)) {
+                $zip->addFile($filePath, basename($filePath));
             }
         }
-
+    
         $zip->close();
+    
+        // Check if file was created successfully
+        if (!file_exists($zipName)) {
+            throw new \Exception("ZIP file could not be created");
+        }
 
-        $response = new Response();
-        $response->setStatusCode(200);
-        $response->headers->set('Content-type', 'application/zip');
-        $response->headers->set('Content-Disposition', 'attachment; filename=' . $threadId . '.zip');
-        $response->headers->set('Content-length', filesize($zipName));
-        $response->sendHeaders();
-        $response->setContent(readfile($zipName));
+        // Stream the file to prevent memory issues
+        $response = new BinaryFileResponse($zipName);
+        $response->headers->set('Content-Type', 'application/zip');
+        $response->headers->set('Content-Disposition', ResponseHeaderBag::DISPOSITION_ATTACHMENT . '; filename="attachments_' . $threadId . '.zip"');
+        $response->deleteFileAfterSend(true); // Clean up after sending
 
         return $response;
     }
 
     public function downloadAttachment(Request $request)
     {
-        $attachmentId = $request->attributes->get('attachmentId');
-
-        if ($attachmentId == 0) {
-            $attachmentId = $request->query->get('attachmendId');
-        }
-
+        $attachmentId = $request->attributes->get('attachmendId');
         $attachment = $this->getDoctrine()->getManager()->getRepository(CoreEntities\Attachment::class)->findOneById($attachmentId);
 
         $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
@@ -655,7 +666,7 @@ class Ticket extends AbstractController
 
             // process only if access for the resource.
             if (
-                empty($ticket)
+                empty($ticket) 
                 || ((! empty($user)) && $user->getId() != $ticket->getCustomer()->getId())
             ) {
                 if (! $this->isCollaborator($ticket, $user)) {
@@ -666,19 +677,13 @@ class Ticket extends AbstractController
 
         $path = $this->kernel->getProjectDir() . "/public/". $attachment->getPath();
 
-        $response = new StreamedResponse(function () use ($path) {
-            // Output the file content
-            $stream = fopen($path, 'rb');
-            fpassthru($stream);
-            fclose($stream);
-        });
-
-        // Set headers
-        $response->headers->set('Content-Type', $attachment->getContentType());
-        $response->headers->set('Content-Disposition', 'attachment; filename="' . $attachment->getName() . '"');
-        $response->headers->set('Content-Length', filesize($path));
-
-        return $response;
+        return new StreamedResponse(function () use ($path) {
+            readfile($path);
+        }, 200, [
+            'Content-Type' => $attachment->getContentType(),
+            'Content-Disposition' => 'attachment; filename="' . $attachment->getName() . '"',
+            'Content-Length' => $attachment->getSize(),
+        ]);
     }
 
     public function ticketCollaboratorXhr(Request $request)
