@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace Webkul\UVDesk\SupportCenterBundle\Form;
 
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,7 +18,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormError;
 use Doctrine\ORM\EntityRepository;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntites;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 
 class Ticket extends AbstractType
 {   
@@ -29,36 +30,40 @@ class Ticket extends AbstractType
         $container = $options['container'];
         $entityManager = $options['entity_manager'];
 
-        if(!is_object($container->get('user.service')->getSessionUser()) || $container->get('user.service')->getSessionUser() == 'anon.') {
+        if (
+            ! is_object($container->get('user.service')->getSessionUser()) 
+            || $container->get('user.service')->getSessionUser() == 'anon.'
+        ) {
 
             $builder->add('name', null, [
                 'required' => true,
-                'label' => 'Your Name',
-                'attr' => array('placeholder' => 'Enter Your Name'),
-                'mapped' => false,
+                'label'    => 'Your Name',
+                'attr'     => array('placeholder' => 'Enter Your Name'),
+                'mapped'   => false,
             ]);
 
             $builder->add('from', EmailType::class, array(
                 'required' => true,
-                'label' => 'Your Email',
-                'mapped' => false,
-                'attr' => array('placeholder' => 'Enter Your Email'),
+                'label'    => 'Your Email',
+                'mapped'   => false,
+                'attr'     => array('placeholder' => 'Enter Your Email'),
             ));
         }
 
         $builder->add('type', EntityType::class, array(
-            'class' => CoreEntites\TicketType::class,
+            'class'        => CoreEntities\TicketType::class,
             'choice_label' => 'description',
-            'multiple' => false,
-            'mapped' => false,
+            'multiple'     => false,
+            'mapped'       => false,
             'attr' => array(
-                    'data-role' => 'tagsinput',
+                    'data-role'        => 'tagsinput',
                     'data-live-search' => true,
-                    'class' => 'selectpicker'
+                    'class'            => 'selectpicker'
             ),
             'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('type')
-                                ->andwhere('type.isActive = :isActive')->setParameter('isActive', true)
+                                ->andWhere('type.isActive = :isActive')
+                                ->setParameter('isActive', true)
                                 ->orderBy('type.description', 'ASC');
             },
             'placeholder' => 'Choose query type',
@@ -67,18 +72,18 @@ class Ticket extends AbstractType
 
         $builder->add('subject', null, array(
             'required' => true,
-            'label' => 'Subject',
-            'mapped' => false,
-            'attr' => ['placeholder' => 'Enter Subject'],
+            'label'    => 'Subject',
+            'mapped'   => false,
+            'attr'     => ['placeholder' => 'Enter Subject'],
         ));
         
         $builder->add('reply', TextareaType::class, array(
-            'label' => 'Message',
+            'label'  => 'Message',
             'mapped' => false,
             'attr' => array(
-                'placeholder' => 'Brief Description about your query',
+                'placeholder'      => 'Brief Description about your query',
                 'data-iconlibrary' => "fa",
-                'data-height' => "250",
+                'data-height'      => "250",
             ),
         ));
         $builder->add('attachments', FileType::class, array(
@@ -86,11 +91,11 @@ class Ticket extends AbstractType
             'mapped' => false,
             'multiple' => true,
             'attr' => array(
-                'mainLabel' => false,
-                'infoLabel' => 'right',
-                'infoLabelText' => '+ Attach File',
-                'decorateFile' => true,
-                'decorateCss' => 'attach-file',
+                'mainLabel'          => false,
+                'infoLabel'          => 'right',
+                'infoLabelText'      => '+ Attach File',
+                'decorateFile'       => true,
+                'decorateCss'        => 'attach-file',
                 'enableRemoveOption' => true
             ),
         ));
@@ -102,9 +107,9 @@ class Ticket extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => CoreEntites\Ticket::class,
+            'data_class'         => CoreEntities\Ticket::class,
             'allow_extra_fields' => true,
-            'csrf_protection' => false
+            'csrf_protection'    => false
         ));
         
         $resolver->setRequired('container');

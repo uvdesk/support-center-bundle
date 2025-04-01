@@ -5,7 +5,7 @@ namespace Webkul\UVDesk\SupportCenterBundle\Repository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Request;
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntites;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
 
 class Solutions extends \Doctrine\ORM\EntityRepository
 {
@@ -38,7 +38,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
 
     private function cleanAllData(&$data)
     {
-        if(isset($data['isActive'])){
+        if (isset($data['isActive'])) {
             $data['visibility'] = ($data['isActive'] ? 'public' : 'private');
             unset($data['isActive']);
         }
@@ -48,7 +48,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
     {
         $categoryResponse = [];
         $categoryQB = $this->getEntityManager()->createQueryBuilder()->select('sc.id, sc.name, sc.description')
-            ->from(SupportEntites\SolutionCategory::class, 'sc')
+            ->from(SupportEntities\SolutionCategory::class, 'sc')
             ->andWhere('sc.status = :status')->setParameter('status', true)
             ->orderBy('sc.dateAdded', 'DESC');            
         
@@ -66,22 +66,25 @@ class Solutions extends \Doctrine\ORM\EntityRepository
 
         $this->presetting($data);
         foreach ($data as $key => $value) {
-            if(!in_array($key,$this->safeFields) && in_array($key, $this->allowedFormFields)) {
-                if($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search') {
-                    $qb->Andwhere('a.'.$key.' = :'.$key);
+            if (
+                ! in_array($key,$this->safeFields) 
+                && in_array($key, $this->allowedFormFields)
+            ) {
+                if ($key !='dateUpdated' AND $key != 'dateAdded' AND $key != 'search') {
+                    $qb->andWhere('a.'.$key.' = :'.$key);
                     $qb->setParameter($key, $value);
                 } else {
-                    if($key == 'search') {
-                        $qb->orwhere('a.name'.' LIKE :name');
+                    if ($key == 'search') {
+                        $qb->orWhere('a.name'.' LIKE :name');
                         $qb->setParameter('name', '%'.urldecode(trim($value)).'%');
-                        $qb->orwhere('a.description'.' LIKE :description');
+                        $qb->orWhere('a.description'.' LIKE :description');
                         $qb->setParameter('description', '%'.urldecode(trim($value)).'%');
                     }
                 }
             }
         }
 
-        if(!$allResult){
+        if (! $allResult) {
             $paginator  = $container->get('knp_paginator');
 
             $results = $paginator->paginate(
@@ -90,24 +93,24 @@ class Solutions extends \Doctrine\ORM\EntityRepository
                 self::LIMIT,
                 array('distinct' => false)
             );
-        }else{
+        } else {
             $qb->select($allResult);
             $results = $qb->getQuery()->getResult();
+
             return $results;
         }
       
         $newResult = [];
         foreach ($results as $key => $result) {
-           
             $newResult[] = array(
-                'id'                   => $result->getId(),
-                'name'                 => $result->getName(),
-                'description'          => $result->getDescription(),
-                'visibility'           => $result->getVisibility(),
-                'solutionImage'        => ($result->getSolutionImage() == null) ? $this->defaultImage : $result->getSolutionImage(),
-                'categoriesCount'      => $this->getCategoriesCountBySolution($result->getId(), $status),
-                'categories'           => $this->getCategoriesWithCountBySolution($result->getId(), $status),
-                'articleCount'         => $this->getArticlesCountBySolution($result->getId(), $status)
+                'id'              => $result->getId(),
+                'name'            => $result->getName(),
+                'description'     => $result->getDescription(),
+                'visibility'      => $result->getVisibility(),
+                'solutionImage'   => ($result->getSolutionImage() == null) ? $this->defaultImage : $result->getSolutionImage(),
+                'categoriesCount' => $this->getCategoriesCountBySolution($result->getId(), $status),
+                'categories'      => $this->getCategoriesWithCountBySolution($result->getId(), $status),
+                'articleCount'    => $this->getArticlesCountBySolution($result->getId(), $status)
             );
         }
 
@@ -129,13 +132,12 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         $qb->select('a')->from($this->getEntityName(), 'a');
 
         foreach ($filterArray as $key => $value) {
-            $qb->Andwhere('a.'.$key.' = :'.$key);
+            $qb->andWhere('a.'.$key.' = :'.$key);
             $qb->setParameter($key, $value);
         }
 
         $result = $qb->getQuery()->getOneOrNullResult();
         
-
         return($result);
     }
 
@@ -147,8 +149,8 @@ class Solutions extends \Doctrine\ORM\EntityRepository
             ->select('sc.id, sc.name')
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping','ac','WITH', 'ac.solutionId = a.id')
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory','sc','WITH', 'ac.categoryId = sc.id')
-            ->andwhere('ac.solutionId = :solutionId')
-            ->andwhere('sc.status IN (:status)')
+            ->andWhere('ac.solutionId = :solutionId')
+            ->andWhere('sc.status IN (:status)')
             ->setParameters([
                 'solutionId' => $id,
                 'status' => $status,
@@ -159,7 +161,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         ;
 
         if ($categories) {
-            $solutionCategoryRepository = $this->getEntityManager()->getRepository(SupportEntites\SolutionCategory::class);
+            $solutionCategoryRepository = $this->getEntityManager()->getRepository(SupportEntities\SolutionCategory::class);
             
             foreach ($categories as $key => $category) {
                 $categories[$key]['articleCount'] = $solutionCategoryRepository->getArticlesCountByCategory($category['id']);
@@ -177,8 +179,8 @@ class Solutions extends \Doctrine\ORM\EntityRepository
             ->select('COUNT(a.id)')
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping','ac','WITH', 'ac.solutionId = a.id')
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory','sc','WITH', 'ac.categoryId = sc.id')
-            ->andwhere('ac.solutionId = :solutionId')
-            ->andwhere('sc.status IN (:status)')
+            ->andWhere('ac.solutionId = :solutionId')
+            ->andWhere('sc.status IN (:status)')
             ->setParameters([
                 'solutionId' => $id ,
                 'status' => $status,
@@ -199,8 +201,8 @@ class Solutions extends \Doctrine\ORM\EntityRepository
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory','ac','WITH', 'sac.categoryId = ac.categoryId')
             ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\Article','aa','WITH', 'ac.articleId = aa.id')
             ->where('sac.solutionId = :solutionId')
-            ->andwhere('ac.id IS NOT NULL')
-            ->andwhere('aa.status != :status')
+            ->andWhere('ac.id IS NOT NULL')
+            ->andWhere('aa.status != :status')
             ->setParameters([
                 'solutionId' => $id,
                 'status' => 0
@@ -218,8 +220,8 @@ class Solutions extends \Doctrine\ORM\EntityRepository
 
         $queryBuilder = $this->createQueryBuilder('ac');
         $queryBuilder
-            ->delete(SupportEntites\SolutionCategoryMapping::class,'ac')
-            ->andwhere($where)
+            ->delete(SupportEntities\SolutionCategoryMapping::class, 'ac')
+            ->andWhere($where)
             ->setParameters([
                 'id' => $id ,
             ])

@@ -48,11 +48,3 @@ helpdesk_knowledgebase_tag:
     path:     /tag/{tag}/{name}
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Website::viewTaggedResources
     defaults: { tag: '', name: '' }
-
-# webkul_support_center_front_solution_article:
-#     path:     /folder/{solution}/article/{article}
-#     defaults: { _controller: UVDeskSupportCenterBundle:Front:Article, solution: 0, category: 0, article: 0 }
-
-# webkul_support_center_front_solution_article_history:
-#     path:     /folder/{solution}/article/{article}/{history}
-#     defaults: { _controller: UVDeskSupportCenterBundle:Front:Article, solution: 0, category: 0, article: 0, history: 0 }

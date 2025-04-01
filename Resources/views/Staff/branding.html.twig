@@ -63,12 +63,85 @@
 					<li for="knowledgebase" {% if type == 'knowledgebase' %} class="uv-tab-active"{% endif %}>{{ 'Knowledgebase'|trans }}</li>
                     <li for="time" {% if type == 'time' %}class="uv-tab-active"{% endif %}>{{ 'Time'|trans }}</li>
 					<li for="seo" {% if type == 'seo' %}class="uv-tab-active"{% endif %}>{{ 'SEO'|trans }}</li>
+                    {% if user_service.isFileExists('apps/uvdesk/sla') %}
+                        <li for="business-hours" {% if type == 'business-hours' %}class="uv-tab-active"{% endif %}>{{ 'Business Hours'|trans }}</li>
+                    {% endif %}
 					<li for="links" {% if type == 'links' %}class="uv-tab-active"{% endif %}>{{ 'Links'|trans }}</li>
                     <li for="advanced" {% if type == 'advanced' %}class="uv-tab-active"{% endif %}>{{ 'Advanced'|trans }}</li>
 					<li for="broadcasting" {% if type == 'broadcasting' %}class="uv-tab-active"{% endif %}>{{ 'Broadcast Message'|trans }}</li>                  
 				</ul>
 			</div>
 			<!--Tabs-->
+
+            <!--Tab View-->
+			<div class="uv-tab-view {% if type == 'business-hours' %}uv-tab-view-active{% endif %}" id="business-hours">
+				<!--Form-->
+				<form method="post" action="{{ path('helpdesk_member_knowledgebase_theme', {'type': 'business-hours'}) }}" id="businessHoursSettingForm">
+                    <div class="uv-element-block">
+						{# <label class="uv-field-label">{{ 'Business Hours Status'|trans }}</label> #}
+						<div class="uv-element-block">
+							<label>
+								<div class="uv-checkbox">
+									<input name="status" type="checkbox"  {{ websiteData.businessHourStatus ? 'checked' : ''}}>
+									<span class="uv-checkbox-view"></span>
+								</div>
+								<span class="uv-checkbox-label">{{ 'Business Hours is Active'|trans }}</span>
+							</label>
+						</div>
+	                </div>
+	                <div class="business-hours" style="margin-top: 20px; {{ websiteData.businessHourStatus ? '' : 'display: none'}}">
+		                {% for day in days %}
+		                	{% if business_hours|length > 0 %}
+			                	<div>
+									<label>
+										<div class="uv-checkbox">
+											<input name="businessHours[{{ day }}][is_active]" type="checkbox" {% if business_hours[day]['is_active'] is defined %} checked="" {% endif %} >
+											<span class="uv-checkbox-view"></span>
+										</div>
+										<span class="uv-checkbox-label" style="width: 140px;">{{ day|trans }}</span>
+									</label>
+								    <select class="uv-select uv-select-grouped" name="businessHours[{{ day }}][from]" style="width: 300px;">
+								        {% for key,time in time_interval %}
+								        	<option value="{{ key }}" {% if business_hours[day]['from'] == key %} selected="selected" {% endif %}>{{ time }}</option>
+								    	{% endfor %}
+								    </select>
+								    <select class="uv-select uv-select-grouped" name="businessHours[{{ day }}][to]" style="width: 300px;">
+								        {% for key,time in time_interval %}
+								        	<option value="{{ key }}" {% if business_hours[day]['to'] == key %} selected="selected" {% endif %}>{{ time }}</option>
+								    	{% endfor %}
+								    </select>
+								</div>
+		                	{% else %}
+		                		<div>
+		                			<label>
+										<div class="uv-checkbox">
+											<input name="businessHours[{{ day }}][is_active]" type="checkbox" {% if day != 'Saturday' and day != 'Sunday' %} checked="checked" {% endif %} >
+											<span class="uv-checkbox-view"></span>
+										</div>
+										<span class="uv-checkbox-label" style="width: 200px;">{{ day|trans }}</span>
+									</label>
+								    <select class="uv-select uv-select-grouped" name="businessHours[{{ day }}][from]" style="width: 300px;">
+								        {% for key,time in time_interval %}
+								        	<option value="{{ key }}" {% if day != 'Saturday' and day != 'Sunday' and key == "9:00" %} selected="selected" {% endif %}>{{ time }}</option>
+								    	{% endfor %}
+								    </select>
+								    <select class="uv-select uv-select-grouped" name="businessHours[{{ day }}][to]" style="width: 300px;">
+								        {% for key,time in time_interval %}
+								        	<option value="{{ key }}" {% if day != 'Saturday' and day != 'Sunday' and key == "18:00" %} selected="selected" {% endif %}>{{ time }}</option>
+								    	{% endfor %}
+								    </select>
+		                		</div>
+		                	{% endif %}
+		                {% endfor %}
+	                </div>
+
+					<!--CTA-->
+					<input class="uv-btn" href="#" value="{{ 'Save Changes'|trans }}" type="button">
+					<!--//CTA-->
+				</form>
+				<!--//Form-->
+			</div>
+			<!--//Tab View-->
 
 			<!--Tab View-->
 			<div class="uv-tab-view {% if type == 'general' or type == '' %}uv-tab-view-active{% endif %}" id="general">
@@ -550,14 +623,17 @@
 
 {% block footer %}
 	{{ parent() }}
- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/css/bootstrap-colorpicker.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/css/bootstrap-colorpicker.min.css">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.3.0/js/bootstrap-colorpicker.min.js"></script>
 
     <script>
-  		$('.datetime').datetimepicker({
-			format: 'YYYY-MM-DD H:mm:ss',
-            minDate: new Date()
-		});
+        var currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+
+        $('.datetime').datetimepicker({
+            format: 'YYYY-MM-DD H:mm:ss',
+            minDate: currentDate
+        });
     </script>
     
     <!-- Header Link template -->
@@ -629,30 +705,33 @@
             _.extend(Backbone.Validation.validators, {
                 notEmptyFile: function(value, attr) {
                     var field = $('input[name="' + attr + '"]');
-                    if(field.length && field[0].files && field[0].files.length ) {
+                    if (field.length && field[0].files && field[0].files.length ) {
                         var file = field[0].files[0];
-                        if(file && 0 == file.size) {
+                        if (file && 0 == file.size) {
                             return true; //error
                         }
                     }                    
                 },
                 sizeLimit: function(value, attr) {
                     var field = $('input[name="' + attr + '"]');
-                    if(field.length && field[0].files && field[0].files.length ) {
+                    if (field.length && field[0].files && field[0].files.length ) {
                         var file = field[0].files[0];
-                        if(file && file.size/1024 > 200) {
+                        if (file && file.size/1024 > 200) {
                             return true; //error                            
                         }
                     }                    
                 },
-                imageFile: function(value, attr) { 
+                imageFile: function(value, attr) {
                     var field = $('input[name="' + attr + '"]');
-                    if(field.length && field[0].files && field[0].files.length ) {
+                    if (field.length && field[0].files && field[0].files.length) {
                         var file = field[0].files[0];
-                        if(file && file.type.indexOf('image/') != 0) {
-                            return true; //error                            
+                        // Check if the file type is valid
+                        if (! ['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+                            return true; // Invalid file type
                         }
                     }
+
+                    return false; // Valid file type or no file selected
                 }
             });
 
@@ -660,8 +739,9 @@
 			    events: {
 			    	'click .general-btn': 'generalBrandingFormSubmit',
 			        'click .pending-response-btn': 'pendingResponseSettingFormSubmit',
+                    'change input[type="checkbox"][name="status"]': 'toggleBusinessHours',
 					'click .uv-btn': 'disableButton',
-                    'change input[type="file"]': 'formChanegd',
+                    'change input[type="file"]': 'formChanged',
                     'change .convertToSlug': 'convertToSlug',
                     'click .uv-btn-tag.btn-add': 'addMoreLink',
                     'click .remove-link': 'removeLink',
@@ -698,8 +778,15 @@
 
 			        Backbone.Validation.bind(this);		      
 			    },
-			    formChanegd: function(e) {
-                    if(!Backbone.$(e.currentTarget).parents('.links').length) {
+                toggleBusinessHours: function(e) {
+					if (e.currentTarget.checked) {
+					$('.business-hours').fadeIn(0);
+					} else {
+					$('.business-hours').fadeOut(0);
+					}
+				},
+			    formChanged: function(e) {
+                    if (!Backbone.$(e.currentTarget).parents('.links').length) {
                         this.model.set(Backbone.$(e.currentTarget).attr('name'), Backbone.$(e.currentTarget).val())
                         this.model.isValid([Backbone.$(e.currentTarget).attr('name')])
                     }
@@ -709,7 +796,7 @@
 			        this.model.set($('#generalSettingForm').serializeObject());
                         console.log("form_submited fail");
                     
-			        if(this.model.isValid(true)) {
+			        if (this.model.isValid(true)) {
 			           $("#generalSettingForm").submit();
 			        }
 			    },
@@ -718,7 +805,7 @@
 			        this.model.set($('#generalSettingForm').serializeObject());
                         console.log("form_submited fail");
                     
-			        if(this.model.isValid(true)) {
+			        if (this.model.isValid(true)) {
 
                        	$.ajax({
 							url: "{{ url('helpdesk_member_knowledgebase_update_locales') }}",
@@ -737,14 +824,15 @@
 			    pendingResponseSettingFormSubmit: function (e) {
 			        e.preventDefault();
 			        this.model.set($('#pendingResponseSettingForm').serializeObject());
-			        if(this.model.isValid('website[pendingSince]')) {
+			        if (this.model.isValid('website[pendingSince]')) {
 						$('.pending-response-btn').attr('disabled', 'disabled');
 			            $("#pendingResponseSettingForm").submit();
 			        }
 			    },
 				disableButton: function(e) {
 					var form = Backbone.$(e.currentTarget).parents('form');
-					if(form.attr('id') == 'seoForm' || form.attr('id') == 'advancedForm' || form.attr('id') == 'knowledgebaseForm') {
+
+					if (form.attr('id') == 'businessHoursSettingForm' || form.attr('id') == 'seoForm' || form.attr('id') == 'advancedForm' || form.attr('id') == 'knowledgebaseForm') {
 						Backbone.$(e.currentTarget).attr('disabled', 'disabled');
 						form.submit()
 					}
@@ -756,7 +844,7 @@
                     e.preventDefault();
 
                     var currentElement = Backbone.$(e.currentTarget);
-                    if(currentElement.attr('data-type') == 'header') {
+                    if (currentElement.attr('data-type') == 'header') {
                         count = $('.uv-header-link-wrapper .uv-element-block').length + 1;
                         $('.uv-header-link-wrapper .links').append(this.headerLinkTemplate({'count' : count}))
                     } else {
@@ -804,17 +892,17 @@
                     Backbone.Validation.bind(this);
                 },
 			    formChanged: function(e) {
-                    if(!Backbone.$(e.currentTarget).parents('.links').length) {
+                    if (!Backbone.$(e.currentTarget).parents('.links').length) {
                         this.model.set(Backbone.$(e.currentTarget).attr('name'), Backbone.$(e.currentTarget).val())
                         this.model.isValid([Backbone.$(e.currentTarget).attr('name')])
                     }
 			    },
                 broadcastingFormSubmit: function(e) {
 					var form = Backbone.$(e.currentTarget).closest('form')
-                    if(form.attr('id') == 'broadcastingForm') {
+                    if (form.attr('id') == 'broadcastingForm') {
                         data = form.serializeObject();
                         this.model.set(data);
-                        if(this.model.isValid(true)) {
+                        if (this.model.isValid(true)) {
                             Backbone.$(e.currentTarget).attr('disabled', 'disabled');
                             form.submit()
                         }
@@ -840,14 +928,14 @@
                     var data = $('#linksForm').serializeObject();
                     var self = this; var valid = true;
                     $.each(data, function(key, value) {
-                        if(key.indexOf('[url]') != -1 && value && !value.match('^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$')) {
+                        if (key.indexOf('[url]') != -1 && value && !value.match('^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$')) {
     		    			Backbone.Validation.callbacks.invalid(self, key, '{{ "Provide a valid url(with protocol)"|trans }}', 'input');
                             valid = false;
                         } else {
     		    			Backbone.Validation.callbacks.valid(self, key, '{{ "Provide a valid url(with protocol)"|trans }}', 'input');                            
                         }
                     });
-                    if(valid) {
+                    if (valid) {
 						$('.links-btn').attr('disabled', 'disabled');
 			            $("#linksForm").submit();
 			        }

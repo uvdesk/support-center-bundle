@@ -601,6 +601,17 @@ input[type="radio"][disabled="disabled"] + .uv-radio-view {
   box-shadow: 0px 15px 25px 0px rgba(0, 0, 0, 0.03), 0px 20px 45px 5px rgba(0, 0, 0, 0.2);
   animation: jelly 0.5s ease-in-out;
 }
+
+.uv-rtl .uv-pop-up-box {
+  top: 50px;
+  bottom: 1000px;
+  left: -23%;
+  z-index: 5000;
+  background: rgba(255, 255, 255, 0.9);
+  overflow-y: auto;
+  animation: fade-in-white 0.3s ease-in-out;
+}
+
 .uv-pop-up-box .uv-pop-up-close {
   background: url("../../uvdeskcoreframework/images/icon-close.svg");
   width: 15px;
@@ -2095,8 +2106,13 @@ p {
   padding-top: 60px;
   padding-bottom: 40px;
   border-bottom: solid 1px #D3D3D3;
-  font-size: 0;
+  display: flex;
 }
+
+.uv-paper-article div {
+  font-size: 16px;
+}
+
 .uv-paper-article .uv-paper-section {
   width: 75%;
   display: inline-block;

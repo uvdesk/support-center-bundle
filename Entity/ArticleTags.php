@@ -19,8 +19,6 @@ class ArticleTags
      */
     private $id;
 
-  
-
     /**
      * @var integer
      * @ORM\Column(type="integer")
@@ -32,7 +30,6 @@ class ArticleTags
      * @ORM\Column(type="integer")
      */
     private $tagId;
-
 
     /**
      * Get id

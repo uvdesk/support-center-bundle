@@ -3,6 +3,44 @@ CHANGELOG for 1.1.x
 
 This changelog references any relevant changes introduced in 1.1 minor versions.
 
+* 1.1.3.2 (2024-12-20)
+    Updates:
+    * Customer login using OTP functionality added.
+    * Marketing Module added for marketing purpose.
+    * License and support email related updates.
+    * Code Refactor.
+    
+    Issue Fixes:
+    * Issues #538 - Tag line is not translated in other languages except the english.
+    * Made required message field in ticket creation form on front end.
+    * Issues #228 - front website cookies policy Popup issue if switch language in arabic.
+    * Issues #168 - Branding logo file type checking issue.
+    * Issue #162  - Broadcast message when choosing current date, not showing current date.
+    * Issue #215  - Article's numbered list not being rendered correctly.
+    * Issue #218  - In Folder, if we using the any docs file in folder image file upload so here showing an error instead of warning.
+    * Issue #174 - CSS Font-size 0 hides OL/UL/LI in Knowledgebase.
+    * Issue #170 - When creating an article and adding a tag this special character: " / " after click on view button shows an error.
+    * Issue #169 - When creating articles and adding tags should be show warning here: Must be less than 20 characters.
+    * Issue #206 - Trashed ticket should not open on customer end.
+    * Issue #216 - In article should be limit added for the horizontal lines.
+    * Issue #173 - In article section when choosing Div and Pre tag so customer panel not showing text or content.
+    * Marketing announcement URL validation added.
+    * Allowing underscore in strong password for spacial characters.
+    * setting customer last reply time.
+    * Issue #245 - Update in customer dashboard footer content.
+
+* 1.1.3.1 (2023-07-28)
+    * PR #246: Update branding content in knowledgebase (Abhi12-gupta)
+
+* 1.1.3 (2023-06-12)
+    * Update: Dropped dependency on uvdesk/composer-plugin in support of symfony/flex
+    * Update: Redefined workflow events & action, updated workflow triggers for improved compatibility support
+    * PR #222: Trim whitespaces while updating spam settings (Abhi12-gupta)
+    * PR #208: Add RTL support for supported locales (ar) (papnoisanjeev)
+
+* 1.1.2.1 (2023-01-31)
+    * Fixes: Resolve issues while saving custom fields on a ticket
+
 * 1.1.2 (2022-11-02)
     * PR #210: Render ticket id on customer ticket view page (Komal-sharma-2712)
 

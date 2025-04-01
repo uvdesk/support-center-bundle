@@ -250,7 +250,7 @@ class Solutions
 
     public function removeUpload($file, $container)
     {   
-        if($this->{$file} AND file_exists($this->{$file})){
+        if ($this->{$file} AND file_exists($this->{$file})) {
             //call service
             $container->get('file.service')->removeUpload($file);
         }

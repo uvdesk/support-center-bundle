@@ -153,13 +153,13 @@
 						required: true,
 						msg: "{{ 'This field is mandatory'|trans }}"
 					},{
-                        maxLength: 16,
+                         maxLength: 16,
                         msg: '{{ "Maximum character length is 16" | trans}}'
                     }],
 					'announcement_form[promotext]': [{
 						required: true,
 						msg: "{{ 'This field is mandatory'|trans }}"
-					},{
+					}, {
                         maxLength: 80,
                         msg: '{{ "Maximum character length is 80" | trans}}'
                     }],
@@ -170,14 +170,17 @@
 					'announcement_form[linkText]': [{
 						required: true,
 						msg: "{{ 'This field is mandatory'|trans }}"
-					},{
+					}, {
                         maxLength: 16,
                         msg: '{{ "Maximum character length is 16" | trans}}'
                     }],
-					'announcement_form[linkURL]': {
+					'announcement_form[linkURL]': [{
 						required: true,
 						msg: "{{ 'This field is mandatory'|trans }}"
-					},
+					}, {
+                        pattern: '^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$',
+						msg: '{{ "Provide a valid url(with protocol)"| trans}}'
+                    }],
 					'announcement_form[status]': {
 						required: true,
 						msg: "{{ 'This field is mandatory'|trans }}"
@@ -203,13 +206,10 @@
 		    			Backbone.Validation.callbacks.invalid(this, field, jsonContext[field], 'input');
 					}
 				},
-				formChanegd: function(e) {
-			    	
-			    },
 				savePromotion : function (e) {
 					e.preventDefault();
 			        this.model.set(this.$el.serializeObject());
-					if(this.model.isValid(true)) {
+					if (this.model.isValid(true)) {
 						this.$el.find('.uv-btn').attr('disabled', 'disabled');
 						this.$el.submit();
 			        }
@@ -224,11 +224,11 @@
                 },
                 addEntity: function(e) {
                     currentElement = Backbone.$(e.currentTarget);
-                    if(id = currentElement.attr("data-id")) {
+                    if (id = currentElement.attr("data-id")) {
                         parent = currentElement.parents(".uv-field-block");
                         parent.find('input').val('')
                         parent.find("li:not(.uv-no-results)").show()
-                        if(!parent.find(".uv-filtered-tags a[data-id='" + id + "']").length) {
+                        if (! parent.find(".uv-filtered-tags a[data-id='" + id + "']").length) {
                             parent.find('.uv-filtered-tags').append("<a class='uv-btn-small default' href='#' data-id='" + id + "'>"+currentElement.text()+"<span class='uv-icon-remove'></span></a>")
                             this.setAddedIds("#" + parent.attr('id'))
                         }

@@ -48,7 +48,7 @@ class ArticleHistory
     /**
      * @var \DateTime
      */
-    private $formatedDate;
+    private $formattedDate;
 
 
     /**
@@ -167,14 +167,15 @@ class ArticleHistory
      *
      * @return \DateTime 
      */
-    public function getFormatedDate()
+    public function getFormattedDate()
     {
-        return $this->formatedDate;
+        return $this->formattedDate;
     }
 
-    public function setFormatedDate($formatedDate)
+    public function setFormattedDate($formattedDate)
     {
-        $this->formatedDate = $formatedDate;
+        $this->formattedDate = $formattedDate;
+
         return $this;
     }
 }

@@ -159,8 +159,62 @@
             margin-right: 0.05em;
             vertical-align: -0.4em;
         }
-        blockquote p {
+        blockquote p {                                                                                                   
             display: inline;
+        }
+        #item-list-modules{
+            margin-top: 20px;
+        }
+        .uv-marketing-modules-wrapper {
+            display: flex;
+            align-items: center;
+            border-radius: 3px;
+            padding: 12px;
+            position: relative;
+        }
+        .uv-marketing-modules-text {
+            padding-left: 0.7rem;
+            width: 100%;
+        }
+        .uv-marketing-modules-text-description {
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 18.86px;
+            font-family: 'Source Sans Pro';
+            max-height: 57px;
+            text-transform: capitalize;
+            overflow: hidden;
+        }
+        .uv-marketing-modules-img img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .uv-marketing-modules-text {
+            padding-left: 0.7rem;
+            width: 100%;
+        }
+        .uv-marketing-modules-text-heading {
+            font-family: 'Source Sans Pro';
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 21.37px;
+            text-transform: capitalize;
+        }
+        .uv-marketing-modules-text-description {
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 18.86px;
+            font-family: 'Source Sans Pro';
+            max-height: 57px;
+            text-transform: capitalize;
+            overflow: hidden;
+        }
+        .uv-marketing-modules {
+            padding: 0 !important;
+            margin-top: 7px;
+            border: none !important;
         }
     </style>
 
@@ -224,12 +278,14 @@
                     </div>
                 {% endif %}
             </aside>
-            
-            {% if user_service.isfileExists('apps/uvdesk/form-component') %}
+
+            {% if user_service.isFileExists('apps/uvdesk/form-component') %}
                 {{ user_service.getCustomFieldTemplateCustomer() | raw }}
-            {% elseif user_service.isfileExists('apps/uvdesk/custom-fields') %}
+            {% elseif user_service.isFileExists('apps/uvdesk/custom-fields') %}
                 {{ user_service.getCustomFieldTemplateCustomer() | raw }}
             {% endif %}
+
+            <div id="item-list-modules"></div>
         </div>
         <div class="uv-thread-rt">
             <section>
@@ -488,21 +544,21 @@
                     {{ 'replied'|trans }}
                 </span>
             </span>
-            <% if(cc || bcc) { %>
+            <% if (cc || bcc) { %>
                 <div class="uv-ticket-strip">
-                    <% if(cc) { %>
+                    <% if (cc) { %>
                         <span><span class="uv-ticket-strip-label">{{ 'CC'|trans }} -</span> <%- cc %></span>
-                    <% } if(bcc) { %>
+                    <% } if (bcc) { %>
                         <span><span class="uv-ticket-strip-label">{{ 'BCC'|trans }} -</span> <%- bcc %></span>
                     <% } %>
                 </div>
             <% } %>
         </div>
         <div class="uv-ticket-main-lt">
-            <% if(user && smallThumbnail != null) { %>
+            <% if (user && smallThumbnail != null) { %>
                 <img src="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('') }}<%= smallThumbnail.slice(1) %>" />
             <% } else { %>
-                <img src="<% if(userType == 'agent') { %> {{ asset(default_agent_image_path) }} <% } else { %> {{ asset(default_customer_image_path) }} <% } %>" />
+                <img src="<% if (userType == 'agent') { %> {{ asset(default_agent_image_path) }} <% } else { %> {{ asset(default_customer_image_path) }} <% } %>" />
             <% } %>
         </div>
         <div class="uv-ticket-main-rt">
@@ -516,7 +572,7 @@
             <!-- //Message Block -->
 
             <!-- Attachment Block -->
-            <% if(attachments.length) { %>
+            <% if (attachments.length) { %>
                 <div class="uv-ticket-uploads">
                     <h4>{{ 'Uploaded Files'|trans }}</h4>
                     <div class="uv-ticket-uploads-strip uv-viewer-images">
@@ -552,7 +608,7 @@
                     'email': [{
                         required: true,
                         msg: '{{ "This field is mandatory"|trans }}'
-                    },{
+                    }, {
                         pattern: 'email',
                         msg: '{{ "Please enter a valid email"|trans }}'
                     }],
@@ -599,7 +655,7 @@
                         url : "{{ path('helpdesk_customer_rate_ticket', {'id': ticket.id}) }}",
                         success: function (model, response, options) {
                             app.appView.hideLoader()
-                            if(response.alertClass == 'success') {
+                            if (response.alertClass == 'success') {
                                 $('.uv-kudo-response').removeClass('uv-kudo-done');
                                 element.addClass('uv-kudo-done');
                                 $('.uv-kudo-message').text(self.ratingText[count])
@@ -609,13 +665,13 @@
                             }
                         },
                         error: function (model, xhr, options) {
-                            if(url = xhr.getResponseHeader('Location'))
+                            if (url = xhr.getResponseHeader('Location'))
                                 window.location = url;
                         }
                     });
                 },
                 addCCCollaborators: function() {
-                    if(collaboratorCollection.length) {
+                    if (collaboratorCollection.length) {
                         var collaboratorContainer = $('.uv-element-block.collaborators');
                         collaboratorContainer.find('.uv-field-block').html('');
                         collaboratorContainer.show()
@@ -632,13 +688,13 @@
                         var collaboratorContainer = $('.uv-element-block.collaborators');
                     }
 
-                    if(!collaboratorContainer.find('.uv-btn-tag').length)
+                    if (! collaboratorContainer.find('.uv-btn-tag').length)
                         collaboratorContainer.hide()
                 },
                 showCcBccBlock: function(e) {
                     var currentElement = Backbone.$(e.currentTarget);
                     var currentTab = currentElement.parents('.uv-tab-view');
-                    if(currentElement.is(':checked')) {
+                    if (currentElement.is(':checked')) {
                         currentTab.find('.uv-element-block.cc-bcc').find('.uv-field-block').show()
                     } else {
                         currentTab.find('.uv-element-block.cc-bcc').find('.uv-field-block').hide()
@@ -652,12 +708,12 @@
                     if (e.which === 13 && email) {
                         e.preventDefault()
                         type = currentTab.find('.cc-bcc-select option:selected').text()
-                        if(!this.model.preValidate({name: 'email', email: email})) {
+                        if (! this.model.preValidate({name: 'email', email: email})) {
                             inputName = $('.cc-bcc-select').val()
                             inputElement.val('').trigger('input')
                             inputElement.removeClass('uv-dropdown-btn-active')
                             inputElement.siblings('.uv-dropdown-list').hide()
-                            if(!currentTab.find(".cc-bcc-list input[value='" + email + "']." + inputName).length) {
+                            if (!currentTab.find(".cc-bcc-list input[value='" + email + "']." + inputName).length) {
                                 currentTab.find('.cc-bcc-list').append("<span><input type='hidden' name='" + inputName + "[]' value='" + email + "' class='" + inputName + "'/><a class=uv-btn-tag uv-lowercase' href='#'><span class='uv-icon-remove-dark-before'></span>" + email + " : <span class='uv-uppercase'>" + type + "</span></a></span>")
                             }
                         }
@@ -675,7 +731,7 @@
                     form.find('.uv-field-message').remove()
 
                     var html = tinyMCE.get("reply-area").getContent();
-                    if(app.appView.htmlText(html) != '' || -1 != html.indexOf('<img')) {
+                    if (app.appView.htmlText(html) != '' || -1 != html.indexOf('<img')) {
                         this.stopDraftSaveFlag = 1;
 
 						app.appView.showLoader();
@@ -718,7 +774,7 @@
                         },
                         error: function (model, xhr, options) {
                             app.appView.hideLoader()
-                            if(url = xhr.getResponseHeader('Location'))
+                            if (url = xhr.getResponseHeader('Location'))
                                 window.location = url;
                         }
                     });
@@ -746,12 +802,11 @@
                     var threadItem = new ThreadItem({
                         model: item
                     });
-                    if(item.id < threadCollection.fullCollection.at(0).id)
+                    if (item.id < threadCollection.fullCollection.at(0).id)
                         this.$el.prepend(threadItem.render().el);
                     else
                         this.$el.append(threadItem.render().el);
                     threadItem.$el.find('.helpdesk_blockquote').eq(0).before("<span class='uv-icon-ellipsis uv-ellipsis-mirror'></span>").hide();
-                    //emojifyRun();
                     this.$el.find('img').removeAttr('crossorigin');
                     //viewerImages();
                     //convertForImages(this.$el);
@@ -766,7 +821,7 @@
                     'click .uv-ticket-count-stat': 'loadMore',
                 },
                 renderPagination: function(pagination) {
-                    if(pagination.totalCount - pagination.lastItemNumber > 0 && pagination.lastItemNumber > 0) {
+                    if (pagination.totalCount - pagination.lastItemNumber > 0 && pagination.lastItemNumber > 0) {
                         var remain = pagination.totalCount - pagination.lastItemNumber;
                         $('.uv-ticket-count-stat').text(remain)
                         $('.uv-ticket-accordion').removeClass('uv-ticket-accordion-expanded').removeClass('uv-ticket-accordion-no-count')
@@ -779,7 +834,7 @@
                 }
             });
 
-            //Collaborator Code starts here
+            // Collaborator Code starts here
             _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
             var CollaboratorModel = Backbone.Model.extend({
                 idAttribute : "id",
@@ -787,7 +842,7 @@
                     'email': [{
                         required: true,
                         msg: '{{ "This field is mandatory"|trans }}'
-                    },{
+                    }, {
                         pattern: 'email',
                         msg: '{{ "Please enter a valid email"|trans }}'
                     }]
@@ -818,7 +873,7 @@
                     return this;
                 },
                 unrender : function(response) {
-                    if(response.alertMessage != undefined) {
+                    if (response.alertMessage != undefined) {
                         collaboratorListView.render();
                         app.appView.renderResponseAlert(response);
                     }
@@ -834,10 +889,10 @@
                             self.unrender(response);
                         },
                         error: function (model, xhr, options) {
-                            if(url = xhr.getResponseHeader('Location'))
+                            if (url = xhr.getResponseHeader('Location'))
                                 window.location = url;
                             var response = warningResponse;
-                            if(xhr.responseJSON)
+                            if (xhr.responseJSON)
                                 response = xhr.responseJSON;
 
                             app.appView.hideLoader();
@@ -860,7 +915,7 @@
                     this.$el.find(".collaborator-list").html('');
                     var self = this;
                     collaboratorOptionHtml = '';
-                    if(collaboratorCollection.length) {
+                    if (collaboratorCollection.length) {
                         _.each(collaboratorCollection.models, function (item) {
                             this.renderCollaborator(item);
                         }, this);
@@ -889,12 +944,12 @@
                         self = this;
                         this.model.set({email: text})
 
-                        if(this.model.isValid(true)) {
+                        if (this.model.isValid(true)) {
                             app.appView.showLoader();
                             this.model.save({},{
                                 success : function (model, response, options) {
                                     inputElement.val('');
-                                    if(response.alertClass == "success") {
+                                    if (response.alertClass == "success") {
                                         collaboratorCollection.add(model);
                                     }
                                     self.render();
@@ -902,10 +957,10 @@
                                     app.appView.renderResponseAlert(response);
                                 },
                                 error: function (model, xhr, options) {
-                                    if(url = xhr.getResponseHeader('Location'))
+                                    if (url = xhr.getResponseHeader('Location'))
                                         window.location = url;
                                     var response = warningResponse;
-                                    if(xhr.responseJSON)
+                                    if (xhr.responseJSON)
                                         response = xhr.responseJSON;
 
                                     app.appView.hideLoader();
@@ -914,13 +969,13 @@
                             });
                         } else {
                             inputElement.addClass('uv-field-error');
-                            if(text)
+                            if (text)
                                 inputElement.parents('.uv-element-block').append("<span class='uv-field-message'>{{ 'Email address is invalid'|trans }}</span>");
                         }
                     }
                 }
             });
-            //Collaborator Code ends here
+            // Collaborator Code ends here
 
             ticketModel = new TicketModel({
                 id : "{{ ticket.id }}",
@@ -941,6 +996,88 @@
                 collaboratorListView.render();
             {% endif %}
         });
+    </script>
+
+    <script id="marketing_module_list_tmp" type="text/template">
+        <a class="uv-marketing-modules-ancor" href="<%- linkURL %>" target="_blank">
+            <aside class="uv-marketing-modules" style="border: 1px solid <%- borderColor %> !important; background-color: rgba(<%- borderColor.substr(4, borderColor.length-5) %>, 0.1) !important;">
+                <div class="uv-marketing-modules-wrapper" >
+                    <div class="uv-marketing-modules-img">
+                        <img src="<%- image %>" alt="module image">
+                    </div>
+                    <div class="uv-marketing-modules-text">
+                        <p class="uv-marketing-modules-text-heading"><%- title %></p>
+                        <p class="uv-marketing-modules-text-description"><%- description %></p>
+                    </div>
+
+                </div>
+            </aside>
+        </a>
+    </script>
+
+    <script type="text/javascript">
+        $(function() {
+            // Model definition
+            var ModuleModel = Backbone.Model.extend({
+                idAttribute: "id",
+            });
+
+            // Collection definition
+            var ModuleModelCollection = Backbone.Collection.extend({
+                model: ModuleModel,
+                url: '{{ path("helpdesk_member_knowledgebase_front_marketing_modules_xhr") }}',
+                page: 1,
+                limit: 3,
+                ticketId: "{{ ticket.id }}",
+                parse: function(response) {
+                    return response.modules;
+                }
+            });
+
+            // Individual item view
+            var ItemViewModule = Backbone.View.extend({
+                template: _.template($("#marketing_module_list_tmp").html()),
+                render: function() {
+                    this.$el.html(this.template(this.model.toJSON()));
+                    return this;
+                }
+            });
+
+            // List view
+            var ItemListViewModule = Backbone.View.extend({
+                el: '#item-list-modules',
+                initialize: function() {
+                    console.log('Initializing ItemListViewModule');
+                    // Ensure collection is defined
+                    if (!this.collection) {
+                        console.error("Collection is not defined");
+                        return;
+                    }
+                    this.collection.on('sync', this.render, this);
+                    this.collection.fetch({
+                        data: { page: this.collection.page, limit: this.collection.limit, ticketId: this.collection.ticketId },
+                    });
+                },
+                render: function() {
+                    if (this.collection.length > 0) {
+                        this.$el.empty(); // Clear previous content
+                        this.collection.each(function(item) {
+                            var ItemModule = new ItemViewModule({ model: item });
+                            this.$el.append(ItemModule.render().el);
+                        }, this);
+                    }
+                }
+            });
+
+            // Instantiate the collection
+            var moduleCollection = new ModuleModelCollection();
+
+            // Pass the collection to the view
+            var itemsView = new ItemListViewModule({
+                collection: moduleCollection
+            });
+        });
+
     </script>
 
     {{ include("@UVDeskCoreFramework/Templates/tinyMCE.html.twig") }}

@@ -11,15 +11,10 @@
     ],
     "require": {
         "php": "^7.2.5 || ^8.0",
-        "uvdesk/core-framework": "^1.2"
+        "uvdesk/core-framework": "^1.1.5"
     },
     "autoload": {
         "psr-4": { "Webkul\\UVDesk\\SupportCenterBundle\\": "" }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.2.x-dev"
-        }
     },
     "minimum-stability": "stable"
 }

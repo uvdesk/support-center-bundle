@@ -10,22 +10,22 @@ use Webkul\UVDesk\SupportCenterBundle\Entity as SupportCenterEntities;
 class KnowledgebaseWebsite extends DoctrineFixture
 {
     private static $websiteConfigurationSeed = [
-        'status' => true,
-        'brand_color' => '#7E91F0',
-        'page_background_color' => '#FFFFFF',
-        'header_background_color' => '#FFFFFF',
-        'banner_background_color' => '#7C70F4',
-        'nav_text_color' => '#7085F4',
-        'nav_active_color' => '#7085F4',
-        'page_link_color' => '#2750C4',
-        'page_link_hover_color' => '#2750C4',
-        'article_text_color' => '#333333',
-        'site_description' => 'Hi! how can i help you.',
-        'broadcast_message' => null,
-        'ticket_create_option' => true,
-        'disable_customer_login' => false,
+        'status'                   => true,
+        'brand_color'              => '#7E91F0',
+        'page_background_color'    => '#FFFFFF',
+        'header_background_color'  => '#FFFFFF',
+        'banner_background_color'  => '#7C70F4',
+        'nav_text_color'           => '#7085F4',
+        'nav_active_color'         => '#7085F4',
+        'page_link_color'          => '#2750C4',
+        'page_link_hover_color'    => '#2750C4',
+        'article_text_color'       => '#333333',
+        'site_description'         => 'Hi! how can i help you.',
+        'broadcast_message'        => null,
+        'ticket_create_option'     => true,
+        'disable_customer_login'   => false,
         'login_required_to_create' => true,
-        'home_page_content' => 'masonry',
+        'home_page_content'        => 'masonry',
     ];
 
     public function load(ObjectManager $entityManager)

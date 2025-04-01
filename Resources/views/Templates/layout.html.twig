@@ -79,7 +79,11 @@
 
     {% set bodyClass = '' %}
     {% set bodySkinClass = '' %}
-   
+
+    {% if app.request.locale == "ar" %}
+        {% set bodyClass = 'uv-rtl' %}
+    {% endif %}
+
     <body class="{{ bodySkinClass ~ ' ' ~ bodyClass }}">
         {% set broadcastMessage = uvdesk_service.getValidBroadcastMessage(websiteConfiguration.broadcastMessage is defined ? websiteConfiguration.broadcastMessage : '') %}
         {% if broadcastMessage %}
@@ -115,7 +119,6 @@
 
 
         {% block header %}
-         
             {% include "@UVDeskSupportCenter/Templates/header.html.twig" %}
         {% endblock %}
 
@@ -181,7 +184,7 @@
 
             <!-- Notification Template -->
             <script type="text/template" id="notification-template">
-                <div class="uv-notification <% if(alertClass == 'danger') { %>uv-error<% } else { %> <%= 'uv-' + alertClass %> <% } %>">
+                <div class="uv-notification <% if (alertClass == 'danger') { %>uv-error<% } else { %> <%= 'uv-' + alertClass %> <% } %>">
                     <span class="uv-notification-close"></span>
                     <p><%= alertMessage %> </p>
                 </div>
