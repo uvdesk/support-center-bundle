@@ -3,6 +3,13 @@ CHANGELOG for 1.1.x
 
 This changelog references any relevant changes introduced in 1.1 minor versions.
 
+* 1.1.3.3
+    Updates:
+    * Updated UI for customer ticket create and login forms.
+
+    Issue Fixes:
+     * Issue fixed for large size attachment zip download.
+
 * 1.1.3.2 (2024-12-20)
     Updates:
     * Customer login using OTP functionality added.
