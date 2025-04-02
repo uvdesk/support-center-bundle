@@ -11,16 +11,19 @@ use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 Class Announcement extends AbstractController
 {
     private $translator;
     private $userService;
+    private $entityManager;
 
-    public function __construct(TranslatorInterface $translator, UserService $userService)
+    public function __construct(TranslatorInterface $translator, UserService $userService, EntityManagerInterface $entityManager)
     {
         $this->translator = $translator;
         $this->userService = $userService;
+        $this->entityManager = $entityManager;
     }
 
     public function listAnnouncement(Request $request)    
@@ -73,8 +76,6 @@ Class Announcement extends AbstractController
             $announcement->setPromoText($request['promotext']);
             $announcement->setPromotag($request['promotag']);
             $announcement->setTagColor($request['tagColor']);
-            $announcement->setLinkText($request['linkText']);
-            $announcement->setLinkURL($request['linkURL']);
             $announcement->setIsActive($request['status']);
             $announcement->setGroup($group);
             $em->persist($announcement);
@@ -121,6 +122,18 @@ Class Announcement extends AbstractController
             ];
         }
 
+        $response = new Response(json_encode($json));
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
+    }
+
+    public function marketingAnnouncementCustomerListXHR(Request $request, ContainerInterface $container )
+    {
+        $json = array();
+        $customer = $this->userService->getCurrentUser();
+        $repository = $this->entityManager->getRepository(SupportEntities\Announcement::class);
+        $json = $repository->getAllAnnouncementForCustomer($request->query, $container, $customer);
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
 

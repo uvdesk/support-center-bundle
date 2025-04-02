@@ -6,6 +6,7 @@ This changelog references any relevant changes introduced in 1.1 minor versions.
 * 1.1.3.3
     Updates:
     * Updated UI for customer ticket create and login forms.
+    * Marketing announcement section functionality and design updates.
 
     Issue Fixes:
      * Issue fixed for large size attachment zip download.

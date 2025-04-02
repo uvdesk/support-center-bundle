@@ -1,0 +1,399 @@
+{% block uvdesk_announcements %}
+	{% block uvdesk_announcements_css %}
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+			<style>
+				.announcementWrapperLoader {
+					display: block;
+					margin-top: -2px;
+					height: 2px;
+					background-color: rgba(47, 163, 104, 1);
+				}
+				.announcement {
+					background-color: rgba(255, 165, 0, 0.1);
+					border-radius:3px;
+					padding: 16px;
+					border: 2px solid rgba(255, 165, 0, 1);
+					color: rgba(0, 0, 0, 1);
+					align-items: flex-start;
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					font-family: 'Roboto';
+					font-size: 20px;
+				}
+				.announcement_mobile {
+					background-color: rgba(255, 165, 0, 0.1);
+					border-radius:3px;
+					padding: 16px;
+					border: 2px solid rgba(255, 165, 0, 1);
+					color: rgba(0, 0, 0, 1);
+					justify-content: space-between;
+					align-items: center;
+					font-family: 'Roboto';
+					font-size: 20px;
+				}
+
+				.announcement_mobile_flex {
+					display: flex;
+					align-items: center;
+				}
+				.announcement_left_wrapper {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					width: 100%;
+				}
+				.announcement_actions {
+					display: flex;
+					justify-content: space-between;
+				}
+				.announcement_para {
+					font-weight: 500;
+					font-size: 20px;
+					line-height: 23.44px;
+				}
+				.announcement_para a:hover{
+					text-decoration: underline;
+				}
+				.announcement_count {
+					float:left;
+				}
+				.announcement_count_next, .announcement_remove {
+					font-weight: 100;
+					border-radius: 50%;
+					cursor: pointer;
+					float: right;
+					width: 39px;
+					height: 39px;
+					background-color: transparent;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					font-size: 20px;
+					color: #000;
+					margin-left: 5px;
+				}
+				.announcement_count_next:hover, .announcement_remove:hover {
+					background-color: rgba(255, 165, 0, 0.1);
+				}
+				.announcement_count_next_wrapper {
+					display: flex;
+					align-items: center;
+				}
+				.announcement_btn_left {
+					background: #EFC556;
+					font-weight: bold;
+					cursor: pointer;
+					padding: 8px 12px;
+					border-radius: 4px;
+					margin-right: 10px;
+					margin-left: 4px;
+					display: block;
+				}
+				.announcement_left_icon {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+				}
+				.announcement_left_icon img {
+					height: 39px;
+					width: 39px;
+				}
+				.announcement_count_next img, .announcement_remove img {
+					width: 100%;
+					height: 100%;
+					margin-left: 1.7px;
+				}
+				.announcement_content {
+					display: flex;
+					align-items: center;
+					margin-left: 4px;
+					width: 100%;
+				}
+
+				.announcement_content_mobile {
+					display: flex;
+					align-items: center;
+					margin-left: 4px;
+					width: 100%;
+				}
+
+				.announcement_content_para_link {
+					display: flex;
+					align-items: center;
+					flex-direction: row;
+				}
+				.announcement_count_mv {
+					display: none;
+				}
+
+				.desktop {
+					display: block !important;
+				}
+
+				.mobile {
+					display: none;
+				}
+
+				@media screen and (max-width: 800px) {
+					.announcementWrapperLoader {
+						margin-top: -2px !important;
+					}
+					.desktop {
+						display: none !important;
+					}
+
+					.mobile {
+						display: block !important;
+					}
+					.announcement_btn_left{
+						font-size: 10px;
+					}
+					.announcementWrapperLoader {
+						margin-top: -12px;
+					}
+
+					.announcementWrapperLoader_mobile {
+						margin-top: -2px;
+					}
+
+					.announcement_remove {
+						width: 36px !important;
+						height: 36px !important;
+					}
+
+					.announcement {
+						background-color: rgba(255, 165, 0, 0.1);
+						margin-bottom: 10px;
+						border-radius: 3px;
+						padding: 8px;
+						border: 2px solid rgba(255, 165, 0, 1);
+					}
+					.announcement_para {
+						font-size: 18px;
+						line-height: 25px;
+					}
+					.announcement_count_mv {
+						display: block;
+					}
+					.announcement_count {
+						display: none;
+					}
+					.announcement_actions {
+						flex-direction: column;
+					}
+				}
+		</style>
+	{% endblock %}
+
+	{% block uvdesk_announcements_body %}
+		<div id="item-list"></div>
+	{% endblock %}
+
+	{% block uvdesk_announcements_main %}
+		<script id="announcement_template" type="text/template">
+			<div class="desktop">
+				<div class="announcementWrapper" >
+					<div class="announcement" id="uv-kb-info-announcement_<%- id %>">
+						<div class="announcement_left_wrapper">
+							<div class="announcement_left_icon">
+								<img src="{{ asset('bundles/uvdesksupportcenter/images/tick_icon.png') }}" alt="tick icon"/>
+							</div>
+							<div class="announcement_content">
+								<div class="announcement_content_para_link">
+									<p class="announcement_para"><%= promoText %></p>
+								</div>
+							</div>
+							<p class="announcement_count_mv"><%- currentPage %>/<%- lastPage %></p>
+						</div>
+						<div class="announcement_actions">
+							<div class="announcement_count_next_wrapper">
+								
+									<p class="announcement_count"><%- currentPage %>/<%- lastPage %></p>
+									<a class ="announcement_count_next" id="announcement_count_next">
+										<img src="{{ asset('bundles/uvdesksupportcenter/images/arrow.png') }}" alt="arrow icon"/>
+									</a>
+							</div>
+							<div>
+								<a class ="announcement_remove">
+									<img src="{{ asset('bundles/uvdesksupportcenter/images/close_2.png') }}" alt="close icon"/>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<span class="announcementWrapperLoader"></span>
+			</div>
+
+			<div class="mobile">
+				<div class="announcementWrapper" >
+					<div class="" id="uv-kb-info-announcement_<%- id %>">
+						<div class="announcement_mobile">
+							<div class="announcement_mobile_flex">
+								<div class="announcement_left_wrapper">
+									<div class="announcement_left_icon">
+										<img src="{{ asset('bundles/uvdesksupportcenter/images/tick_icon.png') }}" alt="tick icon"/>
+								</div>
+									
+								</div>
+								<div>
+									<a class ="announcement_remove">
+										<img src="{{ asset('bundles/uvdesksupportcenter/images/close_2.png') }}" alt="Close icon"/>
+									</a>
+								</div>
+								
+								<p class="announcement_count_mv"><%- currentPage %>/<%- lastPage %></p>
+								
+								<div class="announcement_count_next_wrapper">
+									<p class="announcement_count"><%- currentPage %>/<%- lastPage %></p>
+									<a class ="announcement_count_next" id="announcement_count_next">
+										<img src="{{ asset('bundles/uvdesksupportcenter/images/arrow.png') }}" alt="arrow icon"/>
+									</a>
+								</div>
+								</div>
+							
+
+							<div class="announcement_content_mobile">
+								<div class="announcement_content_para_link">
+									<p class="announcement_para"><%= promoText %></p>
+									
+								</div>
+							</div>
+						</div>
+						
+					</div>
+				</div>
+				<span class="announcementWrapperLoader"></span>
+			</div>
+			
+		</script>
+	{% endblock %}
+
+	{% block uvdesk_announcements_javacript %}
+		<script src="/js/front_jquery-2.1.4.min_1.js"></script>
+
+		<script type="text/javascript">
+			$(function() {
+				var AnnouncementModel = Backbone.Model.extend({
+					idAttribute : "id",
+				});
+
+				var AnnouncementCollection = Backbone.Collection.extend({
+					model: AnnouncementModel,
+					url: '{{ path("helpdesk_member_knowledgebase_front_marketing_announcement_xhr") }}',
+					parse: function(response) {
+						return response;
+					}
+				});
+
+				var ItemView = Backbone.View.extend({
+					template: _.template($("#announcement_template").html()),
+
+					render: function(announcement, currentPage, totalPages) {
+						announcement.currentPage = currentPage;
+						announcement.lastPage = totalPages;
+						this.$el.html(this.template(announcement));
+						return this;
+					}
+				});
+
+				var ItemListView = Backbone.View.extend({
+					tag: 'div',
+					el: '#item-list',
+
+					allAnnouncements: [],
+					currentIndex: 0,
+
+					events: {
+						'click .announcement_count_next': "loadNextAnnouncement",
+						'click .announcement_remove': "removeAnnouncement"
+					},
+
+					initialize: function() {
+						this.collection = new AnnouncementCollection();
+						this.itemView = new ItemView({ el: this.el });
+
+						// Only fetch data once
+						this.collection.fetch({
+							reset: true,
+							success: function(collection, response) {
+								// Store all announcements from the response
+								if (collection.length > 0) {
+									var model = collection.at(0);
+									this.allAnnouncements = model.get('modules') || [];
+									this.totalAnnouncements = this.allAnnouncements.length;
+
+									if (this.totalAnnouncements > 0) {
+										this.displayAnnouncement(0);
+										this.startLoader();
+									}
+								}
+							}.bind(this)
+						});
+					},
+
+					displayAnnouncement: function(index) {
+						if (index >= this.totalAnnouncements) {
+							index = 0;
+						}
+
+						if (this.allAnnouncements.length > 0) {
+							var announcement = this.allAnnouncements[index];
+							this.itemView.render(announcement, index + 1, this.totalAnnouncements);
+							this.currentIndex = index;
+						}
+					},
+
+					removeAnnouncement: function() {
+						this.$el.empty();
+						this.stopInterval();
+					},
+
+					stopInterval: function() {
+						if (this.loaderInterval) {
+							clearInterval(this.loaderInterval);
+							this.loaderInterval = null;
+						}
+					},
+
+					startLoader: function() {
+						this.stopInterval();
+
+						this.loaderWidth = 0;
+						this.loaderInterval = setInterval(function() {
+							var elem = this.$el.find('.announcementWrapperLoader');
+							if (this.loaderWidth >= 100) {
+								this.loadNextAnnouncement();
+								this.loaderWidth = 0;
+							} else {
+								this.loaderWidth++;
+								if (elem.length > 0) {
+									elem[0].style.width = this.loaderWidth + '%';
+								}
+							}
+						}.bind(this), 70);
+					},
+
+					loadNextAnnouncement: function(event) {
+						if (event) {
+							this.$el.find('.announcement_count_next').prop('disabled', true);
+						}
+
+						this.stopInterval();
+						var nextIndex = (this.currentIndex + 1) % this.totalAnnouncements;
+
+						this.displayAnnouncement(nextIndex);
+
+						if (event) {
+							this.$el.find('.announcement_count_next').prop('disabled', false);
+						}
+
+						this.startLoader();
+					}
+				});
+
+				var itemsView = new ItemListView();
+			});
+		</script>
+	{% endblock %}
+{% endblock %}
