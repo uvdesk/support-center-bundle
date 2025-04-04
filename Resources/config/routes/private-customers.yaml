@@ -64,9 +64,9 @@ helpdesk_customer_create_ticket_success:
     defaults: { email: '', flag: 0 }
 
 helpdesk_customer_download_ticket_attachment:
-    path:     /ticket/download/{attachmendId}
+    path:     /ticket/download/{attachmentId}
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Ticket::downloadAttachment
-    defaults: { attachmendId: 0 }
+    defaults: { attachmentId: 0 }
 
 helpdesk_customer_download_ticket_attachment_zip:
     path:     /ticket/download-ticket-zip/{threadId}
@@ -93,3 +93,7 @@ helpdesk_member_knowledgebase_front_customer_login_otp_generate:
 helpdesk_member_knowledgebase_front_customer_verify_otp_login:
     path:     /customer/login/otp/verify
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Customer::loginOtpVerify
+
+helpdesk_member_knowledgebase_front_marketing_announcement_xhr:
+    path:     /customer/marketing/announcement/xhr
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::marketingAnnouncementCustomerListXHR

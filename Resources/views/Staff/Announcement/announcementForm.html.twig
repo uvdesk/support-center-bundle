@@ -74,26 +74,6 @@
 
 				<!-- Field -->
 				<div class="uv-element-block">
-					<label class="uv-field-label">{{ 'Link Text'|trans }}</label>
-					<div class="uv-field-block">
-						<input type="text" name="announcement_form[linkText]" class="uv-field" value="{{ announcement.linkText }}" />
-					</div>
-					<span class="uv-field-info"></span>
-				</div>
-				<!-- //Field -->
-
-				<!-- Field -->
-				<div class="uv-element-block">
-					<label class="uv-field-label">{{ 'Link URL'|trans }}</label>
-					<div class="uv-field-block">
-						<input type="text" name="announcement_form[linkURL]" class="uv-field" value="{{ announcement.linkURL }}" placeholder="https://example.com/" />
-					</div>
-					<span class="uv-field-info"></span>
-				</div>
-				<!-- //Field -->
-
-				<!-- Field -->
-				<div class="uv-element-block">
 					<label class="uv-field-label">{{ 'Status'|trans }}</label>
 					<div class="uv-field-block">
 						<select name="announcement_form[status]" class="uv-select">
@@ -160,27 +140,13 @@
 						required: true,
 						msg: "{{ 'This field is mandatory'|trans }}"
 					}, {
-                        maxLength: 80,
-                        msg: '{{ "Maximum character length is 80" | trans}}'
+                        maxLength: 200,
+                        msg: '{{ "Maximum character length is 200" | trans}}'
                     }],
 					'announcement_form[promotag]': {
 						required: true,
 						msg: "{{ 'This field is mandatory'|trans }}"
 					},
-					'announcement_form[linkText]': [{
-						required: true,
-						msg: "{{ 'This field is mandatory'|trans }}"
-					}, {
-                        maxLength: 16,
-                        msg: '{{ "Maximum character length is 16" | trans}}'
-                    }],
-					'announcement_form[linkURL]': [{
-						required: true,
-						msg: "{{ 'This field is mandatory'|trans }}"
-					}, {
-                        pattern: '^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$',
-						msg: '{{ "Provide a valid url(with protocol)"| trans}}'
-                    }],
 					'announcement_form[status]': {
 						required: true,
 						msg: "{{ 'This field is mandatory'|trans }}"

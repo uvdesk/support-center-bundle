@@ -4,6 +4,7 @@ namespace Webkul\UVDesk\SupportCenterBundle\Repository;
 
 use Webkul\UVDesk\SupportCenterBundle\Entity\Announcement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections;
@@ -89,6 +90,66 @@ class AnnouncementRepository extends ServiceEntityRepository
         $json['groups'] = $newResult;
         $json['pagination_data'] = $paginationData;
 
+        return $json;
+    }
+
+    public function getAllAnnouncementForCustomer($query, $container, $customer)
+    {
+        $order = array_rand(array(
+            'DESC' => 'DESC',
+            'ASC'  => 'ASC'
+        ));
+    
+        $column = array_rand(array(
+            'ma.id'        => 'ma.id',
+            'ma.createdAt' => 'ma.createdAt'
+        ));
+
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $entityClass = Announcement::class;
+        $limit = 10;
+
+        $qb->select('ma')
+            ->from($entityClass, 'ma')
+            ->join(Ticket::class, 't', 'WITH', 'ma.group = t.supportGroup')
+            ->where('ma.isActive = :isActive')
+            ->andWhere('t.customer = :userId')
+            ->groupBy('ma.id')
+            ->orderBy($column, $order)
+            ->setParameter('isActive', 1)
+            ->setParameter('userId', $customer)
+            ->setMaxResults($limit);
+
+        $paginator  = $container->get('knp_paginator');
+        $results = $paginator->paginate(
+            $qb,
+            $query->get('page') ?: 1,
+            $limit,
+            array('distinct' => false)
+        );
+
+        $newResult = [];
+        
+        foreach ($results as $key => $result) {
+            $newResult[] = array(
+                'id'           => $result->getId(),
+                'title'        => $result->getTitle(),
+                'promoText'    => $result->getPromoText(),
+                'promoTag'     => $result->getPromoTag(),
+                'isActive'     => $result->getIsActive(),
+                'linkURL'      => $result->getLinkUrl(),
+                'linkText'      => $result->getLinkText(),
+                'createdAt'    => $result->getCreatedAt(),
+                'updatedAt'    => $result->getUpdatedAt(),
+                'group'        => $result->getGroup()->getId() == 1 ? $group = ['name' => 'Default Group'] : $group = ['name' => $result->getGroup()->getName()],
+            );
+        }
+
+        $paginationData = $results->getPaginationData();
+
+        $json['modules'] = ($newResult);
+        $json['pagination_data'] = $paginationData;
+        
         return $json;
     }
 }
