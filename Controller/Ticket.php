@@ -649,7 +649,7 @@ class Ticket extends AbstractController
 
     public function downloadAttachment(Request $request)
     {
-        $attachmentId = $request->attributes->get('attachmendId');
+        $attachmentId = $request->attributes->get('attachmentId');
         $attachment = $this->getDoctrine()->getManager()->getRepository(CoreEntities\Attachment::class)->findOneById($attachmentId);
 
         $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
