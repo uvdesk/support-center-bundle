@@ -38,16 +38,6 @@
                 <div id="login-form-container" class="login-form-container">
                     <form action="{{ path('helpdesk_customer_login')}}" method="post" id="login-form" class="login-form"></form>
                 </div>
-
-                <div style="margin-top:20px">
-                    {% if recaptchaDetail and recaptchaDetail.isActive == true %}
-                        <div class="clearfix"></div>
-                        <div class="g-recaptcha" data-sitekey="{{ recaptchaDetail.siteKey }}"></div>
-                        <div class="clearfix"></div>
-                    {% else %}
-                            <!-- Recaptcha will not support -->
-                    {% endif %}
-                </div>
             </section>
         </div>
     </div>
