@@ -515,6 +515,18 @@
                         </div>
                         <!-- //Field -->
 
+                         <!-- Field -->
+                        <div class="uv-element-block">
+                            <label class="uv-field-label">
+                                {{ 'Public Access Links' }}
+                            </label>
+                            <div class="uv-field-block">
+                                <input type="text" name="publicResourceAccessAttemptLimit" class="uv-field" value="{{ configuration.publicResourceAccessAttemptLimit }}"></input>
+                            </div>
+                            <span class="uv-field-info">{{ 'Maximum number of times a generated public resource link can be accessed'|trans }}</span>
+                        </div>
+                        <!-- //Field -->
+
                         <!-- CSRF token Field -->
                         <input type="hidden" name="form[_token]" value="{{ uvdesk_service.generateCsrfToken('form') }}"/>
                         <!-- //CSRF token Field -->

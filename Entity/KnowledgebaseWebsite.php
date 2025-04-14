@@ -676,7 +676,6 @@ class KnowledgebaseWebsite
      */
     private $loginRequiredToCreate;
 
-
     /**
      * Set loginRequiredToCreate.
      *
@@ -801,7 +800,36 @@ class KnowledgebaseWebsite
      */
     private $removeCustomerLoginButton;
 
-   
+    /**
+     * @var integer
+     * @ORM\Column(type="integer", nullable=true, options={"default": 5})
+     */
+    private $publicResourceAccessAttemptLimit;
+
+     /**
+     * Set publicResourceAccessAttemptLimit
+     *
+     * @param int $publicResourceAccessAttemptLimit
+     *
+     * @return Website
+     */
+    public function setPublicResourceAccessAttemptLimit($publicResourceAccessAttemptLimit)
+    {
+        $this->publicResourceAccessAttemptLimit = $publicResourceAccessAttemptLimit;
+
+        return $this;
+    }
+
+    /**
+     * Get publicResourceAccessAttemptLimit
+     *
+     * @return array
+     */
+    public function getPublicResourceAccessAttemptLimit()
+    {
+        return $this->publicResourceAccessAttemptLimit;
+    }
+
     /**
      * Set removeCustomerLoginButton
      *

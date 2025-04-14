@@ -177,6 +177,8 @@ class Branding extends AbstractController
                 case 'advanced':
                     $configuration->setCustomCSS($request->request->get('customCSS'));
                     $configuration->setScript($request->request->get('script'));
+                    $configuration->setPublicResourceAccessAttemptLimit($request->request->get('publicResourceAccessAttemptLimit'));
+                    
                     $entityManager->persist($configuration);
                     $entityManager->flush();
 
