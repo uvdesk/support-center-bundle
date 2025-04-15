@@ -763,4 +763,37 @@ class Ticket extends AbstractController
 
         return $response;
     }
+
+    public function ticketIntermediateAccess(Request $request)
+    {
+        $user = $this->userService->getSessionUser();
+
+        if (!empty($user)) {
+            $assignedRoles = $user->getCustomerInstance();
+            $urid = $request->query->get('urid');
+
+            if (in_array('ROLE_CUSTOMER_READ_ONLY', $assignedRoles)) {
+                $entityManager = $this->getDoctrine()->getManager();
+                $resource = $entityManager->getRepository(PublicResourceAccessLink::class)->findOneBy([
+                    'uniqueResourceAccessId' => $urid, 
+                ]);
+
+                if (!empty($resource) && $resource->getResourceType() == Ticket::class) {
+                    $ticket = $entityManager->getRepository(Ticket::class)->findOneBy([
+                        'id' => $resource->getResourceId(), 
+                    ]);
+
+                    if (! empty($ticket)) {
+                        return $this->redirect($this->generateUrl('helpdesk_customer_ticket', [
+                            'id' => $ticket->getId(), 
+                        ]));
+                    }
+                }
+            }
+        }
+
+        $this->addFlash('warning', $this->translator->trans("Please login to continue."));
+        
+        return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
+    }
 }

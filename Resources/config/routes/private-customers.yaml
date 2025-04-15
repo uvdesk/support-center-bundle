@@ -68,6 +68,10 @@ helpdesk_customer_download_ticket_attachment:
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Ticket::downloadAttachment
     defaults: { attachmentId: 0 }
 
+helpdesk_customer_public_resource_access_intermediate:
+    path:     /ticket/intermediate/public-access/read-only
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Ticket::ticketIntermediateAccess
+
 helpdesk_customer_download_ticket_attachment_zip:
     path:     /ticket/download-ticket-zip/{threadId}
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Ticket::downloadAttachmentZip
