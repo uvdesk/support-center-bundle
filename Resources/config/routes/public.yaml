@@ -48,3 +48,8 @@ helpdesk_knowledgebase_tag:
     path:     /tag/{tag}/{name}
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Website::viewTaggedResources
     defaults: { tag: '', name: '' }
+
+helpdesk_customer_thread_collection_public_xhr:
+    path:     /threads/public-ajax/{id}
+    controller: Webkul\UVDesk\SupportCenterBundle\Controller\Ticket::threadListXhr
+    defaults: { id: 0 }
