@@ -468,7 +468,7 @@ class Article extends AbstractController
                 }
             }
         } elseif ($request->getMethod() == "PATCH") {
-            $entityManager = $this->entityManager->getManager();
+            $entityManager = $this->entityManager;
 
             $data = json_decode($request->getContent(), true);
 
