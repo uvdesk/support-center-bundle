@@ -20,7 +20,6 @@ class ArticleHistory
      */
     private $id;
 
-   
     /**
      * @var integer
      * @ORM\Column(type="integer")
@@ -50,7 +49,6 @@ class ArticleHistory
      */
     private $formattedDate;
 
-
     /**
      * Get id
      *
@@ -61,7 +59,6 @@ class ArticleHistory
         return $this->id;
     }
 
-   
     /**
      * Set articleId
      *

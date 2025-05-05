@@ -2,16 +2,17 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
-use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
-use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFileservice;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
+use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
 
 class Branding extends AbstractController
 {
@@ -19,13 +20,15 @@ class Branding extends AbstractController
     private $translator;
     private $fileSystem;
     private $uvdeskService;
+    private $entityManager;
 
-    public function __construct(UserService $userService, TranslatorInterface $translator, FileSystem $fileSystem, UVDeskService $uvdeskService)
+    public function __construct(UserService $userService, TranslatorInterface $translator, FileSystem $fileSystem, UVDeskService $uvdeskService, EntityManagerInterface $entityManager)
     {
         $this->userService = $userService;
         $this->translator = $translator;
         $this->fileSystem = $fileSystem;
         $this->uvdeskService = $uvdeskService;
+        $this->entityManager = $entityManager;
     }
 
     public function theme(Request $request)
@@ -34,36 +37,31 @@ class Branding extends AbstractController
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
-        $errors = [];
-        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager = $this->entityManager;
         $settingType = $request->attributes->get('type');
-        $userService = $this->userService;
-        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneBy(['code'=>"knowledgebase"]);
-        $configuration = $entityManager->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(),'isActive' => 1]);
+        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneBy(['code' => "knowledgebase"]);
+        $configuration = $entityManager->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
         $currentLocales = $this->uvdeskService->getDefaultLangauge();
 
         if ($request->getMethod() == 'POST') {
-            $isValid = 0;
             $params = $request->request->all();
             $paramsFile = ($request->files->get('website'));
             $selectedLocale = isset($params['defaultLocale']) ? $params['defaultLocale'] : null;
 
-            switch($settingType) {
+            switch ($settingType) {
                 case 'business-hours':
-                    $website->setBusinessHourStatus(isset($params['status']) && $params['status']=='on' ? 1 : 0);
+                    $website->setBusinessHourStatus(isset($params['status']) && $params['status'] == 'on' ? 1 : 0);
                     $website->setBusinessHour(serialize($params['businessHours']));
-                    $entityManager->persist($website);
-                    $entityManager->flush();
 
                     break;
                 case "general":
                     $website->setName($params['website']['name']);
-                    $status = array_key_exists("status",$params['website']) ? 1 : 0;
+                    $status = array_key_exists("status", $params['website']) ? 1 : 0;
                     $logo = $website->getLogo();
 
                     if ($logo != null && isset($paramsFile['logo'])) {
                         $fileService = new SymfonyFileservice;
-                        $fileService->remove($this->getParameter('kernel.project_dir').'/public'.$logo);
+                        $fileService->remove($this->getParameter('kernel.project_dir') . '/public' . $logo);
                     }
 
                     if (isset($paramsFile['logo'])) {
@@ -73,10 +71,6 @@ class Branding extends AbstractController
 
                     $configuration->setStatus($status);
                     $configuration->setBrandColor($params['website']['brandColor']);
-
-                    $entityManager->persist($website);
-                    $entityManager->persist($configuration);
-                    $entityManager->flush();
 
                     if (! empty($selectedLocale)) {
                         if (false == $this->uvdeskService->updatesLocales($selectedLocale)) {
@@ -100,9 +94,9 @@ class Branding extends AbstractController
                     $configuration->setBannerBackgroundColor($params['website']['bannerBackgroundColor']);
                     $configuration->setHomepageContent($params['website']['homepageContent']);
 
-                    $removeCustomerLoginButton = array_key_exists("removeCustomerLoginButton",$params['website']) ? $params['website']['removeCustomerLoginButton'] : 0;
-                    $removeBrandingContent = array_key_exists("removeBrandingContent",$params['website']) ? $params['website']['removeBrandingContent'] : 0;
-                    $disableCustomerLogin = array_key_exists("disableCustomerLogin",$params['website']) ? $params['website']['disableCustomerLogin'] : 0;
+                    $removeCustomerLoginButton = array_key_exists("removeCustomerLoginButton", $params['website']) ? $params['website']['removeCustomerLoginButton'] : 0;
+                    $removeBrandingContent = array_key_exists("removeBrandingContent", $params['website']) ? $params['website']['removeBrandingContent'] : 0;
+                    $disableCustomerLogin = array_key_exists("disableCustomerLogin", $params['website']) ? $params['website']['disableCustomerLogin'] : 0;
 
                     $configuration->setRemoveCustomerLoginButton($removeCustomerLoginButton);
                     $configuration->setRemoveBrandingContent($removeBrandingContent);
@@ -113,8 +107,6 @@ class Branding extends AbstractController
                     $configuration->setTicketCreateOption($ticketCreateOption);
                     $configuration->setLoginRequiredToCreate($loginRequiredToCreate);
                     $configuration->setUpdatedAt(new \DateTime());
-                    $entityManager->persist($configuration);
-                    $entityManager->flush();
 
                     $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
@@ -122,22 +114,20 @@ class Branding extends AbstractController
                     $configuration->setMetaDescription($params['metaDescription']);
                     $configuration->setMetaKeywords($params['metaKeywords']);
                     $configuration->setUpdatedAt(new \DateTime());
-                    $entityManager->persist($configuration);
-                    $entityManager->flush();
 
                     $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
                 case "links":
-                    $footerLinks=[];
-                    $headerLinks=[];
-                    $headerLinks = isset($params['headerLinks'])? $params['headerLinks']: '';
-                    $footerLinks = isset($params['footerLinks']) ? $params['footerLinks']: 0;
+                    $footerLinks = [];
+                    $headerLinks = [];
+                    $headerLinks = isset($params['headerLinks']) ? $params['headerLinks'] : '';
+                    $footerLinks = isset($params['footerLinks']) ? $params['footerLinks'] : 0;
 
                     if (! empty($headerLinks)) {
                         foreach ($headerLinks as $key => $link) {
                             if (
-                                $link['label'] == '' 
-                                || $link['url'] == '' 
+                                $link['label'] == ''
+                                || $link['url'] == ''
                                 || !filter_var($link['url'], FILTER_VALIDATE_URL)
                             ) {
                                 unset($headerLinks[$key]);
@@ -148,8 +138,8 @@ class Branding extends AbstractController
                     if (! empty($footerLinks)) {
                         foreach ($footerLinks as $key => $link) {
                             if (
-                                $link['label'] == '' 
-                                || $link['url'] == '' 
+                                $link['label'] == ''
+                                || $link['url'] == ''
                                 || !filter_var($link['url'], FILTER_VALIDATE_URL)
                             ) {
                                 unset($footerLinks[$key]);
@@ -159,8 +149,6 @@ class Branding extends AbstractController
 
                     $configuration->setHeaderLinks($headerLinks);
                     $configuration->setFooterLinks($footerLinks);
-                    $entityManager->persist($configuration);
-                    $entityManager->flush();
 
                     $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
@@ -169,18 +157,12 @@ class Branding extends AbstractController
                     $configuration->setBroadcastMessage(json_encode($params['broadcasting']));
                     $configuration->setUpdatedAt(new \DateTime());
 
-                    $entityManager->persist($configuration);
-                    $entityManager->flush();
-
                     $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
                 case 'advanced':
                     $configuration->setCustomCSS($request->request->get('customCSS'));
                     $configuration->setScript($request->request->get('script'));
                     $configuration->setPublicResourceAccessAttemptLimit($request->request->get('publicResourceAccessAttemptLimit'));
-                    
-                    $entityManager->persist($configuration);
-                    $entityManager->flush();
 
                     $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
@@ -188,15 +170,17 @@ class Branding extends AbstractController
                     $configuration->getWebsite()->setTimezone($params['form']['timezone']);
                     $configuration->getWebsite()->setTimeformat($params['form']['timeFormat']);
 
-                    $entityManager->persist($configuration);
-                    $entityManager->flush();
-
                     $this->addFlash('success', $this->translator->trans('Success ! Time details saved successfully.'));
                     break;
                 default:
                     break;
             }
         }
+
+
+        $entityManager->persist($website);
+        $entityManager->persist($configuration);
+        $entityManager->flush();
 
         return $this->render('@UVDeskSupportCenter/Staff/branding.html.twig', [
             'websiteData'   => $website,
@@ -242,16 +226,14 @@ class Branding extends AbstractController
         }
 
         $params = $request->request->all();
-        $entityManager = $this->getDoctrine()->getManager();
+        $website = $this->entityManager->getRepository(CoreEntities\Website::class)->findOneBy(['code' => "knowledgebase"]);
 
-        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneBy(['code'=>"knowledgebase"]);
-        
         if (! $website) {
             throw new \Exception("No knowledgebase website details were found.");
         }
-        
-        $configuration = $entityManager->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
-        
+
+        $configuration = $this->entityManager->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
+
         $blacklist = ! empty($params['blackList']) ? explode(',', $params['blackList']) : [];
         $whitelist = ! empty($params['whiteList']) ? explode(',', $params['whiteList']) : [];
 
@@ -272,8 +254,8 @@ class Branding extends AbstractController
                 ->setBlackList($blacklist)
             ;
 
-            $entityManager->persist($configuration);
-            $entityManager->flush();
+            $this->entityManager->persist($configuration);
+            $this->entityManager->flush();
 
             $this->addFlash('success', $this->translator->trans('Spam setting saved successfully.'));
 

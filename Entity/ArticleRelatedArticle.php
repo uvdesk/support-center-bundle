@@ -22,12 +22,6 @@ class ArticleRelatedArticle
 
     /**
      * @var integer
-     * 
-     */
-    private $companyId;
-
-    /**
-     * @var integer
      * @ORM\Column(type="integer")
      */
     private $articleId;
@@ -38,7 +32,6 @@ class ArticleRelatedArticle
      */
     private $relatedArticleId;
 
-
     /**
      * Get id
      *
@@ -48,7 +41,6 @@ class ArticleRelatedArticle
     {
         return $this->id;
     }
-
     
     /**
      * Set articleId

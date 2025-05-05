@@ -2,32 +2,32 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
-use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 
 class Article extends AbstractController
 {
     private $userService;
-    private $eventDispatcher;
     private $translator;
     private $uvdeskService;
+    private $entityManager;
 
-    public function __construct(UserService $userService, UVDeskService $uvdeskService,EventDispatcherInterface $eventDispatcher, TranslatorInterface $translator)
+    public function __construct(UserService $userService, UVDeskService $uvdeskService, TranslatorInterface $translator, EntityManagerInterface $entityManager)
     {
         $this->userService = $userService;
-        $this->eventDispatcher = $eventDispatcher;
         $this->translator = $translator;
         $this->uvdeskService = $uvdeskService;
+        $this->entityManager = $entityManager;
     }
 
     public function ArticleList(Request $request, ContainerInterface $container)
@@ -36,13 +36,13 @@ class Article extends AbstractController
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
-        $solutions = $this->getDoctrine()
+        $solutions = $this->entityManager
             ->getRepository(SupportEntities\Solutions::class)
             ->getAllSolutions(null, $container, 'a.id, a.name');
 
         if ($solutions) {
             foreach ($solutions as $key => $solution) {
-                $solutions[$key]['categories'] = $this->getDoctrine()
+                $solutions[$key]['categories'] = $this->entityManager
                     ->getRepository(SupportEntities\Solutions::class)
                     ->getCategoriesWithCountBySolution($solution['id']);
             }
@@ -55,22 +55,22 @@ class Article extends AbstractController
 
     public function ArticleListByCategory(Request $request, ContainerInterface $container)
     {
-        $category = $this->getDoctrine()
+        $category = $this->entityManager
             ->getRepository(SupportEntities\SolutionCategory::class)
             ->findCategoryById(['id' => $request->attributes->get('category')]);
 
         if ($category) {
-            return $this->render('@UVDeskSupportCenter/Staff/Articles/articleListByCategory.html.twig',[
+            return $this->render('@UVDeskSupportCenter/Staff/Articles/articleListByCategory.html.twig', [
                 'category'          => $category,
-                'articleCount'      => $this->getDoctrine()
+                'articleCount'      => $this->entityManager
                     ->getRepository(SupportEntities\SolutionCategory::class)
                     ->getArticlesCountByCategory($request->attributes->get('category')),
 
-                'categorySolutions' => $this->getDoctrine()
+                'categorySolutions' => $this->entityManager
                     ->getRepository(SupportEntities\SolutionCategory::class)
                     ->getSolutionsByCategory($request->attributes->get('category')),
 
-                'solutions'         => $this->getDoctrine()
+                'solutions'         => $this->entityManager
                     ->getRepository(SupportEntities\Solutions::class)
                     ->getAllSolutions(null, $container, 'a.id, a.name')
             ]);
@@ -81,18 +81,18 @@ class Article extends AbstractController
 
     public function ArticleListBySolution(Request $request)
     {
-        $solution = $this->getDoctrine()
+        $solution = $this->entityManager
             ->getRepository(SupportEntities\Solutions::class)
             ->findSolutionById(['id' => $request->attributes->get('solution')]);
 
         if ($solution) {
             return $this->render('@UVDeskSupportCenter/Staff/Articles/articleListBySolution.html.twig', [
                 'solution'              => $solution,
-                'solutionArticleCount'  => $this->getDoctrine()
+                'solutionArticleCount'  => $this->entityManager
                     ->getRepository(SupportEntities\Solutions::class)
                     ->getArticlesCountBySolution($request->attributes->get('solution')),
 
-                'solutionCategoryCount' => $this->getDoctrine()
+                'solutionCategoryCount' => $this->entityManager
                     ->getRepository(SupportEntities\Solutions::class)
                     ->getCategoriesCountBySolution($request->attributes->get('solution')),
             ]);
@@ -104,7 +104,7 @@ class Article extends AbstractController
     public function ArticleListXhr(Request $request, ContainerInterface $container)
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository(SupportEntities\Article::class);
+        $repository = $this->entityManager->getRepository(SupportEntities\Article::class);
 
         if ($request->attributes->get('category'))
             $request->query->set('categoryId', $request->attributes->get('category'));
@@ -123,7 +123,7 @@ class Article extends AbstractController
     public function articleHistoryXhr(Request $request)
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository(SupportEntities\Article::class);
+        $repository = $this->entityManager->getRepository(SupportEntities\Article::class);
 
         $params = ['articleId' => $request->attributes->get('id')];
         $json = $repository->getAllHistoryByArticle($params);
@@ -146,7 +146,7 @@ class Article extends AbstractController
     public function articleRelatedXhr(Request $request)
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository(SupportEntities\Article::class);
+        $repository = $this->entityManager->getRepository(SupportEntities\Article::class);
 
         $params = ['articleId' => $request->attributes->get('id')];
         $json = $repository->getAllRelatedByArticle($params);
@@ -160,7 +160,7 @@ class Article extends AbstractController
     protected function getArticle($filterArray = array())
     {
         if ($filterArray) {
-            return $this->getDoctrine()
+            return $this->entityManager
                 ->getRepository(SupportEntities\Article::class)
                 ->findOneBy($filterArray);
         }
@@ -170,6 +170,8 @@ class Article extends AbstractController
 
     public function article(Request $request, ContainerInterface $container)
     {
+        $articleCategory = $articleTags = [];
+
         if ($request->attributes->get('id')) {
             $article = $this->getArticle(['id' => $request->attributes->get('id')]);
 
@@ -179,18 +181,17 @@ class Article extends AbstractController
             $article = new SupportEntities\Article;
         }
 
-        $articleCategory = $articleTags = [];
         if ($article->getId()) {
-            $articleCategory = $this->getDoctrine()
+            $articleCategory = $this->entityManager
                 ->getRepository(SupportEntities\Article::class)
                 ->getCategoryByArticle($article->getId());
 
-            $articleTags = $this->getDoctrine()
+            $articleTags = $this->entityManager
                 ->getRepository(SupportEntities\Article::class)
                 ->getTagsByArticle($article->getId());
         }
 
-        $categories = $this->getDoctrine()
+        $categories = $this->entityManager
             ->getRepository(SupportEntities\SolutionCategory::class)
             ->getAllCategories(null, $container, 'a.id, a.name');
 
@@ -203,41 +204,38 @@ class Article extends AbstractController
             ]);
         }
 
-        return $this->render( '@UVDeskSupportCenter/Staff/Articles/articleAddForm.html.twig', [ 'article' => $article ] );
+        return $this->render('@UVDeskSupportCenter/Staff/Articles/articleAddForm.html.twig', ['article' => $article]);
     }
+
     public function articleXhr(Request $request)
     {
-        // Proceed only if user has access to the resource        
-        if (
-            (! $this->userService->getSessionUser()) 
-            || (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) 
-        ) {
-            throw new \Exception('Access Denied', 403); 
-        }
-
         $json = array();
+
+        // Proceed only if user has access to the resource
+        if (
+            (! $this->userService->getSessionUser())
+            || (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE'))
+        ) {
+            throw new \Exception('Access Denied', 403);
+        }
 
         if ($request->getMethod() == "POST") {
             $data = $request->request->get("data");
-            $entityManager = $this->getDoctrine()->getManager();
-            
+            $entityManager = $this->entityManager;
+
             if (isset($data['actionType'])) {
                 switch ($data['actionType']) {
                     case 'articleUpdate':
                         if (
-                            'articleSave' == $data['actionType']  
-                            && !empty($resources['articles']['showAlert']) 
+                            'articleSave' == $data['actionType']
+                            && ! empty($resources['articles']['showAlert'])
                         ) {
                             $json['alertClass'] = 'danger';
 
                             return new JsonResponse($json);
                         }
 
-                        if ($data['ids'][0]) {
-                            $article = $this->getArticle(['id' => $data['ids'][0]]);
-                        } else {
-                            $article = new SupportEntities\Article;
-                        }
+                        $article = ! empty($data['ids'][0]) ? $this->getArticle(['id' => $data['ids'][0]]) : new SupportEntities\Article;
 
                         $json['errors'] = [];
 
@@ -254,14 +252,10 @@ class Article extends AbstractController
                                 $article->setKeywords($data['keywords']);
                                 $article->setMetaDescription($data['metaDescription']);
 
-                                $updateRevisionHistory = false;
-
                                 if (
-                                    $article->getContent() == null 
+                                    $article->getContent() == null
                                     || trim($article->getContent()) != trim($data['content'])
                                 ) {
-
-                                    $updateRevisionHistory = true;
                                     $article->setContent($data['content']);
                                 }
 
@@ -274,7 +268,6 @@ class Article extends AbstractController
                                 if (! $data['ids'][0]) {
                                     $json['redirect'] = $this->generateUrl('helpdesk_member_knowledgebase_update_article', array('id' => $article->getId()));
                                 }
-
                             } else {
                                 $json['alertClass'] = 'danger';
                                 $json['alertMessage'] = $this->translator->trans('Warning! Correct all field values first!');
@@ -285,28 +278,23 @@ class Article extends AbstractController
                         }
                         break;
                     case 'articleSave':
-                        if ('articleSave' == $data['actionType']  && !empty($resources['articles']['showAlert']) ) {
+                        if ('articleSave' == $data['actionType']  && !empty($resources['articles']['showAlert'])) {
                             $json['alertClass'] = 'danger';
 
                             return new JsonResponse($json);
                         }
 
-                        if ($data['ids'][0]) {
-                            $article = $this->getArticle(['id' => $data['ids'][0]]);
-                        } else {
-                            $article = new SupportEntities\Article;
-                        }
+                        $article = ! empty($data['ids'][0]) ? $this->getArticle(['id' => $data['ids'][0]]) : new SupportEntities\Article;
 
                         $json['errors'] = [];
 
                         if ($article) {
-
                             if (strlen($data['name']) > 200) {
                                 $json['errors']['name'] = $this->translator->trans('Name length must not be greater than 200 !!');
                             }
 
                             $slug = $entityManager->getRepository(SupportEntities\Article::class)->findOneBy(['slug' => $data['slug']]);
-                            
+
                             if (! empty($slug)) {
                                 $json['errors']['slug'] = $this->translator->trans('Warning! Article slug is not available.');
                             }
@@ -319,11 +307,7 @@ class Article extends AbstractController
                                 $article->setKeywords($data['keywords']);
                                 $article->setMetaDescription($data['metaDescription']);
 
-                                $updateRevisionHistory = false;
-
                                 if ($article->getContent() == null || trim($article->getContent()) != trim($data['content'])) {
-
-                                    $updateRevisionHistory = true;
                                     $article->setContent($data['content']);
                                 }
 
@@ -333,10 +317,9 @@ class Article extends AbstractController
                                 $json['alertClass'] = 'success';
                                 $json['alertMessage'] = $this->translator->trans('Success! Article updated successfully');
 
-                                if (!$data['ids'][0]) {
+                                if (! $data['ids'][0]) {
                                     $json['redirect'] = $this->generateUrl('helpdesk_member_knowledgebase_update_article', array('id' => $article->getId()));
                                 }
-
                             } else {
                                 $json['alertClass'] = 'danger';
                                 $json['alertMessage'] = $this->translator->trans('Warning! Correct all field values first!');
@@ -417,10 +400,9 @@ class Article extends AbstractController
                         break;
                     case 'categoryUpdate':
                         if ($data['action'] == 'remove') {
-                            $this->getDoctrine()
+                            $this->entityManager
                                 ->getRepository(SupportEntities\Article::class)
                                 ->removeCategoryByArticle($data['ids'][0], [$data['entityId']]);
-
                         } else if ($data['action'] == 'add') {
                             $articleCategoryMapping = new SupportEntities\ArticleCategory();
                             $articleCategoryMapping->setArticleId($data['ids'][0]);
@@ -448,11 +430,9 @@ class Article extends AbstractController
                             if (count($relatedArticles)) {
                                 $json['alertClass'] = 'success';
                                 $json['alertMessage'] = $this->translator->trans('Success ! Article Related is already added.');
-
                             } elseif ($data['ids'][0] == $data['entityId']) {
                                 $json['alertClass'] = 'danger';
                                 $json['alertMessage'] = $this->translator->trans('Success ! Cannot add self as relative article.');
-
                             } else {
                                 $articleRelatedMapping = new SupportEntities\ArticleRelatedArticle();
                                 $articleRelatedMapping->setArticleId($data['ids'][0]);
@@ -466,7 +446,6 @@ class Article extends AbstractController
                         }
 
                         break;
-
                     case 'delete':
                         if ($data['ids']) {
                             foreach ($data['ids'] as $id) {
@@ -481,6 +460,7 @@ class Article extends AbstractController
 
                         $json['alertClass'] = 'success';
                         $json['alertMessage'] = $this->translator->trans('Success ! Articles removed successfully.');
+
                         break;
                     default:
                         $json['alertClass'] = 'danger';
@@ -488,7 +468,7 @@ class Article extends AbstractController
                 }
             }
         } elseif ($request->getMethod() == "PATCH") {
-            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager = $this->entityManager->getManager();
 
             $data = json_decode($request->getContent(), true);
 
@@ -502,16 +482,19 @@ class Article extends AbstractController
                         break;
                     case "stared":
                         $article = $entityManager->getRepository(SupportEntities\Article::class)->findOneBy(['id' => $data['id']]);
+
                         if ($article) {
-                            $article->setStared( (isset($data['value']) && $data['value'] == 1) ? 1 : 0 );
+                            $article->setStared((isset($data['value']) && $data['value'] == 1) ? 1 : 0);
                             $entityManager->persist($article);
                             $entityManager->flush();
                         }
+
                         $json['alertClass'] = 'success';
                         $json['alertMessage'] = $this->translator->trans('Success ! Article star updated successfully.');
+
                         break;
                     case "update":
-                        $articleBase = $this->getDoctrine()
+                        $articleBase = $this->entityManager
                             ->getRepository(SupportEntities\SolutionCategory::class)
                             ->find($data['id']);
 
@@ -519,7 +502,6 @@ class Article extends AbstractController
                             if (isset($data['name']) && strlen($data['name']) > 200) {
                                 $json['alertClass'] = 'danger';
                                 $json['alertMessage'] = $this->translator->trans('Name length must not be greater than 200 !!');
-
                             } else {
                                 $articleBase->setName($this->uvdeskService->htmlfilter($data['name']));
 
@@ -535,14 +517,14 @@ class Article extends AbstractController
                         $entityManager->getRepository(SupportEntities\Article::class)->bulkArticleStatusUpdate([$data['id']], $data['value']);
                         $json['alertClass'] = 'success';
                         $json['alertMessage'] =  $this->translator->trans('Success ! Article status updated successfully.');
-                        break;
 
+                        break;
                     default:
                         $json['alertClass'] = 'danger';
                         $json['alertMessage'] =  $this->translator->trans('Warning ! This is not a valid request');
                 }
         }
-        
+
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
 
@@ -551,7 +533,7 @@ class Article extends AbstractController
 
     private function updateContent($articleBase, $content, $updateArticle = true)
     {
-        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager = $this->entityManager->getManager();
         $articleHistory = new SupportEntities\ArticleHistory;
         $articleHistory->setUserId($this->getUser()->getId());
         $articleHistory->setArticleId($articleBase->getId());
@@ -568,14 +550,14 @@ class Article extends AbstractController
 
     private function removeArticle($article)
     {
-        $this->getDoctrine()
+        $this->entityManager
             ->getRepository(SupportEntities\Article::class)
             ->removeEntryByArticle($article->getId());
     }
 
     /**
      * If customer is playing with url and no result is found then what will happen
-     * @return 
+     * @return
      */
     protected function noResultFound()
     {

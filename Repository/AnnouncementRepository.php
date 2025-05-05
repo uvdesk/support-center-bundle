@@ -2,13 +2,11 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Repository;
 
-use Webkul\UVDesk\SupportCenterBundle\Entity\Announcement;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket;
+use Webkul\UVDesk\SupportCenterBundle\Entity\Announcement;
 
 /**
  * @method Announcement|null find($id, $lockMode = null, $lockVersion = null)
@@ -18,14 +16,14 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
  */
 class AnnouncementRepository extends ServiceEntityRepository
 {
-    public $safeFields = array('page','limit','sort','order','direction');
+    public $safeFields = array('page', 'limit', 'sort', 'order', 'direction');
     const LIMIT = 10;
 
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Announcement::class);
     }
-    
+
     public function getAllAnnouncements(\Symfony\Component\HttpFoundation\ParameterBag $obj = null, $container)
     {
         $json = array();
@@ -34,24 +32,25 @@ class AnnouncementRepository extends ServiceEntityRepository
 
         $data = $obj->all();
         $data = array_reverse($data);
+
         foreach ($data as $key => $value) {
             if (! in_array($key, $this->safeFields)) {
-                if ($key!='dateUpdated' AND $key!='dateAdded' AND $key!='search') {
-                    $qb->andWhere('a.'.$key.' = :'.$key);
+                if ($key != 'dateUpdated' and $key != 'dateAdded' and $key != 'search') {
+                    $qb->andWhere('a.' . $key . ' = :' . $key);
                     $qb->setParameter($key, $value);
                 } else {
                     if ($key == 'search') {
-                        $qb->orWhere('a.title'.' LIKE :name');
-                        $qb->setParameter('name', '%'.urldecode($value).'%');
-                        $qb->orWhere('a.promoText'.' LIKE :promoText');
-                        $qb->setParameter('promoText', '%'.urldecode($value).'%');
+                        $qb->orWhere('a.title' . ' LIKE :name');
+                        $qb->setParameter('name', '%' . urldecode($value) . '%');
+                        $qb->orWhere('a.promoText' . ' LIKE :promoText');
+                        $qb->setParameter('promoText', '%' . urldecode($value) . '%');
                     }
                 }
             }
         }
 
         if (! isset($data['sort'])) {
-            $qb->orderBy('a.id',Criteria::DESC);
+            $qb->orderBy('a.id', Criteria::DESC);
         }
 
         $paginator  = $container->get('knp_paginator');
@@ -85,7 +84,7 @@ class AnnouncementRepository extends ServiceEntityRepository
         $paginationData = $results->getPaginationData();
         $queryParameters = $results->getParams();
 
-        $paginationData['url'] = '#'.$container->get('uvdesk.service')->buildPaginationQuery($queryParameters);
+        $paginationData['url'] = '#' . $container->get('uvdesk.service')->buildPaginationQuery($queryParameters);
 
         $json['groups'] = $newResult;
         $json['pagination_data'] = $paginationData;
@@ -99,7 +98,7 @@ class AnnouncementRepository extends ServiceEntityRepository
             'DESC' => 'DESC',
             'ASC'  => 'ASC'
         ));
-    
+
         $column = array_rand(array(
             'ma.id'        => 'ma.id',
             'ma.createdAt' => 'ma.createdAt'
@@ -129,19 +128,19 @@ class AnnouncementRepository extends ServiceEntityRepository
         );
 
         $newResult = [];
-        
+
         foreach ($results as $key => $result) {
             $newResult[] = array(
-                'id'           => $result->getId(),
-                'title'        => $result->getTitle(),
-                'promoText'    => $result->getPromoText(),
-                'promoTag'     => $result->getPromoTag(),
-                'isActive'     => $result->getIsActive(),
-                'linkURL'      => $result->getLinkUrl(),
-                'linkText'      => $result->getLinkText(),
-                'createdAt'    => $result->getCreatedAt(),
-                'updatedAt'    => $result->getUpdatedAt(),
-                'group'        => $result->getGroup()->getId() == 1 ? $group = ['name' => 'Default Group'] : $group = ['name' => $result->getGroup()->getName()],
+                'id'        => $result->getId(),
+                'title'     => $result->getTitle(),
+                'promoText' => $result->getPromoText(),
+                'promoTag'  => $result->getPromoTag(),
+                'isActive'  => $result->getIsActive(),
+                'linkURL'   => $result->getLinkUrl(),
+                'linkText'  => $result->getLinkText(),
+                'createdAt' => $result->getCreatedAt(),
+                'updatedAt' => $result->getUpdatedAt(),
+                'group'     => $result->getGroup()->getId() == 1 ? $group = ['name' => 'Default Group'] : $group = ['name' => $result->getGroup()->getName()],
             );
         }
 
@@ -149,7 +148,7 @@ class AnnouncementRepository extends ServiceEntityRepository
 
         $json['modules'] = ($newResult);
         $json['pagination_data'] = $paginationData;
-        
+
         return $json;
     }
 }

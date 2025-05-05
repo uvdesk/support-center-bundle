@@ -40,7 +40,6 @@ class ArticleViewLog
      */
     private $article;
 
-
     /**
      * Get id
      *
@@ -96,8 +95,6 @@ class ArticleViewLog
     {
         return $this->user;
     }
-
-   
 
     /**
      * Set article

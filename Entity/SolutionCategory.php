@@ -50,7 +50,6 @@ class SolutionCategory
      */
     private $dateAdded;
 
-
     /**
      * Get id.
      *
@@ -180,6 +179,7 @@ class SolutionCategory
     {
         return $this->dateAdded;
     }
+
     /**
      * @var int|null
      * @ORM\Column(type="integer", nullable=true, options={"default": 0})
@@ -191,7 +191,6 @@ class SolutionCategory
      * @ORM\Column(type="datetime")
      */
     private $dateUpdated;
-
 
     /**
      * Set status.

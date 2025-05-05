@@ -44,7 +44,6 @@ class Solutions
      */
     private $sortOrder;
 
-
     /**
      * Get id.
      *
@@ -150,6 +149,7 @@ class Solutions
     {
         return $this->sortOrder;
     }
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime")
@@ -161,14 +161,12 @@ class Solutions
      * @ORM\Column(type="datetime")
      */
     private $dateUpdated;
-    
 
     /**
      * @var string|null
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $solutionImage;
-
 
     /**
      * Set dateAdded.
@@ -241,16 +239,17 @@ class Solutions
     {
         return $this->solutionImage;
     }
+
     //file upload   
     public function upload($file, $container)
-    {   
+    {
         $container->get('file.service')->setRequiredFileSystem();
         $container->get('file.service')->upload($file);
     }
 
     public function removeUpload($file, $container)
-    {   
-        if ($this->{$file} AND file_exists($this->{$file})) {
+    {
+        if ($this->{$file} and file_exists($this->{$file})) {
             //call service
             $container->get('file.service')->removeUpload($file);
         }

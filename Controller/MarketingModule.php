@@ -2,18 +2,17 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\FileUploadService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UVDeskService;
-use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Doctrine\ORM\EntityManagerInterface;
 
 Class MarketingModule extends AbstractController
 {
@@ -46,7 +45,7 @@ Class MarketingModule extends AbstractController
     public function listModulesXHR(Request $request, ContainerInterface $container)
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository(SupportEntities\MarketingModule::class);
+        $repository = $this->entityManager->getRepository(SupportEntities\MarketingModule::class);
         $json =  $repository->getAllMarketingModules($request->query, $container);
 
         $response = new Response(json_encode($json));
@@ -137,16 +136,14 @@ Class MarketingModule extends AbstractController
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $marketingAnnouncement = $this->getDoctrine()->getRepository(SupportEntities\MarketingModule::class)
+        $marketingAnnouncement = $this->entityManager->getRepository(SupportEntities\MarketingModule::class)
             ->findOneBy([
                 'id' => $request->attributes->get('id')
             ]);
 
         if ($marketingAnnouncement) {
-            $entityManager->remove($marketingAnnouncement);
-            $entityManager->flush();
+            $this->entityManager->remove($marketingAnnouncement);
+            $this->entityManager->flush();
 
             $json = [
                 'alertClass'   => 'success',

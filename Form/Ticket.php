@@ -2,36 +2,27 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Form;
 
-use Symfony\Component\Form\FormBuilderInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\RequiredReply;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type;
-use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormError;
-use Doctrine\ORM\EntityRepository;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 
 class Ticket extends AbstractType
-{   
+{
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $container = $options['container'];
-        $entityManager = $options['entity_manager'];
 
         if (
-            ! is_object($container->get('user.service')->getSessionUser()) 
+            ! is_object($container->get('user.service')->getSessionUser())
             || $container->get('user.service')->getSessionUser() == 'anon.'
         ) {
 
@@ -56,15 +47,15 @@ class Ticket extends AbstractType
             'multiple'     => false,
             'mapped'       => false,
             'attr' => array(
-                    'data-role'        => 'tagsinput',
-                    'data-live-search' => true,
-                    'class'            => 'selectpicker'
+                'data-role'        => 'tagsinput',
+                'data-live-search' => true,
+                'class'            => 'selectpicker'
             ),
             'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('type')
-                                ->andWhere('type.isActive = :isActive')
-                                ->setParameter('isActive', true)
-                                ->orderBy('type.description', 'ASC');
+                return $er->createQueryBuilder('type')
+                    ->andWhere('type.isActive = :isActive')
+                    ->setParameter('isActive', true)
+                    ->orderBy('type.description', 'ASC');
             },
             'placeholder' => 'Choose query type',
             'empty_data'  => null
@@ -76,7 +67,7 @@ class Ticket extends AbstractType
             'mapped'   => false,
             'attr'     => ['placeholder' => 'Enter Subject'],
         ));
-        
+
         $builder->add('reply', TextareaType::class, array(
             'label'  => 'Message',
             'mapped' => false,
@@ -86,6 +77,7 @@ class Ticket extends AbstractType
                 'data-height'      => "250",
             ),
         ));
+
         $builder->add('attachments', FileType::class, array(
             'label' => '+ Attach File',
             'mapped' => false,
@@ -111,7 +103,7 @@ class Ticket extends AbstractType
             'allow_extra_fields' => true,
             'csrf_protection'    => false
         ));
-        
+
         $resolver->setRequired('container');
         $resolver->setRequired('entity_manager');
     }

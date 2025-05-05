@@ -2,16 +2,16 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Filesystem\Filesystem as Fileservice;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\FileUploadService;
 use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
-use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\Filesystem\Filesystem as Fileservice;
 
 class Folder extends AbstractController
 {
@@ -19,13 +19,15 @@ class Folder extends AbstractController
     private $translator;
     private $fileSystem;
     private $fileUploadService;
+    private $em;
 
-    public function __construct(UserService $userService, TranslatorInterface $translator, FileSystem $fileSystem, FileUploadService $fileUploadService)
+    public function __construct(UserService $userService, TranslatorInterface $translator, FileSystem $fileSystem, FileUploadService $fileUploadService, EntityManagerInterface $entityManager)
     {
         $this->userService = $userService;
         $this->translator = $translator;
         $this->fileSystem = $fileSystem;
         $this->fileUploadService = $fileUploadService;
+        $this->em = $entityManager;
     }
 
     public function listFolders(Request $request)
@@ -34,10 +36,9 @@ class Folder extends AbstractController
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $totalKnowledgebaseFolders = count($entityManager->getRepository(SupportEntities\Solutions::class)->findAll());
-        $totalKnowledgebaseCategories = count($entityManager->getRepository(SupportEntities\SolutionCategory::class)->findAll());
-        $totalKnowledgebaseArticles = count($entityManager->getRepository(SupportEntities\Article::class)->findAll());
+        $totalKnowledgebaseFolders = count($this->em->getRepository(SupportEntities\Solutions::class)->findAll());
+        $totalKnowledgebaseCategories = count($this->em->getRepository(SupportEntities\SolutionCategory::class)->findAll());
+        $totalKnowledgebaseArticles = count($this->em->getRepository(SupportEntities\Article::class)->findAll());
 
         return $this->render('@UVDeskSupportCenter/Staff/Folders/listFolders.html.twig', [
             'articleCount'  => $totalKnowledgebaseArticles,
@@ -56,15 +57,17 @@ class Folder extends AbstractController
         $errors = [];
 
         if ($request->getMethod() == "POST") {
-            $entityManager = $this->getDoctrine()->getManager();
             $solutionImage = $request->files->get('solutionImage');
 
             if ($imageFile = $request->files->get('solutionImage')) {
-                if ($imageFile->getMimeType() == "image/svg+xml" || $imageFile->getMimeType() == "image/svg") {
+                if (
+                    $imageFile->getMimeType() == "image/svg+xml"
+                    || $imageFile->getMimeType() == "image/svg"
+                ) {
                     if (! $this->fileUploadService->svgFileCheck($imageFile)) {
                         $message = $this->translator->trans('Warning! Not a valid svg. (Recommended: PNG, JPG or GIF Format).');
                         $this->addFlash('warning', $message);
-    
+
                         return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
                     }
                 }
@@ -80,7 +83,7 @@ class Folder extends AbstractController
                 if (strpos($imageFile->getClientOriginalName(), '.php') !== false) {
                     $message = $this->translator->trans('Warning! Provide valid image file. (Recommended: PNG, JPG or GIF Format).');
                     $this->addFlash('warning', $message);
-    
+
                     return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
                 }
             }
@@ -89,17 +92,20 @@ class Folder extends AbstractController
             $folder->setName($data['name']);
             $folder->setDescription($data['description']);
             $folder->setvisibility($data['visibility']);
+
             if (isset($solutionImage)) {
                 $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($solutionImage, 'knowledgebase');
                 $folder->setSolutionImage($assetDetails['path']);
             }
-            $folder->setDateAdded( new \DateTime());
-            $folder->setDateUpdated( new \DateTime());
-            $folder->setSortOrder(1);
-            $entityManager->persist($folder);
-            $entityManager->flush();
-            $message = $this->translator->trans('Success! Folder has been added successfully.');
 
+            $folder->setDateAdded(new \DateTime());
+            $folder->setDateUpdated(new \DateTime());
+            $folder->setSortOrder(1);
+
+            $this->em->persist($folder);
+            $this->em->flush();
+
+            $message = $this->translator->trans('Success! Folder has been added successfully.');
             $this->addFlash('success', $message);
 
             return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_folders_collection'));
@@ -117,9 +123,8 @@ class Folder extends AbstractController
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
-        $entityManager = $this->getDoctrine()->getManager();
         $request = $this->container->get('request_stack')->getCurrentRequest();
-        $knowledgebaseFolder = $entityManager->getRepository(SupportEntities\Solutions::class)->findSolutionById(['id' => $folderId]);
+        $knowledgebaseFolder = $this->em->getRepository(SupportEntities\Solutions::class)->findSolutionById(['id' => $folderId]);
 
         if (empty($knowledgebaseFolder)) {
             $this->noResultFound();
@@ -134,11 +139,11 @@ class Folder extends AbstractController
                     if (! $this->fileUploadService->svgFileCheck($imageFile)) {
                         $message = $this->translator->trans('Warning! Not a valid svg. (Recommended: PNG, JPG or GIF Format).');
                         $this->addFlash('warning', $message);
-    
+
                         return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
                     }
                 }
-                
+
                 if (! preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
                     $message = $this->translator->trans('Warning! Provide valid image file. (Recommended: PNG, JPG or GIF Format).');
                     $this->addFlash('warning', $message);
@@ -154,7 +159,7 @@ class Folder extends AbstractController
                 // Removing old image from physical path is new image uploaded
                 $fileService = new Fileservice();
                 if ($knowledgebaseFolder->getSolutionImage()) {
-                    $fileService->remove($this->getParameter('kernel.project_dir')."/public/".$knowledgebaseFolder->getSolutionImage());
+                    $fileService->remove($this->getParameter('kernel.project_dir') . "/public/" . $knowledgebaseFolder->getSolutionImage());
                 }
 
                 $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($solutionImage, 'knowledgebase');
@@ -165,14 +170,14 @@ class Folder extends AbstractController
                 ->setName($formData['name'])
                 ->setDescription($formData['description'])
                 ->setvisibility($formData['visibility'])
-                ->setDateUpdated( new \DateTime())
+                ->setDateUpdated(new \DateTime())
                 ->setSortOrder(1);
 
-            $entityManager->persist($knowledgebaseFolder);
-            $entityManager->flush();
+            $this->em->persist($knowledgebaseFolder);
+            $this->em->flush();
 
             $this->addFlash('success', $this->translator->trans('Folder updated successfully.'));
-            
+
             return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_folders_collection'));
         }
 
@@ -184,7 +189,7 @@ class Folder extends AbstractController
 
     /**
      * If customer is playing with url and no result is found then what will happen
-     * @return 
+     * @return
      */
     protected function noResultFound()
     {

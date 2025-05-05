@@ -2,31 +2,27 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
-use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
-use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Doctrine\ORM\EntityManagerInterface;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
 
-Class Announcement extends AbstractController
+class Announcement extends AbstractController
 {
-    private $translator;
     private $userService;
     private $entityManager;
 
-    public function __construct(TranslatorInterface $translator, UserService $userService, EntityManagerInterface $entityManager)
+    public function __construct(UserService $userService, EntityManagerInterface $entityManager)
     {
-        $this->translator = $translator;
         $this->userService = $userService;
         $this->entityManager = $entityManager;
     }
 
-    public function listAnnouncement(Request $request)    
+    public function listAnnouncement(Request $request)
     {
         if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
@@ -35,10 +31,10 @@ Class Announcement extends AbstractController
         return $this->render('@UVDeskSupportCenter/Staff/Announcement/listAnnouncement.html.twig');
     }
 
-    public function listAnnouncementXHR(Request $request, ContainerInterface $container)    
+    public function listAnnouncementXHR(Request $request, ContainerInterface $container)
     {
         $json = array();
-        $repository = $this->getDoctrine()->getRepository(SupportEntities\Announcement::class);
+        $repository = $this->entityManager->getRepository(SupportEntities\Announcement::class);
         $json =  $repository->getAllAnnouncements($request->query, $container);
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
@@ -51,14 +47,12 @@ Class Announcement extends AbstractController
         if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
-        
-        $em = $this->getDoctrine()->getManager();
-        
+
         if ($request->attributes->get('announcementId')) {
-            $announcement = $this->getDoctrine()->getRepository(SupportEntities\Announcement::class)
-                        ->findOneBy([
-                                'id' => $request->attributes->get('announcementId')
-                            ]);
+            $announcement = $this->entityManager->getRepository(SupportEntities\Announcement::class)
+                ->findOneBy([
+                    'id' => $request->attributes->get('announcementId')
+                ]);
             $announcement->setCreatedAt(new \DateTime('now'));
 
             if (! $announcement)
@@ -67,10 +61,10 @@ Class Announcement extends AbstractController
             $announcement = new SupportEntities\Announcement();
             $announcement->setCreatedAt(new \DateTime('now'));
         }
-        
+
         if ($request->getMethod() == "POST") {
             $request = $request->request->get('announcement_form');
-            $group = $em->getRepository(CoreEntities\SupportGroup::class)->find($request['group']);
+            $group = $this->entityManager->getRepository(CoreEntities\SupportGroup::class)->find($request['group']);
 
             $announcement->setTitle($request['title']);
             $announcement->setPromoText($request['promotext']);
@@ -78,8 +72,9 @@ Class Announcement extends AbstractController
             $announcement->setTagColor($request['tagColor']);
             $announcement->setIsActive($request['status']);
             $announcement->setGroup($group);
-            $em->persist($announcement);
-            $em->flush();
+
+            $this->entityManager->persist($announcement);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Success! Announcement data saved successfully.');
 
@@ -87,34 +82,30 @@ Class Announcement extends AbstractController
         }
 
         return $this->render('@UVDeskSupportCenter/Staff/Announcement/announcementForm.html.twig', [
-                'announcement' => $announcement,
-                'errors'       => ''
+            'announcement' => $announcement,
+            'errors'       => ''
         ]);
     }
 
     public function removeAnnouncementXHR(Request $request)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
+        if (! $this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_KNOWLEDGEBASE')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $knowledgebaseAnnouncementId = $request->attributes->get('announcementId');
-
-        $knowledgebaseAnnouncement = $this->getDoctrine()->getRepository(SupportEntities\Announcement::class)
+        $knowledgebaseAnnouncement = $this->entityManager->getRepository(SupportEntities\Announcement::class)
             ->findOneBy([
                 'id' => $request->attributes->get('announcementId')
             ]);
 
         if ($knowledgebaseAnnouncement) {
-            $entityManager->remove($knowledgebaseAnnouncement);
-            $entityManager->flush();
+            $this->entityManager->remove($knowledgebaseAnnouncement);
+            $this->entityManager->flush();
 
             $json = [
                 'alertClass'   => 'success',
                 'alertMessage' => 'Announcement deleted successfully!',
             ];
-            $responseCode = 200;
         } else {
             $json = [
                 'alertClass'   => 'warning',
@@ -128,7 +119,7 @@ Class Announcement extends AbstractController
         return $response;
     }
 
-    public function marketingAnnouncementCustomerListXHR(Request $request, ContainerInterface $container )
+    public function marketingAnnouncementCustomerListXHR(Request $request, ContainerInterface $container)
     {
         $json = array();
         $customer = $this->userService->getCurrentUser();

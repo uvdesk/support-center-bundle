@@ -264,7 +264,8 @@ class MarketingModule
         return $this->borderColor;
     }
 
-    public function getHexToRGBAColor($alpha){
+    public function getHexToRGBAColor($alpha)
+    {
         $hex = str_replace('#', '', $this->getBorderColor());
 
         // Convert hex to RGB
@@ -275,11 +276,6 @@ class MarketingModule
         // Return RGBA color
         return "rgba($r, $g, $b, $alpha)";
     }
-
-    // public function setTmpStorageToImage($file = 'Image')
-    // {
-    //     $this->{'set'.$file}($this->{'tmp'.$file});
-    // }
 
     /**
      * Set linkURL
