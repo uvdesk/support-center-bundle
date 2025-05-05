@@ -196,6 +196,32 @@
                 };
             </script>
 
+            {% if app.user is defined and app.user is not empty %}
+                <script type="text/javascript">
+                    setInterval(async () => {
+                        try {
+                            const response = await fetch('{{ path('helpdesk_customer_session_check') }}', {
+                                credentials: 'include'
+                            });
+
+                            if (!response.ok) {
+                                if (
+                                    response.status === 401
+                                    || response.status === 440
+                                ) {
+                                    window.location.href = '{{ path('helpdesk_customer_login') }}';
+                                }
+                            } else {
+                                const data = await response.json();
+                                console.log('Session status:', data.session);
+                            }
+                        } catch (err) {
+                            console.error('Error checking session:', err);
+                        }
+                    }, 20 * 60 * 1000); // Every 20 minutes
+                </script>
+            {% endif %}
+
             {% include('@UVDeskSupportCenter/Themes/cookiePolicy.html.twig') %}
         {% endblock %}
     </body>
