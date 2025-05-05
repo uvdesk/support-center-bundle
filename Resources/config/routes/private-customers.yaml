@@ -101,3 +101,8 @@ helpdesk_member_knowledgebase_front_customer_verify_otp_login:
 helpdesk_member_knowledgebase_front_marketing_announcement_xhr:
     path:     /customer/marketing/announcement/xhr
     controller: Webkul\UVDesk\SupportCenterBundle\Controller\Announcement::marketingAnnouncementCustomerListXHR
+
+# Session Check
+helpdesk_customer_session_check:
+    path:     /session-check
+    controller: Webkul\UVDesk\CoreFrameworkBundle\Controller\Session::checkSession
