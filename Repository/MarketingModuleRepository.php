@@ -2,25 +2,22 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Repository;
 
-use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket;
-use Webkul\UVDesk\SupportCenterBundle\Entity\MarketingModule;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity\Ticket;
+use Webkul\UVDesk\SupportCenterBundle\Entity\MarketingModule;
 
 class MarketingModuleRepository extends ServiceEntityRepository
 {
-    public $safeFields = array('page','limit','sort','order','direction');
+    public $safeFields = array('page', 'limit', 'sort', 'order', 'direction');
     const LIMIT = 10;
 
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, MarketingModule::class);
     }
-   
+
     public function getAllMarketingModules(\Symfony\Component\HttpFoundation\ParameterBag $obj = null, $container)
     {
         $json = array();
@@ -29,25 +26,25 @@ class MarketingModuleRepository extends ServiceEntityRepository
 
         $data = $obj->all();
         $data = array_reverse($data);
-       
+
         foreach ($data as $key => $value) {
             if (! in_array($key, $this->safeFields)) {
-                if ($key != 'dateUpdated' AND $key != 'dateAdded' AND $key != 'search') {
-                    $qb->andWhere('a.'.$key.' = :'.$key);
+                if ($key != 'dateUpdated' and $key != 'dateAdded' and $key != 'search') {
+                    $qb->andWhere('a.' . $key . ' = :' . $key);
                     $qb->setParameter($key, $value);
                 } else {
                     if ($key == 'search') {
-                        $qb->orWhere('a.title'.' LIKE :name');
-                        $qb->setParameter('name', '%'.urldecode(trim($value)).'%');
-                        $qb->orWhere('a.description'.' LIKE :description');
-                        $qb->setParameter('description', '%'.urldecode(trim($value)).'%');
+                        $qb->orWhere('a.title' . ' LIKE :name');
+                        $qb->setParameter('name', '%' . urldecode(trim($value)) . '%');
+                        $qb->orWhere('a.description' . ' LIKE :description');
+                        $qb->setParameter('description', '%' . urldecode(trim($value)) . '%');
                     }
                 }
             }
         }
 
-        if (! isset($data['sort'])){
-            $qb->orderBy('a.id',Criteria::DESC);
+        if (! isset($data['sort'])) {
+            $qb->orderBy('a.id', Criteria::DESC);
         }
 
         $paginator  = $container->get('knp_paginator');
@@ -75,7 +72,7 @@ class MarketingModuleRepository extends ServiceEntityRepository
         $paginationData = $results->getPaginationData();
         $queryParameters = $results->getParams();
 
-        $paginationData['url'] = '#'.$container->get('uvdesk.service')->buildPaginationQuery($queryParameters);
+        $paginationData['url'] = '#' . $container->get('uvdesk.service')->buildPaginationQuery($queryParameters);
 
         $json['groups'] = $newResult;
         $json['pagination_data'] = $paginationData;
@@ -89,7 +86,7 @@ class MarketingModuleRepository extends ServiceEntityRepository
             'DESC' => 'DESC',
             'ASC'  => 'ASC'
         ));
-    
+
         $column = array_rand(array(
             'mm.id'        => 'mm.id',
             'mm.createdAt' => 'mm.createdAt'
@@ -142,7 +139,7 @@ class MarketingModuleRepository extends ServiceEntityRepository
 
         $json['modules'] = ($newResult);
         $json['pagination_data'] = $paginationData;
-        
+
         return $json;
     }
 }

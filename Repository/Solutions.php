@@ -3,8 +3,6 @@
 namespace Webkul\UVDesk\SupportCenterBundle\Repository;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\EntityRepository;
-use Symfony\Component\HttpFoundation\Request;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
 
 class Solutions extends \Doctrine\ORM\EntityRepository
@@ -50,8 +48,8 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         $categoryQB = $this->getEntityManager()->createQueryBuilder()->select('sc.id, sc.name, sc.description')
             ->from(SupportEntities\SolutionCategory::class, 'sc')
             ->andWhere('sc.status = :status')->setParameter('status', true)
-            ->orderBy('sc.dateAdded', 'DESC');            
-        
+            ->orderBy('sc.dateAdded', 'DESC');
+
         return $categoryQB->getQuery()->getResult();
     }
 
@@ -67,18 +65,18 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         $this->presetting($data);
         foreach ($data as $key => $value) {
             if (
-                ! in_array($key,$this->safeFields) 
+                ! in_array($key, $this->safeFields)
                 && in_array($key, $this->allowedFormFields)
             ) {
-                if ($key !='dateUpdated' AND $key != 'dateAdded' AND $key != 'search') {
-                    $qb->andWhere('a.'.$key.' = :'.$key);
+                if ($key != 'dateUpdated' and $key != 'dateAdded' and $key != 'search') {
+                    $qb->andWhere('a.' . $key . ' = :' . $key);
                     $qb->setParameter($key, $value);
                 } else {
                     if ($key == 'search') {
-                        $qb->orWhere('a.name'.' LIKE :name');
-                        $qb->setParameter('name', '%'.urldecode(trim($value)).'%');
-                        $qb->orWhere('a.description'.' LIKE :description');
-                        $qb->setParameter('description', '%'.urldecode(trim($value)).'%');
+                        $qb->orWhere('a.name' . ' LIKE :name');
+                        $qb->setParameter('name', '%' . urldecode(trim($value)) . '%');
+                        $qb->orWhere('a.description' . ' LIKE :description');
+                        $qb->setParameter('description', '%' . urldecode(trim($value)) . '%');
                     }
                 }
             }
@@ -99,7 +97,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
 
             return $results;
         }
-      
+
         $newResult = [];
         foreach ($results as $key => $result) {
             $newResult[] = array(
@@ -117,11 +115,11 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         $paginationData = $results->getPaginationData();
         $queryParameters = $results->getParams();
 
-        $paginationData['url'] = '#'.$container->get('uvdesk.service')->buildPaginationQuery($queryParameters);
+        $paginationData['url'] = '#' . $container->get('uvdesk.service')->buildPaginationQuery($queryParameters);
 
         $json['results'] = $newResult;
         $json['pagination_data'] = $paginationData;
-       
+
         return $json;
     }
 
@@ -132,13 +130,13 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         $qb->select('a')->from($this->getEntityName(), 'a');
 
         foreach ($filterArray as $key => $value) {
-            $qb->andWhere('a.'.$key.' = :'.$key);
+            $qb->andWhere('a.' . $key . ' = :' . $key);
             $qb->setParameter($key, $value);
         }
 
         $result = $qb->getQuery()->getOneOrNullResult();
-        
-        return($result);
+
+        return ($result);
     }
 
     public function getCategoriesWithCountBySolution($id, $status = [1])
@@ -147,8 +145,8 @@ class Solutions extends \Doctrine\ORM\EntityRepository
 
         $categories = $queryBuilder
             ->select('sc.id, sc.name')
-            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping','ac','WITH', 'ac.solutionId = a.id')
-            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory','sc','WITH', 'ac.categoryId = sc.id')
+            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping', 'ac', 'WITH', 'ac.solutionId = a.id')
+            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory', 'sc', 'WITH', 'ac.categoryId = sc.id')
             ->andWhere('ac.solutionId = :solutionId')
             ->andWhere('sc.status IN (:status)')
             ->setParameters([
@@ -157,17 +155,16 @@ class Solutions extends \Doctrine\ORM\EntityRepository
             ])
             ->orderBy('sc.sortOrder', Criteria::ASC)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
 
         if ($categories) {
             $solutionCategoryRepository = $this->getEntityManager()->getRepository(SupportEntities\SolutionCategory::class);
-            
+
             foreach ($categories as $key => $category) {
                 $categories[$key]['articleCount'] = $solutionCategoryRepository->getArticlesCountByCategory($category['id']);
             }
         }
-        
+
         return $categories;
     }
 
@@ -177,17 +174,16 @@ class Solutions extends \Doctrine\ORM\EntityRepository
 
         $result = $queryBuilder
             ->select('COUNT(a.id)')
-            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping','ac','WITH', 'ac.solutionId = a.id')
-            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory','sc','WITH', 'ac.categoryId = sc.id')
+            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping', 'ac', 'WITH', 'ac.solutionId = a.id')
+            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategory', 'sc', 'WITH', 'ac.categoryId = sc.id')
             ->andWhere('ac.solutionId = :solutionId')
             ->andWhere('sc.status IN (:status)')
             ->setParameters([
-                'solutionId' => $id ,
+                'solutionId' => $id,
                 'status' => $status,
             ])
             ->getQuery()
-            ->getSingleScalarResult()
-        ;
+            ->getSingleScalarResult();
 
         return $result;
     }
@@ -197,9 +193,9 @@ class Solutions extends \Doctrine\ORM\EntityRepository
         $queryBuilder = $this->createQueryBuilder('a');
         $result = $queryBuilder
             ->select('COUNT(DISTINCT aa.id)')
-            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping','sac','WITH', 'sac.solutionId = a.id')
-            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory','ac','WITH', 'sac.categoryId = ac.categoryId')
-            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\Article','aa','WITH', 'ac.articleId = aa.id')
+            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\SolutionCategoryMapping', 'sac', 'WITH', 'sac.solutionId = a.id')
+            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\ArticleCategory', 'ac', 'WITH', 'sac.categoryId = ac.categoryId')
+            ->leftJoin('Webkul\UVDesk\SupportCenterBundle\Entity\Article', 'aa', 'WITH', 'ac.articleId = aa.id')
             ->where('sac.solutionId = :solutionId')
             ->andWhere('ac.id IS NOT NULL')
             ->andWhere('aa.status != :status')
@@ -208,12 +204,11 @@ class Solutions extends \Doctrine\ORM\EntityRepository
                 'status' => 0
             ])
             ->getQuery()
-            ->getSingleScalarResult()
-        ;
+            ->getSingleScalarResult();
 
         return $result;
     }
-    
+
     public function removeEntryBySolution($id)
     {
         $where = is_array($id) ? 'ac.solutionId IN (:id)' : 'ac.solutionId = :id';
@@ -223,7 +218,7 @@ class Solutions extends \Doctrine\ORM\EntityRepository
             ->delete(SupportEntities\SolutionCategoryMapping::class, 'ac')
             ->andWhere($where)
             ->setParameters([
-                'id' => $id ,
+                'id' => $id,
             ])
             ->getQuery()
             ->execute()

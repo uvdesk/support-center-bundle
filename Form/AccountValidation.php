@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Webkul\UVDesk\SupportCenterBundle\Form;
 
@@ -13,18 +13,21 @@ class AccountValidation extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('password', 'repeated', array(
-                            'type'            => 'password',
-                            'invalid_message' => 'The password fields must match.',
-                            'required'        => false,
-                            'first_options'   => array(
-                                'label' => 'Password',
-                            ),
-                            'second_options' => array(
-                                'label' => 'Confirm Password',
-                            )
-                        )
-                    );
+        $builder->add(
+            'password',
+            'repeated',
+            array(
+                'type'            => 'password',
+                'invalid_message' => 'The password fields must match.',
+                'required'        => false,
+                'first_options'   => array(
+                    'label' => 'Password',
+                ),
+                'second_options' => array(
+                    'label' => 'Confirm Password',
+                )
+            )
+        );
     }
 
     /**
@@ -34,7 +37,7 @@ class AccountValidation extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class'        => 'Webkul\UserBundle\Entity\User',
-            'csrf_protection'   => false, 
+            'csrf_protection'   => false,
             'validation_groups' => 'userValidation',
         ));
     }

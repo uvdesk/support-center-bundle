@@ -61,7 +61,7 @@ class KnowledgebaseWebsite
      * @ORM\Column(type="string", length=255, name="ticket_create_option")
      */
     private $ticketCreateOption;
-     /**
+    /**
      * @var string
      * @ORM\Column(type="string", length=1000, name="site_description", nullable=true)
      */
@@ -250,6 +250,7 @@ class KnowledgebaseWebsite
 
         return $this;
     }
+
     /**
      * Get headerBackgroundColor.
      *
@@ -276,7 +277,7 @@ class KnowledgebaseWebsite
     /**
      * Get headerLinks
      *
-     * @return array 
+     * @return array
      */
     public function getHeaderLinks()
     {
@@ -299,7 +300,7 @@ class KnowledgebaseWebsite
     /**
      * Get footerLinks
      *
-     * @return array 
+     * @return array
      */
     public function getFooterLinks()
     {
@@ -400,12 +401,14 @@ class KnowledgebaseWebsite
     {
         return $this->broadcastMessage;
     }
+
     /**
      * @var \Webkul\UVDesk\SupportCenterBundle\Entity\Website
      * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\CoreFrameworkBundle\Entity\Website")
      * @ORM\JoinColumn(name="website", referencedColumnName="id")
      */
     private $website;
+
     /**
      * Set whiteList
      *
@@ -422,17 +425,18 @@ class KnowledgebaseWebsite
     /**
      * Get whiteList
      *
-     * @return string 
+     * @return string
      */
     public function getWhiteList()
     {
         return $this->whiteList;
     }
+
     /**
      * Set blackList
      *
      * @param string $blackList
-     * @return 
+     * @return
      */
     public function setBlackList($blackList)
     {
@@ -444,12 +448,13 @@ class KnowledgebaseWebsite
     /**
      * Get blackList
      *
-     * @return string 
+     * @return string
      */
     public function getBlackList()
     {
         return $this->blackList;
     }
+
     /**
      * Set website.
      *
@@ -473,7 +478,7 @@ class KnowledgebaseWebsite
     {
         return $this->website;
     }
-    
+
     /**
      * Set linkColor
      *
@@ -490,7 +495,7 @@ class KnowledgebaseWebsite
     /**
      * Get linkColor
      *
-     * @return string 
+     * @return string
      */
     public function getLinkColor()
     {
@@ -513,19 +518,18 @@ class KnowledgebaseWebsite
     /**
      * Get articleTextColor
      *
-     * @return string 
+     * @return string
      */
     public function getArticleTextColor()
     {
         return $this->articleTextColor;
     }
 
-/**
+    /**
      * @var string
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $bannerBackgroundColor;
-
 
     /**
      * Set bannerBackgroundColor
@@ -543,19 +547,18 @@ class KnowledgebaseWebsite
     /**
      * Get bannerBackgroundColor
      *
-     * @return string 
+     * @return string
      */
     public function getBannerBackgroundColor()
     {
         return $this->bannerBackgroundColor;
     }
 
-/**
+    /**
      * @var string
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $linkHoverColor;
-
 
     /**
      * Set linkHoverColor
@@ -573,12 +576,13 @@ class KnowledgebaseWebsite
     /**
      * Get linkHoverColor
      *
-     * @return string 
+     * @return string
      */
     public function getLinkHoverColor()
     {
         return $this->linkHoverColor;
     }
+
     /**
      * Set siteDescription
      *
@@ -595,7 +599,7 @@ class KnowledgebaseWebsite
     /**
      * Get siteDescription
      *
-     * @return string 
+     * @return string
      */
     public function getSiteDescription()
     {
@@ -618,13 +622,14 @@ class KnowledgebaseWebsite
     /**
      * Get metaDescription
      *
-     * @return string 
+     * @return string
      */
     public function getMetaDescription()
     {
         return $this->metaDescription;
     }
-/**
+
+    /**
      * Set homepageContent
      *
      * @param string $homepageContent
@@ -640,15 +645,14 @@ class KnowledgebaseWebsite
     /**
      * Get homepageContent
      *
-     * @return string 
+     * @return string
      */
     public function getHomepageContent()
     {
         return $this->homepageContent;
     }
 
-
-/**
+    /**
      * Set metaKeywords
      *
      * @param string $metaKeywords
@@ -664,7 +668,7 @@ class KnowledgebaseWebsite
     /**
      * Get metaKeywords
      *
-     * @return string 
+     * @return string
      */
     public function getMetaKeywords()
     {
@@ -748,7 +752,7 @@ class KnowledgebaseWebsite
         return $this->disableCustomerLogin;
     }
 
-     /**
+    /**
      * Set script
      *
      * @param string $script
@@ -764,7 +768,7 @@ class KnowledgebaseWebsite
     /**
      * Get script
      *
-     * @return string 
+     * @return string
      */
     public function getScript()
     {
@@ -787,7 +791,7 @@ class KnowledgebaseWebsite
     /**
      * Get customCSS
      *
-     * @return string 
+     * @return string
      */
     public function getCustomCSS()
     {
@@ -806,7 +810,7 @@ class KnowledgebaseWebsite
      */
     private $publicResourceAccessAttemptLimit;
 
-     /**
+    /**
      * Set publicResourceAccessAttemptLimit
      *
      * @param int $publicResourceAccessAttemptLimit
@@ -843,20 +847,15 @@ class KnowledgebaseWebsite
         return $this;
     }
 
-    
-
     /**
      * Get removeCustomerLoginButton
      *
-     * @return integer 
+     * @return integer
      */
     public function getRemoveCustomerLoginButton()
     {
         return $this->removeCustomerLoginButton;
     }
-
-   
-    
 
     /**
      * @var integer
@@ -881,10 +880,10 @@ class KnowledgebaseWebsite
     /**
      * Get removeBrandingContent
      *
-     * @return integer 
+     * @return integer
      */
     public function getRemoveBrandingContent()
     {
         return $this->removeBrandingContent;
-    } 
+    }
 }

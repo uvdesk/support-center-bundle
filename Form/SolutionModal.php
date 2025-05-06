@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace Webkul\UVDesk\SupportCenterBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
@@ -15,7 +16,7 @@ class SolutionModal extends AbstractType
         $builder->add('solutionImage', 'file', array(
             'label'      => 'Folder Image',
             'required'   => false,
-            'data_class' => null, 
+            'data_class' => null,
             'attr' => array(
                 'class'   => 'col-sm-3',
                 'style'   => 'display: none;',
@@ -24,46 +25,42 @@ class SolutionModal extends AbstractType
             )
         ));
 
-        $builder->add('name', null, array(
-                                            'label' => 'solution.name',
-                                            'attr'  => array(
-                                                        'parent-div-class' => 'false',
-                                                        )
-                                        )
+        $builder->add(
+            'name',
+            null,
+            array(
+                'label' => 'solution.name',
+                'attr'  => array(
+                    'parent-div-class' => 'false',
+                )
+            )
+        )
+            ->add(
+                'description',
+                'textarea',
+                array(
+                    'required' => false,
+                    'label' => 'solution.description',
+                    'attr'  => array(
+                        'placeholder'      => 'solution.description.placeholder',
+                        'parent-div-class' => 'false',
                     )
-                ->add('description', 'textarea', array(
-                                            'required' => false,
-                                            'label' => 'solution.description',
-                                            'attr'  => array(
-                                                        'placeholder'      => 'solution.description.placeholder',
-                                                        'parent-div-class' => 'false',
-                                                        )
-                                        )
-                    )
-                // ->add('visibility', 'choice', array(
-                //             'required' => false,
-                //             'label' => 'solution.visibility',
-                //             'choices'  => array(
-                //                             'public' => 'solution.public',
-                //                             'private' => 'solution.private'
-                //                         ),
-                //             'attr' => array(
-                //                         'parent-div-class' => 'false',
-                //                         'class' => 'selectpicker'
-                //                         )
-                //         )
-                //     )
-                ->add('visibility', 'checkbox', array(
-                            'required' => false,
-                            'label'    => 'Status',
-                            'attr'     => array(
-                                            'class' => 'i-check',
-                                            'brAfterLabel' => true
-                                        ),
-                        )
-                    )
-                ->add('id', 'hidden')
-                ;
+                )
+            )
+            ->add(
+                'visibility',
+                'checkbox',
+                array(
+                    'required' => false,
+                    'label'    => 'Status',
+                    'attr'     => array(
+                        'class' => 'i-check',
+                        'brAfterLabel' => true
+                    ),
+                )
+            )
+            ->add('id', 'hidden')
+        ;
     }
 
     /**

@@ -6,20 +6,20 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 use Webkul\UVDesk\CoreFrameworkBundle\Services as CoreServices;
 use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
 use Webkul\UVDesk\SupportCenterBundle\Form\Ticket as TicketForm;
 use Webkul\UVDesk\CoreFrameworkBundle\Workflow\Events as CoreWorkflowEvents;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 class Ticket extends AbstractController
 {
@@ -83,7 +83,7 @@ class Ticket extends AbstractController
             ! $websiteConfiguration
             || ! $websiteConfiguration->getTicketCreateOption()
             || ($websiteConfiguration->getLoginRequiredToCreate()
-            && ! $this->getUser())
+                && ! $this->getUser())
         ) {
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
         }
@@ -145,7 +145,7 @@ class Ticket extends AbstractController
 
                         try {
                             $name = $loggedUser->getFirstName() . ' ' . $loggedUser->getLastName();
-                        } catch(\Exception $e) {
+                        } catch (\Exception $e) {
                             $name = explode(' ', strstr($email, '@', true));
                         }
                     } else {
@@ -215,7 +215,7 @@ class Ticket extends AbstractController
                         $data['createdBy'] = 'customer';
                         $data['attachments'] = $request->files->get('attachments');
 
-                        if (! empty($request->server->get("HTTP_CF_CONNECTING_IP") )) {
+                        if (! empty($request->server->get("HTTP_CF_CONNECTING_IP"))) {
                             $data['ipAddress'] = $request->server->get("HTTP_CF_CONNECTING_IP");
                             if (!empty($request->server->get("HTTP_CF_IPCOUNTRY"))) {
                                 $data['ipAddress'] .= '(' . $request->server->get("HTTP_CF_IPCOUNTRY") . ')';
@@ -240,8 +240,7 @@ class Ticket extends AbstractController
                         // Trigger ticket created event
                         $event = new CoreWorkflowEvents\Ticket\Create();
                         $event
-                            ->setTicket($thread->getTicket())
-                        ;
+                            ->setTicket($thread->getTicket());
 
                         $this->eventDispatcher->dispatch($event, 'uvdesk.automation.workflow.execute');
 
@@ -277,7 +276,8 @@ class Ticket extends AbstractController
             ],
         ];
 
-        return $this->render('@UVDeskSupportCenter/Knowledgebase/ticket.html.twig',
+        return $this->render(
+            '@UVDeskSupportCenter/Knowledgebase/ticket.html.twig',
             array(
                 'formErrors'         => $formErrors,
                 'errors'             => json_encode($errors),
@@ -315,14 +315,14 @@ class Ticket extends AbstractController
         $user = $this->userService->getSessionUser();
 
         // process only if access for the resource.
-        if (empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
+        if (empty($ticket) || ((!empty($user)) && $user->getId() != $ticket->getCustomer()->getId())) {
             if (! $this->isCollaborator($ticket, $user)) {
                 throw new \Exception('Access Denied', 403);
             }
         }
 
         if ($_POST) {
-            if (str_replace(' ','',str_replace('&nbsp;','',trim(strip_tags($data['message'], '<img>')))) != "") {
+            if (str_replace(' ', '', str_replace('&nbsp;', '', trim(strip_tags($data['message'], '<img>')))) != "") {
                 if (!$ticket)
                     $this->noResultFound();
                 $data['ticket'] = $ticket;
@@ -351,8 +351,7 @@ class Ticket extends AbstractController
 
                 if ($status) {
                     $ticket
-                        ->setStatus($status)
-                    ;
+                        ->setStatus($status);
 
                     $this->em->persist($ticket);
                 }
@@ -387,7 +386,7 @@ class Ticket extends AbstractController
             $this->addFlash('warning', $this->translator->trans('Warning ! Post size can not exceed 25MB'));
         }
 
-        return $this->redirect($this->generateUrl('helpdesk_customer_ticket',array(
+        return $this->redirect($this->generateUrl('helpdesk_customer_ticket', array(
             'id' => $ticket->getId()
         )));
     }
@@ -399,7 +398,7 @@ class Ticket extends AbstractController
         $announcements =  $this->em->getRepository(SupportEntities\Announcement::class)->findBy(['isActive' => 1]);
 
         $groupAnnouncement = [];
-        foreach($announcements as $announcement) {
+        foreach ($announcements as $announcement) {
             $announcementGroupId = $announcement->getGroup();
             $isTicketExist =  $this->em->getRepository(CoreEntities\Ticket::class)->findBy(['supportGroup' => $announcementGroupId, 'customer' => $this->userService->getCurrentUser()]);
 
@@ -408,7 +407,8 @@ class Ticket extends AbstractController
             }
         }
 
-        return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketList.html.twig',
+        return $this->render(
+            '@UVDeskSupportCenter/Knowledgebase/ticketList.html.twig',
             array(
                 'searchDisable'     => true,
                 'groupAnnouncement' => $groupAnnouncement
@@ -449,7 +449,7 @@ class Ticket extends AbstractController
 
         if ($request->isXmlHttpRequest()) {
             $repository = $this->em->getRepository(CoreEntities\Thread::class);
-            $json = $repository->getAllCustomerThreads($request->attributes->get('id'),$request->query, $container);
+            $json = $repository->getAllCustomerThreads($request->attributes->get('id'), $request->query, $container);
         }
 
         $response = new Response(json_encode($json));
@@ -476,8 +476,8 @@ class Ticket extends AbstractController
 
         if (
             ! empty($ticket)
-            && ( (!empty($user))
-            && $user->getId() != $ticket->getCustomer()->getId())
+            && ((!empty($user))
+                && $user->getId() != $ticket->getCustomer()->getId())
         ) {
             if ($this->isCollaborator($ticket, $user)) {
                 $isConfirmColl = true;
@@ -512,7 +512,8 @@ class Ticket extends AbstractController
     }
 
     // Check if user is collaborator for the ticket
-    public function isCollaborator($ticket, $user) {
+    public function isCollaborator($ticket, $user)
+    {
         $isCollaborator = false;
         if (! empty($ticket->getCollaborators()->toArray())) {
             foreach ($ticket->getCollaborators()->toArray() as $collaborator) {
@@ -537,7 +538,7 @@ class Ticket extends AbstractController
         if ($count > 0 || $count < 6) {
             $ticket = $this->em->getRepository(CoreEntities\Ticket::class)->find($id);
             $customer = $this->userService->getCurrentUser();
-            $rating = $this->em->getRepository(CoreEntities\TicketRating::class)->findOneBy(array('ticket' => $id,'customer'=>$customer->getId()));
+            $rating = $this->em->getRepository(CoreEntities\TicketRating::class)->findOneBy(array('ticket' => $id, 'customer' => $customer->getId()));
             if ($rating) {
                 $rating->setcreatedAt(new \DateTime);
                 $rating->setStars($count);
@@ -567,8 +568,8 @@ class Ticket extends AbstractController
     public function downloadAttachmentZip(Request $request)
     {
         $threadId = $request->attributes->get('threadId');
-        $attachmentRepository = $this->getDoctrine()->getManager()->getRepository(CoreEntities\Attachment::class);
-        $threadRepository = $this->getDoctrine()->getManager()->getRepository(CoreEntities\Thread::class);
+        $attachmentRepository = $this->em->getRepository(CoreEntities\Attachment::class);
+        $threadRepository = $this->em->getRepository(CoreEntities\Thread::class);
 
         // Get thread and attachments
         $thread = $threadRepository->findOneById($threadId);
@@ -582,8 +583,10 @@ class Ticket extends AbstractController
         $ticket = $thread->getTicket();
         $user = $this->userService->getSessionUser();
 
-        if (empty($ticket) ||
-            (!empty($user) && $user->getId() != $ticket->getCustomer()->getId())) {
+        if (
+            empty($ticket)
+            || (!empty($user) && $user->getId() != $ticket->getCustomer()->getId())
+        ) {
             if (!$this->isCollaborator($ticket, $user)) {
                 throw new \Exception('Access Denied', 403);
             }
@@ -594,12 +597,14 @@ class Ticket extends AbstractController
 
         // Make sure directory exists
         $zipDir = dirname($zipName);
-        if (!file_exists($zipDir)) {
+
+        if (! file_exists($zipDir)) {
             mkdir($zipDir, 0777, true);
         }
 
         // Create new ZIP archive
         $zip = new \ZipArchive();
+
         if ($zip->open($zipName, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
             throw new \Exception("Cannot create zip file");
         }
@@ -607,6 +612,7 @@ class Ticket extends AbstractController
         // Add files to ZIP
         foreach ($attachments as $attachment) {
             $filePath = substr($attachment->getPath(), 1); // Remove leading slash
+
             if (file_exists($filePath)) {
                 $zip->addFile($filePath, basename($filePath));
             }
@@ -631,9 +637,7 @@ class Ticket extends AbstractController
     public function downloadAttachment(Request $request)
     {
         $attachmentId = $request->attributes->get('attachmentId');
-        $attachment = $this->getDoctrine()->getManager()->getRepository(CoreEntities\Attachment::class)->findOneById($attachmentId);
-
-        $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
+        $attachment = $this->em->getRepository(CoreEntities\Attachment::class)->findOneById($attachmentId);
 
         if (empty($attachment)) {
             $this->noResultFound();
@@ -656,14 +660,14 @@ class Ticket extends AbstractController
             }
         }
 
-        $path = $this->kernel->getProjectDir() . "/public/". $attachment->getPath();
+        $path = $this->kernel->getProjectDir() . "/public/" . $attachment->getPath();
 
         return new StreamedResponse(function () use ($path) {
             readfile($path);
         }, 200, [
-            'Content-Type' => $attachment->getContentType(),
+            'Content-Type'        => $attachment->getContentType(),
             'Content-Disposition' => 'attachment; filename="' . $attachment->getName() . '"',
-            'Content-Length' => $attachment->getSize(),
+            'Content-Length'      => $attachment->getSize(),
         ]);
     }
 
@@ -675,7 +679,7 @@ class Ticket extends AbstractController
         $user = $this->userService->getSessionUser();
 
         // process only if access for the resource.
-        if (empty($ticket) || ( (!empty($user)) && $user->getId() != $ticket->getCustomer()->getId()) ) {
+        if (empty($ticket) || ((!empty($user)) && $user->getId() != $ticket->getCustomer()->getId())) {
             if (! $this->isCollaborator($ticket, $user)) {
                 throw new \Exception('Access Denied', 403);
             }
@@ -696,7 +700,7 @@ class Ticket extends AbstractController
                 $supportRole = $this->em->getRepository(CoreEntities\SupportRole::class)->findOneByCode('ROLE_CUSTOMER');
                 $collaborator = $this->userService->createUserInstance($data['from'], $data['firstName'], $supportRole, $extras = ["active" => true]);
 
-                $checkTicket = $this->em->getRepository(CoreEntities\Ticket::class)->isTicketCollaborator($ticket,$content['email']);
+                $checkTicket = $this->em->getRepository(CoreEntities\Ticket::class)->isTicketCollaborator($ticket, $content['email']);
 
                 if (! $checkTicket) {
                     $ticket->addCollaborator($collaborator);
@@ -709,8 +713,7 @@ class Ticket extends AbstractController
 
                     $event = new CoreWorkflowEvents\Ticket\Collaborator();
                     $event
-                        ->setTicket($ticket)
-                    ;
+                        ->setTicket($ticket);
 
                     $this->eventDispatcher->dispatch($event, 'uvdesk.automation.workflow.execute');
 
@@ -764,7 +767,7 @@ class Ticket extends AbstractController
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
         }
 
-        if (!empty($user)) {
+        if (! empty($user)) {
             if ($resource->getExpiresAt() < $currentDateTime || $websiteConfiguration->getPublicResourceAccessAttemptLimit() <= $resource->getTotalViews() || $resource->getIsExpired()) {
                 $resource->setIsExpired(true);
 
@@ -786,7 +789,7 @@ class Ticket extends AbstractController
 
                 $ticketId = $ticket->getId();
 
-                if (!in_array($ticketId, $viewedLinks)) {
+                if (! in_array($ticketId, $viewedLinks)) {
                     $resource->setTotalViews($resource->getTotalViews() + 1);
                     $this->em->persist($resource);
                     $this->em->flush();

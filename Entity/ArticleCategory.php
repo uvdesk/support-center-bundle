@@ -21,11 +21,6 @@ class ArticleCategory
      */
     private $id;
 
-    // /**
-    //  * @var integer
-    //  */
-    // private $companyId;
-
     /**
      * @var integer
      * @ORM\Column(type="integer", name="article_id")

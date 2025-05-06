@@ -31,7 +31,6 @@ class SolutionCategoryMapping
      */
     private $categoryId;
 
-
     /**
      * Get id
      *

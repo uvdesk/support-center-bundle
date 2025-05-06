@@ -2,24 +2,25 @@
 
 namespace Webkul\UVDesk\SupportCenterBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
-use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
-use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
-use Webkul\UVDesk\CoreFrameworkBundle\Form\UserProfile;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Webkul\UVDesk\CoreFrameworkBundle\Utils\TokenGenerator;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Filesystem\Filesystem as Fileservice;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Webkul\UVDesk\CoreFrameworkBundle\Form\UserProfile;
+use Webkul\UVDesk\CoreFrameworkBundle\Utils\TokenGenerator;
+use Webkul\UVDesk\CoreFrameworkBundle\FileSystem\FileSystem;
 use Webkul\UVDesk\CoreFrameworkBundle\Services as CoreServices;
 use Webkul\UVDesk\CoreFrameworkBundle\Providers\UserProvider;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Webkul\UVDesk\SupportCenterBundle\Entity as SupportEntities;
+use Webkul\UVDesk\CoreFrameworkBundle\Entity as CoreEntities;
 
-Class Customer extends AbstractController
+class Customer extends AbstractController
 {
     private $translator;
     private $fileSystem;
@@ -27,8 +28,9 @@ Class Customer extends AbstractController
     private $fileUploadService;
     private $uvdeskService;
     private $userProvider;
+    private $em;
 
-    public function __construct(TranslatorInterface $translator, UserPasswordEncoderInterface $passwordEncoder, FileSystem $fileSystem, CoreServices\FileUploadService $fileUploadService, CoreServices\EmailService $emailService, CoreServices\UVDeskService $uvdeskService, UserProvider $userProvider)
+    public function __construct(TranslatorInterface $translator, UserPasswordEncoderInterface $passwordEncoder, FileSystem $fileSystem, CoreServices\FileUploadService $fileUploadService, CoreServices\EmailService $emailService, CoreServices\UVDeskService $uvdeskService, UserProvider $userProvider, EntityManagerInterface $entityManager)
     {
         $this->translator = $translator;
         $this->fileSystem = $fileSystem;
@@ -37,6 +39,7 @@ Class Customer extends AbstractController
         $this->emailService = $emailService;
         $this->uvdeskService = $uvdeskService;
         $this->userProvider = $userProvider;
+        $this->em = $entityManager;
     }
 
     protected function redirectUserToLogin()
@@ -49,12 +52,11 @@ Class Customer extends AbstractController
 
     protected function isWebsiteActive()
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
-  
+        $website = $this->em->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
+
         if (! empty($website)) {
-            $knowledgebaseWebsite = $entityManager->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => 1]);
-            
+            $knowledgebaseWebsite = $this->em->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'status' => 1]);
+
             if (! empty($knowledgebaseWebsite) && true == $knowledgebaseWebsite->getIsActive()) {
                 return true;
             }
@@ -70,17 +72,16 @@ Class Customer extends AbstractController
 
     protected function isLoginDisabled()
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
+        $website = $this->em->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
 
         if (! empty($website)) {
-            $configuration = $entityManager->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy([
+            $configuration = $this->em->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy([
                 'website' => $website->getId(),
                 'isActive' => 1,
             ]);
 
             if (
-                ! empty($configuration) 
+                ! empty($configuration)
                 && $configuration->getDisableCustomerLogin()
             ) {
                 return true;
@@ -90,9 +91,9 @@ Class Customer extends AbstractController
         return false;
     }
 
-    public function loginOtpVerify(Request $request) {
+    public function loginOtpVerify(Request $request)
+    {
         $params = $request->request->all();
-        $entityManager = $this->getDoctrine()->getManager();
 
         if (empty($params['_username'])) {
             return new JsonResponse([
@@ -101,7 +102,7 @@ Class Customer extends AbstractController
             ], 403);
         }
 
-        $user = $entityManager->getRepository(CoreEntities\User::class)->findOneByEmail($params['_username']);
+        $user = $this->em->getRepository(CoreEntities\User::class)->findOneByEmail($params['_username']);
 
         if (empty($user) || empty($params['otp'])) {
             return new JsonResponse([
@@ -148,18 +149,18 @@ Class Customer extends AbstractController
         } catch (\Exception $e) {
             return new JsonResponse([
                 'success' => false,
-                'message' => "Failed to login " . $e->getMessage() ,
+                'message' => "Failed to login " . $e->getMessage(),
             ], 403);
         }
     }
 
-    public function generateOtp(Request $request) {
+    public function generateOtp(Request $request)
+    {
         $params = $request->request->all();
-        $entityManager = $this->getDoctrine()->getManager();
-        $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneByCode('helpdesk');
-        $knowledgebase = $entityManager->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
+        $website = $this->em->getRepository(CoreEntities\Website::class)->findOneByCode('helpdesk');
+        $knowledgebase = $this->em->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
 
-        $user = $entityManager->getRepository(CoreEntities\User::class)->retrieveHelpdeskCustomerInstances($params['_username']);
+        $user = $this->em->getRepository(CoreEntities\User::class)->retrieveHelpdeskCustomerInstances($params['_username']);
 
         if (empty($user)) {
             return new JsonResponse([
@@ -194,13 +195,13 @@ Class Customer extends AbstractController
             ->setLastOtpGeneratedAt(new \DateTime('now'))
         ;
 
-        $entityManager->persist($user);
-        $entityManager->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         $name = ucwords(trim(implode(' ', [$user->getFirstName(), $user->getLastName()])));
 
         // Generate email content
-        $subject = "Login OTP from ".$website->getName();
+        $subject = "Login OTP from " . $website->getName();
         $content = $this->renderView('@UVDeskSupportCenter/CustomerLogin/customer-login-otp-verification-email.html.twig', [
             'name'             => $name,
             'verificationCode' => $user->getVerificationCode(),
@@ -227,8 +228,8 @@ Class Customer extends AbstractController
 
         /** check disabled customer login **/
         if ($this->isLoginDisabled()) {
-            $this->addFlash('warning', $this->translator->trans('Warning ! Customer Login disabled by admin.') );
-            
+            $this->addFlash('warning', $this->translator->trans('Warning ! Customer Login disabled by admin.'));
+
             return $this->redirect($this->generateUrl('helpdesk_knowledgebase'));
         }
 
@@ -238,7 +239,7 @@ Class Customer extends AbstractController
         $session->remove(Security::AUTHENTICATION_ERROR);
 
         if ($error) {
-            $this->addFlash('warning', $this->translator->trans('Warning ! ' . $error->getMessage()) );
+            $this->addFlash('warning', $this->translator->trans('Warning ! ' . $error->getMessage()));
         }
 
         return $this->render('@UVDeskSupportCenter/CustomerLogin/customer-login.html.twig', [
@@ -249,7 +250,8 @@ Class Customer extends AbstractController
                 [
                     'label' => $this->translator->trans('Support Center'),
                     'url'   => $this->generateUrl('helpdesk_knowledgebase')
-                ], [
+                ],
+                [
                     'label' => $this->translator->trans('Sign In'),
                     'url'   => '#'
                 ]
@@ -260,10 +262,8 @@ Class Customer extends AbstractController
     public function Account(Request $request)
     {
         $this->isWebsiteActive();
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->em;
         $user = $this->getUser();
-
-        $errors = [];
 
         if ($request->getMethod() == 'POST') {
             $data     = $request->request->all();
@@ -275,12 +275,12 @@ Class Customer extends AbstractController
             if (isset($dataFiles['profileImage'])) {
                 if (! in_array($dataFiles['profileImage']->getMimeType(), $validMimeType)) {
                     $this->addFlash('warning', $this->translator->trans('Error ! Profile image is not valid, please upload a valid format'));
-                    
+
                     return $this->redirect($this->generateUrl('helpdesk_customer_account'));
                 }
             }
 
-            $checkUser = $em->getRepository(CoreEntities\User::class)->findOneBy(array('email'=>$data['email']));
+            $checkUser = $em->getRepository(CoreEntities\User::class)->findOneBy(array('email' => $data['email']));
             $errorFlag = 0;
 
             if ($checkUser) {
@@ -299,7 +299,7 @@ Class Customer extends AbstractController
                     if ($data != null && (!empty($data['password']['first']))) {
                         $encodedPassword = $this->passwordEncoder->encodePassword($user, $data['password']['first']);
 
-                        if (! empty($encodedPassword) ) {
+                        if (! empty($encodedPassword)) {
                             $user->setPassword($encodedPassword);
                         }
                     } else {
@@ -311,7 +311,7 @@ Class Customer extends AbstractController
                     $user->setEmail($data['email']);
                     $user->setTimeZone($data['timezone']);
                     $user->setTimeFormat($data['timeformat']);
-                    
+
                     $em->persist($user);
                     $em->flush();
 
@@ -320,8 +320,8 @@ Class Customer extends AbstractController
                     if (isset($dataFiles['profileImage'])) {
                         $previousImage = $userInstance->getProfileImagePath();
                         if ($previousImage != null) {
-                            $image = str_replace("\\","/",$this->getParameter('kernel.project_dir').'/public'.$previousImage);
-                            $check = $this->fileUploadService->fileRemoveFromFolder($image); 
+                            $image = str_replace("\\", "/", $this->getParameter('kernel.project_dir') . '/public' . $previousImage);
+                            $check = $this->fileUploadService->fileRemoveFromFolder($image);
                         }
                         $assetDetails = $this->fileSystem->getUploadManager()->uploadFile($dataFiles['profileImage'], 'profile');
                         $userInstance->setProfileImagePath($assetDetails['path']);
@@ -331,7 +331,7 @@ Class Customer extends AbstractController
                     $fileService = new Fileservice;
                     if ($request->get('removeImage') == 'on') {
                         if ($userInstance->getProfileImagePath()) {
-                            $fileService->remove($this->getParameter('kernel.project_dir').'/public'.$userInstance->getProfileImagePath());
+                            $fileService->remove($this->getParameter('kernel.project_dir') . '/public' . $userInstance->getProfileImagePath());
                         }
                         $userInstance = $userInstance->setProfileImagePath(null);
                     }
