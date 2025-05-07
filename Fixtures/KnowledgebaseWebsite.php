@@ -11,7 +11,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
 {
     private static $websiteConfigurationSeed = [
         'status'                   => true,
-        'brand_color'              => '#7E91F0',
+        'brand_color'              => '#0056fc',
         'page_background_color'    => '#FFFFFF',
         'header_background_color'  => '#FFFFFF',
         'banner_background_color'  => '#7C70F4',
@@ -36,7 +36,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
             ($website = new CoreEntities\Website())
                 ->setName('Helpdesk Knowledgebase')
                 ->setCode('knowledgebase')
-                ->setThemeColor('#7E91F0')
+                ->setThemeColor('#0056fc')
                 ->setCreatedAt(new \DateTime())
                 ->setUpdatedAt(new \DateTime());
 
