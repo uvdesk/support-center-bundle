@@ -26,6 +26,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
         'disable_customer_login'   => false,
         'login_required_to_create' => true,
         'home_page_content'        => 'masonry',
+        'public_link_access_limit' => 5,
     ];
 
     public function load(ObjectManager $entityManager)
@@ -61,6 +62,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
                 ->setTicketCreateOption(self::$websiteConfigurationSeed['ticket_create_option'])
                 ->setHomepageContent(self::$websiteConfigurationSeed['home_page_content'])
                 ->setDisableCustomerLogin(self::$websiteConfigurationSeed['disable_customer_login'])
+                ->setPublicResourceAccessAttemptLimit(self::$websiteConfigurationSeed['public_link_access_limit'])
                 ->setIsActive(true)
                 ->setCreatedAt(new \DateTime())
                 ->setUpdatedAt(new \DateTime())
