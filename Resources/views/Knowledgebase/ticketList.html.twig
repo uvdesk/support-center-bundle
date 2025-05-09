@@ -183,12 +183,13 @@
                         <img class="uv-table-agent" src="{{ asset(default_agent_image_path) }}" alt=""/>
                     <% } %>
                     <%- agent.firstName + ' ' + (agent.lastName == null ? '' : agent.lastName) %>
-					
-					<% if (agent.isOnline) { %>
-						<span title="Online" style="cursor:pointer; color: green; font-size: 15px;">●</span>
-				 	<% } else { %>
-						<span title="Offline" style="cursor:pointer; color: red; font-size: 15px;">●</span>
-					<% } %>
+					{% if (ticket_service.getUserPresenceStatus) %}
+						<% if (agent.isOnline) { %>
+							<span title="Online" style="cursor:pointer; color: green; font-size: 15px;">●</span>
+						<% } else { %>
+							<span title="Offline" style="cursor:pointer; color: red; font-size: 15px;">●</span>
+						<% } %>
+					{% endif %}
                 <% } else { %>
                     {{ 'Unassigned'|trans }}
                 <% } %>
