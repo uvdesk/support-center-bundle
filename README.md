@@ -9,13 +9,13 @@
     <a href="https://gitter.im/uvdesk/support-center-bundle"><img src="https://badges.gitter.im/uvdesk/support-center-bundle.svg" alt="connect on gitter"></a>
 </p>
 
-The **UVDeskSupportCenterBundle** introduces the Support Center portal to the [UVDesk Community][1] helpdesk, a nifty solution to provide your customers with an easy interface to manage their tickets and easily engage with your support staff. The Support Center also includes a Knowledgebase that can be easily managed by your support staff.
+The **UVDeskSupportCenterBundle** seamlessly integrates a customer-facing Support Center portal into the [UVDesk Community][1] helpdesk, offering customers an intuitive interface to submit, track, and manage their support tickets. It also features a fully manageable Knowledgebase, enabling support staff to publish helpful articles and FAQs, empowering customers with self-service options and reducing repetitive queries.
 
 The support center bundle comes loaded with the following features:
 
-  * **Knowledgebase** - Publish articles and group them into Folders and Categories
+  * **Knowledgebase** - Create and publish informative articles to help customers find answers quickly without needing direct support. Organize your content into clearly defined Folders and Categories, making it easy for users to navigate and locate relevant information. Whether it's troubleshooting guides, FAQs, or how-to articles, the Knowledgebase empowers your support team to reduce repetitive queries and enhances the overall self-service experience for customers.
 
-  * **Customer Ticket Portal** - Enable web login for your customers to manage their tickets through an easy-to-use interface
+  * **Customer Ticket Portal** - Allow customers to log in via the web to easily view, track, and manage their support tickets through a user-friendly interface.
 
 Installation
 --------------
