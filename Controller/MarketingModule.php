@@ -86,6 +86,13 @@ Class MarketingModule extends AbstractController
 
             try {
                 if ($uploadImage) {
+                    if (! preg_match('#^(image/)(?!(tif)|(svg) )#', $uploadImage->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $uploadImage->getClientMimeType())) {
+                        $message = $this->translator->trans('Warning! Provide valid image file. (Recommended: PNG, JPG or GIF Format).');
+                        $this->addFlash('warning', $message);
+
+                        throw new \Exception($message);
+                    }
+
                     $uploadedFileAttributes = $this->fileUplaodService->uploadFile($uploadImage, $prefix);
 
                     if ($uploadedFileAttributes) {

@@ -101,7 +101,6 @@
 				},
 				initialize : function() {
 					Backbone.Validation.bind(this);
-					var jsonContext = JSON.parse('{{ errors|raw }}');
 		    		for (var field in jsonContext) {
 		    			Backbone.Validation.callbacks.invalid(this, field, jsonContext[field], 'input');
 					}
