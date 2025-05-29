@@ -134,24 +134,16 @@ class Folder extends AbstractController
             $formData = $request->request->all();
             $solutionImage = $request->files->get('solutionImage');
 
-            if ($imageFile = $request->files->get('solutionImage')) {
-                if ($imageFile->getMimeType() == "image/svg+xml" || $imageFile->getMimeType() == "image/svg") {
-                    if (! $this->fileUploadService->svgFileCheck($imageFile)) {
-                        $message = $this->translator->trans('Warning! Not a valid svg. (Recommended: PNG, JPG or GIF Format).');
-                        $this->addFlash('warning', $message);
+            $validMimeType = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+            $imageFile = $request->files->get('solutionImage');
 
-                        return $this->redirect($this->generateUrl('helpdesk_member_knowledgebase_create_folder'));
-                    }
-                }
+            if (! empty($imageFile) && ! in_array($imageFile->getMimeType(), $validMimeType)) {
+                $message = $this->translator->trans('Warning! Provide valid image file. (Recommended: PNG, JPG or GIF Format).');
+                $this->addFlash('warning', $message);
 
-                if (! preg_match('#^(image/)(?!(tif)|(svg) )#', $imageFile->getMimeType()) && !preg_match('#^(image/)(?!(tif)|(svg))#', $imageFile->getClientMimeType())) {
-                    $message = $this->translator->trans('Warning! Provide valid image file. (Recommended: PNG, JPG or GIF Format).');
-                    $this->addFlash('warning', $message);
-
-                    return $this->render('@UVDeskSupportCenter/Staff/Folders/updateFolder.html.twig', [
-                        'folder' => $knowledgebaseFolder
-                    ]);
-                }
+                return $this->render('@UVDeskSupportCenter/Staff/Folders/updateFolder.html.twig', [
+                    'folder' => $knowledgebaseFolder
+                ]);
             }
 
             $formData = $request->request->all();
