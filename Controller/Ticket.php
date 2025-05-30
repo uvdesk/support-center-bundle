@@ -347,7 +347,6 @@ class Ticket extends AbstractController
 
                 // @TODO: Refactor -> Why are we filtering only these two characters?
                 $data['message'] = str_replace(['&lt;script&gt;', '&lt;/script&gt;', ''], '', htmlspecialchars($data['message'], ENT_QUOTES, 'UTF-8'));
-                $data['message'] = $this->ticketService->sanitizeMessage($data['message']);
 
                 $userDetail = $this->userService->getCustomerPartialDetailById($data['user']->getId());
                 $data['fullname'] = $userDetail['name'];
