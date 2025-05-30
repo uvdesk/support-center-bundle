@@ -75,6 +75,7 @@ class Ticket extends AbstractController
     {
         $this->isWebsiteActive();
 
+        $thread = null;
         $formErrors = $errors = array();
         $website = $this->em->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
         $websiteConfiguration = $this->uvdeskService->getActiveConfiguration($website->getId());
@@ -222,7 +223,13 @@ class Ticket extends AbstractController
                             }
                         }
 
-                        $thread = $this->ticketService->createTicketBase($data);
+                        try {
+                            $thread = $this->ticketService->createTicketBase($data);
+                        } catch (\Exception $e) {
+                            $this->addFlash('warning', $e->getMessage());
+
+                            return $this->redirect($this->generateUrl('helpdesk_customer_create_ticket'));
+                        }
 
                         if (! empty($thread)) {
                             $ticket = $thread->getTicket();
@@ -310,6 +317,7 @@ class Ticket extends AbstractController
     public function saveReply(int $id, Request $request)
     {
         $this->isWebsiteActive();
+        $thread = null;
         $data = $request->request->all();
         $ticket = $this->em->getRepository(CoreEntities\Ticket::class)->find($id);
         $user = $this->userService->getSessionUser();
@@ -338,14 +346,24 @@ class Ticket extends AbstractController
                 }
 
                 // @TODO: Refactor -> Why are we filtering only these two characters?
-                $data['message'] = str_replace(['&lt;script&gt;', '&lt;/script&gt;'], '', htmlspecialchars($data['message']));
+                $data['message'] = str_replace(['&lt;script&gt;', '&lt;/script&gt;', ''], '', htmlspecialchars($data['message'], ENT_QUOTES, 'UTF-8'));
+                $data['message'] = $this->ticketService->sanitizeMessage($data['message']);
 
                 $userDetail = $this->userService->getCustomerPartialDetailById($data['user']->getId());
                 $data['fullname'] = $userDetail['name'];
                 $data['source'] = 'website';
                 $data['createdBy'] = $isCollaborator ? 'collaborator' : 'customer';
                 $data['attachments'] = $request->files->get('attachments');
-                $thread = $this->ticketService->createThread($ticket, $data);
+
+                try {
+                    $thread = $this->ticketService->createThread($ticket, $data);
+                } catch (\Exception $e) {
+                    $this->addFlash('warning', $e->getMessage());
+
+                    return $this->redirect($this->generateUrl('helpdesk_customer_ticket', array(
+                        'id' => $ticket->getId()
+                    )));
+                }
 
                 $status = $this->em->getRepository(CoreEntities\TicketStatus::class)->findOneByCode($data['status']);
 

@@ -4,6 +4,7 @@ CHANGELOG for 1.1.x
 This changelog references any relevant changes introduced in 1.1 minor versions.
 
 * 1.1.3.4 (2025-05-05)
+    * Added validation for attachment upload
     * Fixed RCE (Remote Code Execution) security issue
     * Code refactoring
 
