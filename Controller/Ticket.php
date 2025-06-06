@@ -174,9 +174,8 @@ class Ticket extends AbstractController
 
                     if ($form->isValid() && !count($formErrors) && !$error) {
                         $data = array(
-                            'from'      => $email, //email$request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
+                            'from'      => $email,
                             'subject'   => $request->request->get('subject'),
-                            // @TODO: We need to filter js (XSS) instead of html
                             'reply'     => str_replace(['&lt;script&gt;', '&lt;/script&gt;'], '', htmlspecialchars($request->request->get('reply'))),
                             'firstName' => $name[0],
                             'lastName'  => isset($name[1]) ? $name[1] : '',
@@ -286,25 +285,6 @@ class Ticket extends AbstractController
                 'post'               => $post
             )
         );
-    }
-
-    public function ticketList(Request $request)
-    {
-        $ticketRepo = $this->em->getRepository(CoreEntities\Ticket::class);
-
-        $currentUser = $this->get('security.token_storage')->getToken()->getUser();
-        if (
-            ! $currentUser
-            || $currentUser == "anon."
-        ) {
-            //throw error
-        }
-
-        $tickets = $ticketRepo->getAllCustomerTickets($currentUser);
-
-        return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketList.html.twig', array(
-            'ticketList' => $tickets,
-        ));
     }
 
     public function saveReply(int $id, Request $request)
