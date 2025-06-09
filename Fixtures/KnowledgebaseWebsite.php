@@ -28,7 +28,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
         'home_page_content'        => 'masonry',
     ];
 
-    public function load(ObjectManager $entityManager)
+    public function load(ObjectManager $entityManager): void
     {
         $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
         
