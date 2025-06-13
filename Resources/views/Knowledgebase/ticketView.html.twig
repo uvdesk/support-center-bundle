@@ -251,6 +251,13 @@
                     <div class="uv-aside-brick">
                         <h6>{{ 'Agent'|trans }}</h6>
                         <span>{{ ticketAgent.name }}</span>
+                        {% if (ticket_service.getUserPresenceStatus) %}
+                            {% if (ticketAgent.isOnline) %}  
+                                <span title="Online" style="cursor:pointer; padding-left:2px; color: green; font-size: 15px; vertical-align: middle;">● </span>
+                            {% else %}  
+                                <span title="Offline" style="cursor:pointer; padding-left:2px; color: red; font-size: 15px; vertical-align: middle;">● </span>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 {% endif %}
                 <div class="uv-aside-brick">
