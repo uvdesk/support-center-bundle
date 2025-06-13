@@ -5,6 +5,7 @@ This changelog references any relevant changes introduced in 1.1 minor versions.
 
 * 1.1.3.4 (2025-05-05)
     * Code refactoring
+    * Fixed vulnerability broken security issue
 
 * 1.1.3.3 (2025-04-12)
     Updates:

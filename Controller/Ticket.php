@@ -174,9 +174,8 @@ class Ticket extends AbstractController
 
                     if ($form->isValid() && !count($formErrors) && !$error) {
                         $data = array(
-                            'from'      => $email, //email$request->getSession()->getFlashBag()->set('success', $this->translator->trans('Success ! Ticket has been created successfully.'));
+                            'from'      => $email,
                             'subject'   => $request->request->get('subject'),
-                            // @TODO: We need to filter js (XSS) instead of html
                             'reply'     => str_replace(['&lt;script&gt;', '&lt;/script&gt;'], '', htmlspecialchars($request->request->get('reply'))),
                             'firstName' => $name[0],
                             'lastName'  => isset($name[1]) ? $name[1] : '',
@@ -286,25 +285,6 @@ class Ticket extends AbstractController
                 'post'               => $post
             )
         );
-    }
-
-    public function ticketList(Request $request)
-    {
-        $ticketRepo = $this->em->getRepository(CoreEntities\Ticket::class);
-
-        $currentUser = $this->get('security.token_storage')->getToken()->getUser();
-        if (
-            ! $currentUser
-            || $currentUser == "anon."
-        ) {
-            //throw error
-        }
-
-        $tickets = $ticketRepo->getAllCustomerTickets($currentUser);
-
-        return $this->render('@UVDeskSupportCenter/Knowledgebase/ticketList.html.twig', array(
-            'ticketList' => $tickets,
-        ));
     }
 
     public function saveReply(int $id, Request $request)
@@ -536,9 +516,24 @@ class Ticket extends AbstractController
         $count = intval($data['rating']);
 
         if ($count > 0 || $count < 6) {
-            $ticket = $this->em->getRepository(CoreEntities\Ticket::class)->find($id);
             $customer = $this->userService->getCurrentUser();
+            $ticket = $this->em->getRepository(CoreEntities\Ticket::class)->findOneBy([
+                'id'       => $id,
+                'customer' => $customer
+            ]);
+
+            if (empty($ticket)) {
+                $json['alertClass'] = 'danger';
+                $json['alertMessage'] = $this->translator->trans('Warning ! Invalid rating.');
+
+                $response = new Response(json_encode($json));
+                $response->headers->set('Content-Type', 'application/json');
+
+                return $response;
+            }
+
             $rating = $this->em->getRepository(CoreEntities\TicketRating::class)->findOneBy(array('ticket' => $id, 'customer' => $customer->getId()));
+
             if ($rating) {
                 $rating->setcreatedAt(new \DateTime);
                 $rating->setStars($count);
@@ -552,6 +547,7 @@ class Ticket extends AbstractController
                 $this->em->persist($rating);
                 $this->em->flush();
             }
+
             $json['alertClass'] = 'success';
             $json['alertMessage'] = $this->translator->trans('Success ! Rating has been successfully added.');
         } else {

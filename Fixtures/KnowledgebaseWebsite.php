@@ -26,13 +26,13 @@ class KnowledgebaseWebsite extends DoctrineFixture
         'disable_customer_login'   => false,
         'login_required_to_create' => true,
         'home_page_content'        => 'masonry',
-        'public_link_access_limit' => 5,
+        'public_access_link_limit' => 5
     ];
 
-    public function load(ObjectManager $entityManager)
+    public function load(ObjectManager $entityManager): void
     {
         $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneByCode('knowledgebase');
-        
+
         if (empty($website)) {
             ($website = new CoreEntities\Website())
                 ->setName('Helpdesk Knowledgebase')
@@ -46,7 +46,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
         }
 
         $knowledgebaseWebsite = $entityManager->getRepository(SupportCenterEntities\KnowledgebaseWebsite::class)->findOneByWebsite($website);
-        
+
         if (empty($websiteConfiguration)) {
             ($knowledgebaseWebsite = new SupportCenterEntities\KnowledgebaseWebsite())
                 ->setStatus(self::$websiteConfigurationSeed['status'])
@@ -62,7 +62,7 @@ class KnowledgebaseWebsite extends DoctrineFixture
                 ->setTicketCreateOption(self::$websiteConfigurationSeed['ticket_create_option'])
                 ->setHomepageContent(self::$websiteConfigurationSeed['home_page_content'])
                 ->setDisableCustomerLogin(self::$websiteConfigurationSeed['disable_customer_login'])
-                ->setPublicResourceAccessAttemptLimit(self::$websiteConfigurationSeed['public_link_access_limit'])
+                ->setPublicResourceAccessAttemptLimit(self::$websiteConfigurationSeed['public_access_link_limit'])
                 ->setIsActive(true)
                 ->setCreatedAt(new \DateTime())
                 ->setUpdatedAt(new \DateTime())

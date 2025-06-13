@@ -85,7 +85,16 @@ Class MarketingModule extends AbstractController
             $marketingModule->setLinkURL($request['linkURL']);
 
             try {
+                $validMimeType = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+
                 if ($uploadImage) {
+                    if (! empty($uploadImage) && ! in_array($uploadImage->getMimeType(), $validMimeType)) {
+                        $message = $this->translator->trans('Warning! Provide valid image file. (Recommended: PNG, JPG or GIF Format).');
+                        $this->addFlash('warning', $message);
+
+                        throw new \Exception($message);
+                    }
+
                     $uploadedFileAttributes = $this->fileUplaodService->uploadFile($uploadImage, $prefix);
 
                     if ($uploadedFileAttributes) {
