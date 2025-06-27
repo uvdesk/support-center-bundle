@@ -42,9 +42,6 @@ class Branding extends AbstractController
         $website = $entityManager->getRepository(CoreEntities\Website::class)->findOneBy(['code' => "knowledgebase"]);
         $configuration = $entityManager->getRepository(SupportEntities\KnowledgebaseWebsite::class)->findOneBy(['website' => $website->getId(), 'isActive' => 1]);
         $currentLocales = $this->uvdeskService->getDefaultLangauge();
-        $envPath = $this->getParameter('kernel.project_dir') . '/.env';
-        $envContent = file_get_contents($envPath);
-        $sessionExpiryInMinute = $envContent ? (preg_match('/UV_SESSION_COOKIE_LIFETIME=(\d+)/', $envContent, $matches) ? (int) $matches[1] : 60) : 60;
 
         if ($request->getMethod() == 'POST') {
             $params = $request->request->all();
@@ -167,13 +164,6 @@ class Branding extends AbstractController
                     $configuration->setScript($request->request->get('script'));
                     $configuration->setPublicResourceAccessAttemptLimit($request->request->get('publicResourceAccessAttemptLimit'));
 
-                    if (! empty($params['website']['session_expiry'])) {
-                        $sessionExpiry = (int) $params['website']['session_expiry'];
-                        $sessionExpiryInSeconds = $sessionExpiry * 60; // Convert minutes to seconds
-                        $envContent = preg_replace('/^UV_SESSION_COOKIE_LIFETIME=\d+$/m', 'UV_SESSION_COOKIE_LIFETIME=' . $sessionExpiryInSeconds, $envContent);
-                        file_put_contents($envPath, $envContent);
-                    }
-
                     $this->addFlash('success', $this->translator->trans('Success ! Branding details saved successfully.'));
                     break;
                 case 'time':
@@ -225,8 +215,7 @@ class Branding extends AbstractController
                 "22:00" => "10:00 PM",
                 "23:00" => "11:00 PM",
             ],
-            'business_hours'       => unserialize($website->getBusinessHour()),
-            'currentSessionExpiry' => $sessionExpiryInMinute / 60
+            'business_hours'       => unserialize($website->getBusinessHour())
         ]);
     }
 
