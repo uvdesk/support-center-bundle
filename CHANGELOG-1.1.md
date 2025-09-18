@@ -3,11 +3,7 @@ CHANGELOG for 1.1.x
 
 This changelog references any relevant changes introduced in 1.1 minor versions.
 
-* 1.1.3.4 (2025-05-05)
-    * Code refactoring
-    * Fixed vulnerability broken security issue
-
-* 1.1.3.3 (2025-04-12)
+* 1.1.3.3 (2025-09-18)
     Updates:
     * Updated UI for customer ticket create and login forms.
     * Marketing announcement section functionality and design updates.
