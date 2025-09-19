@@ -3,13 +3,20 @@ CHANGELOG for 1.1.x
 
 This changelog references any relevant changes introduced in 1.1 minor versions.
 
-* 1.1.3.3 (2025-09-18)
+* 1.1.3.3 (2025-09-19)
     Updates:
-    * Updated UI for customer ticket create and login forms.
-    * Marketing announcement section functionality and design updates.
+    * Updated UI for the customer ticket creation and login forms.
+    * Enhanced functionality and design of the marketing announcement section.
+    * Updated README.md.
+    * Added a Public Link URL feature for ticket access without customer login.
+    * Added a setting to configure how much time a public link can be accessed.
+    * Updated default theme and brand colors.
+    * updated svg for marketing announcement and 
+    * Updated admin logo color to match the dynamic banner background color.
 
     Issue Fixes:
      * Issue fixed for large size attachment zip download.
+     * Fixed vulnerability broken security issue.
 
 * 1.1.3.2 (2024-12-20)
     Updates:
